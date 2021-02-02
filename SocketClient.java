@@ -1,3 +1,5 @@
+
+// specify all imports
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -8,6 +10,8 @@ import java.net.UnknownHostException;
 import java.util.TimerTask;
 
 public class SocketClient {
+
+	// define variables to be used like host IP, input stream, socket to use etc
 	InetAddress host;
 	Socket socket = null;
 	DataInputStream input = null;
@@ -16,27 +20,35 @@ public class SocketClient {
 	int Port;
 	boolean firstflag = false;
 
+	// paramterized constructor to initiate socket client using IP and the port
 	public SocketClient(String IP_Addr, int Port) {
 		this.IP_Addr = IP_Addr;
 		this.Port = Port;
 	}
 
+	// method to connect to RPi device
+	// return true if connection was successful else return false
 	public boolean connectToDevice() {
+
+		// specify a timeout
+		// if connection not established within this time, return false
 		int timeout = 6000;
 		try {
+			// if socket is already connected, return true
 			if (socket != null) {
 				if (socket.isConnected()) {
 					return true;
 				}
 			}
+
+			// establish socket connection
 			InetSocketAddress ISA = new InetSocketAddress(IP_Addr, Port);
 			socket = new Socket();
 			socket.connect(ISA, timeout);
 			System.out.println("Connected");
-			// takes input from terminal
 
+			// specify input and output streams
 			input = new DataInputStream(socket.getInputStream());
-			// sends output to the socket
 			out = new PrintStream(socket.getOutputStream());
 			return true;
 		} catch (UnknownHostException u) {
@@ -48,64 +60,59 @@ public class SocketClient {
 
 	}
 
-	// sends packet data to rpi to be relayed or processed
+	// send packet data to RPi for further processing
 	public int sendPacket(String packetData) {
 		try {
 			System.out.println("Sending packetData...");
 			System.out.println(packetData);
 			out.print(packetData);
-			System.out.println("Packet sent.");
+			System.out.println("Packet sent");
 			out.flush();
 			return 0;
-
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			System.out.println("Sending Error: " + e);
 			e.printStackTrace();
+
+			// re-establish connection if socket is not connected
 			while (socket.isClosed()) {
 				System.out.println("socket is not connected... reconnecting..");
 				connectToDevice();
 			}
-			System.out.println("resending packet.");
-			sendPacket(packetData);
 
+			// attempt to send packet again
+			System.out.println("Resending packet...");
+			sendPacket(packetData);
 		}
 		return 0;
 	}
 
+	// receive packet
 	public String receivePacket(boolean resentflag, String Data) {
 		String instruction = null;
 		try {
-
-			// need to rethink this.
 			do {
-
 				long timestart = System.currentTimeMillis();
 				while (input.available() == 0) {
 					Thread.sleep(10);
 				}
 				instruction = input.readLine();
 			} while (instruction == null || instruction.equalsIgnoreCase(""));
-		}
-
-		catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {
 			System.out.println("Receiving Error: " + e);
 			e.printStackTrace();
 			connectToDevice();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return instruction;
 	}
 
+	// close socket connection
 	public void closeConnection() {
 		try {
 			socket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

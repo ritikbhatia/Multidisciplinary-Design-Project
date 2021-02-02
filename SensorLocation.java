@@ -4,14 +4,17 @@ public enum SensorLocation {
 
     int type_val = 0;
 
+    // parameterized constructor to initialize type of sensor (based on enum)
     private SensorLocation(int type_val) {
         this.type_val = type_val;
     }
 
+    // get value of sensor from enum mapping
     public int getValue() {
         return this.type_val;
     }
 
+    // update value
     public void setValue(int update) {
         type_val = update;
     }

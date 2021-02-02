@@ -1,40 +1,27 @@
-import com.sun.xml.bind.v2.runtime.reflect.Lister;
 
+// specify all imports and JAR files we will use
+import com.sun.xml.bind.v2.runtime.reflect.Lister;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
-
 import javax.swing.text.Position;
 
 public class PacketFactory implements Runnable {
 
+	// create class variables
 	static SocketClient sc = null;
 	int delay = 0;
 	int whatever = 0;
 	int waypoint_x = 0, waypoint_y = 0;
 	boolean camRun = true;
-	// multi-threading this
-	// have a reference to a queue of strings or commands or something.
-	// will add commands that maps to do something on the robot to this.
-	// will have also a send queue where we can send data out.
+	// multi-threading with reference to a queue of strings/commands
 	Queue<Packet> buffer;
-	// this might cause a problem with the buffer where we have old or
-	// repeated(handled by tcp) packets receiving. fuck.
 	String ip = "192.168.4.4";
 	// String ip = "127.0.0.1";
-
 	String PreviousPacket = null;
-
-	public void resetPreviousPacket() {
-		PreviousPacket = null;
-	}
-
-	public void setPreviousPacket(String Prev) {
-		PreviousPacket = Prev;
-	}
 
 	int port = 8081;
 	final static int FORWARDi = 1;
@@ -46,17 +33,29 @@ public class PacketFactory implements Runnable {
 	boolean explorationflag = false;
 	final static byte UPDATESENSOR = 0x1;
 
-	public PacketFactory() {
-
+	// method to reset the previous packet
+	public void resetPreviousPacket() {
+		PreviousPacket = null;
 	}
 
-	public PacketFactory(Queue<Packet> buffer2) {
+	// method to set the previous packet
+	public void setPreviousPacket(String Prev) {
+		PreviousPacket = Prev;
+	}
+
+	// default constructor
+	public PacketFactory() {
+	}
+
+	// parameterized constructor to connect to device and create buffer
+	public PacketFactory(Queue<Packet> buffer) {
 		sc = new SocketClient(ip, port);
 		sc.connectToDevice();
-		this.buffer = buffer2;
+		this.buffer = buffer;
 
 	}
 
+	// method to reconnect to device
 	public void reconnectToDevice() {
 		sc.closeConnection();
 		sc.connectToDevice();
@@ -64,107 +63,87 @@ public class PacketFactory implements Runnable {
 
 	@Override
 	public void run() {
-		// this cause me the problem of not having the
-		// fucking packetFactory to send. thus i need a sending buffer too...
 		while (true) {
 			listen();
 		}
 
 	}
 
+	// start listening for packets from the socket
 	public void listen() {
 		boolean flag = true;
 		String data = null;
+
+		// while no data received, keep probing for the packet
 		while (data == null) {
 			data = sc.receivePacket(explorationflag, PreviousPacket);
 		}
 
-		System.out.println("receiving Data : " + data);
+		System.out.println("Receiving data: " + data);
 		String removeDataString = data.replace("P:", "");
 		if (explorationflag == false)
-			// TODO: RESET COMES TO HERE DURING EXPLORATION 2 @JARRETT
 			processPacket(removeDataString);
 		else
 			recvSensorOrStop(removeDataString);
 
 	}
 
+	// process the packets received
 	public void processPacket(String packetString) {
 		String[] splitPacket = packetString.split(Packet.Splitter);
 		if (splitPacket[1].equalsIgnoreCase(Packet.StartExplorationType)) {
-			// start exploration
-			// when exploration end and reach the start position
-			// send ok:exploration to android
+			// send ok:exploration to android when exploration ends and robot is at the
+			// start position
 			System.out.println("starting exploration...");
 			buffer.add(new Packet(Packet.StartExploration));
 			System.out.print(
-					"*******************************************received packet for Exploration*********************************************\n");
+					"******************************************* Received Exploration Packet *********************************************\n");
 			sc.sendPacket(Packet.StartExplorationTypeOk + "$");
 			sc.sendPacket(Packet.StartExplorationTypeOkARD + ":" + whatever + "$");
-
 			explorationflag = true;
-
 		} else if (splitPacket[1].equalsIgnoreCase(Packet.StartFastestPathType)) {
-			// start fastest path. just send the whole stack of instruction at once
-			// need to get the x,y value of the waypoint
-			// send to android that it is ready to move.
+			// send fastest path instruction stack at once
+			// need to get x and y coordinates of the waypoint
+			// inform android device that it is ready to move
 			System.out.println(
-					"*****************************************received packet for fastest path**************************************\n");
+					"***************************************** Received fastest path packet **************************************\n");
 
 			buffer.add(new Packet(Packet.StartFastestPath));
-
 		} else if (splitPacket[1].equalsIgnoreCase(Packet.Stop)) {
-			// stop moving robot FUCK i need multi thread this.
-			// i need a stopping flag god damn it
-			// interrupt exploration
+			// interrupt exploration, stop robot
 			buffer.add(new Packet(Packet.StopInstruction));
 			sc.sendPacket(Packet.StopOk);
 		} else if (splitPacket[1].equalsIgnoreCase(Packet.Reset)) {
 			// carry robot back to starting point.
 			// reset map
-			// TODO: RESET COMES TO HERE DURING EXPLORATION 1 @JARRETT
 			buffer.add(new Packet(Packet.ResetInstruction));
 			sc.sendPacket(Packet.ResetOK);
 			System.out.println("sending ok reset");
 		} else if (splitPacket[1].equals(Packet.GETMAP)) {
 			buffer.add(new Packet(Packet.GETMAPi));
-		}
-
-		else if (splitPacket[0].equals(Packet.Set)) {
+		} else if (splitPacket[0].equals(Packet.Set)) {
 			if (splitPacket[1].equalsIgnoreCase(Packet.SetRobotPos)) {
-				// remove bracket, split by comma , set first as x second as y
-				// set robot direction and x and y
-				// this is a problem now. does not handle the robot Position
-				// String directionTemp = splitPacket[3];//set direction for robot
-				//
-				// String[] waypointcoord = splitPacket[2].replace("[", "").split(",");
-				// int x = Integer.parseInt(waypointcoord[0]);
-				// int y = Integer.parseInt(waypointcoord[1]);
-				// System.out.println("setting robot position at :" + x + ", " + y + "with robot
-				// facing " + directionTemp);
-				// buffer.add(new Packet(Packet.setRobotPosition, x, y, direction));
 				sc.sendPacket(Packet.SetRobotPosOk);
 			} else if (splitPacket[1].equalsIgnoreCase(Packet.SetWayPoint)) {
 				// remove bracket, split by comma , set first as x second as y
 				String[] waypointcoord = splitPacket[2].replace("[", "").replace("]", "").split(",");
 				int x = Integer.parseInt(waypointcoord[0]);
 				int y = Integer.parseInt(waypointcoord[1]);
-				// set robot position waypoint for the fastest path. after setting this, we will
-				// send all instruction to raspberry and not do anything.
-				// allow faster execution when android sends the command to start fastest path.
-				// must edit set robot position.
+				// set robot position waypoint for the fastest path
+				// after setting this, send all instructions to RPi
+				// allow faster execution when android sends the command to start fastest path
 				buffer.add(new Packet(Packet.SetWayPointi, x, y));
 				sc.sendPacket("A:" + Packet.SetWayPointOK);
 			}
 		} else {
-			System.out.println("String received is invalid...");
+			System.out.println("Invalid string received...");
 		}
 
 	}
 
 	public void recvSensorOrStop(String packetString) {
 		System.out.println(
-				"*************************************recvSensorOrStop called*********************************************\n");
+				"************************************* recvSensorOrStop called *********************************************\n");
 		String[] commandSplit = packetString.split(Packet.Splitter);
 		if (commandSplit[0].equalsIgnoreCase(Packet.Map)) {
 			if (commandSplit[1].equalsIgnoreCase("sensor")) {
@@ -177,35 +156,33 @@ public class PacketFactory implements Runnable {
 
 			}
 		} else if (commandSplit[1].equalsIgnoreCase(Packet.Stop)) {
-			// stop moving robot FUCK i need multi thread this.
-			// i need a stopping flag god damn it
 			// interrupt exploration
 			sc.sendPacket(Packet.StopOk);
 			explorationflag = false;
 			buffer.add(new Packet(Packet.StopInstruction));
 		} else if (commandSplit[1].equalsIgnoreCase(Packet.Reset)) {
-			// stop whatever is going on
-			// carry robot back to starting point.
+			// stop everything and carry robot back to starting point
 			// reset map
 			sc.sendPacket(Packet.ResetOK);
 			System.out.println("sending ok reset");
 			explorationflag = false;
 			buffer.add(new Packet(Packet.ResetInstruction));
-
 		} else {
 			System.out.println("Data received and ignored.");
 		}
-
 	}
 
+	// get exploration flag
 	public boolean getFlag() {
 		return explorationflag;
 	}
 
+	// set exploration flag
 	public void setFlag(boolean flag) {
 		this.explorationflag = flag;
 	}
 
+	// get the last packet
 	public Packet getLatestPacket() {
 		if (buffer.isEmpty())
 			return null;
@@ -213,7 +190,6 @@ public class PacketFactory implements Runnable {
 	}
 
 	public void sideTurnCalibrate() {
-		// we need a return packet after calibration?
 		sc.sendPacket(Packet.SIDETURNCALIBRATE);
 		setPreviousPacket(Packet.SIDETURNCALIBRATE);
 	}
@@ -222,52 +198,20 @@ public class PacketFactory implements Runnable {
 	public void sideCalibrate(int x, int y, int directionNum) {
 		System.out.println("debug side calibrate");
 		sc.sendPacket(Packet.SIDECALIBRATE + "$");
-		// sc.sendPacket(Packet.SIDECALIBRATE + Packet.Splitter + x + Packet.Splitter +
-		// y + Packet.Splitter + directionNum + "$");
-		/*
-		 * try { Thread.sleep((int) (delay)); }catch (Exception e){
-		 * System.out.println("You ran into an error you idiot. Get a life."); }
-		 * sendPhotoDataToRpi();
-		 */
-		// sendPhotoDataToRpi();
 		setPreviousPacket(Packet.SIDECALIBRATE);
 	}
 
 	// for debugging purposes only
 	public void frontCalibrate(int x, int y, int directionNum) {
 		System.out.println("debug front calibrate");
-		// if (isFacingWall(x, y, directionNum)) {
-		// if(camRun) sc.sendPacket(Packet.FRONTCALIBRATE + Packet.Splitter + "-1" +
-		// Packet.Splitter + "-1" + Packet.Splitter + "-1" + "$");
-		// else sc.sendPacket(Packet.FRONTCALIBRATE);
-		// }
-		// else {
-		// if(camRun) sc.sendPacket(Packet.FRONTCALIBRATE + Packet.Splitter + x +
-		// Packet.Splitter + y + Packet.Splitter + directionNum + "$");
-		// else sc.sendPacket(Packet.FRONTCALIBRATE);
-		// }
 		sc.sendPacket(Packet.FRONTCALIBRATE + "$");
-		// sc.sendPacket(Packet.FRONTCALIBRATE + Packet.Splitter + x + Packet.Splitter +
-		// y + Packet.Splitter + directionNum + "$");
 		setPreviousPacket(Packet.FRONTCALIBRATE);
 	}
 
 	// for debugging purposes only
 	public void leftCalibrate(int x, int y, int directionNum) {
 		System.out.println("debug left calibrate");
-		// if (isFacingWall(x, y, directionNum)) {
-		// if (camRun) sc.sendPacket(Packet.LEFTCALIBRATE + Packet.Splitter + "-1" +
-		// Packet.Splitter + "-1" + Packet.Splitter + "-1" + "$");
-		// else sc.sendPacket(Packet.LEFTCALIBRATE);
-		// }
-		// else {
-		// if(camRun) sc.sendPacket(Packet.LEFTCALIBRATE + Packet.Splitter + x +
-		// Packet.Splitter + y + Packet.Splitter + directionNum + "$");
-		// else sc.sendPacket(Packet.LEFTCALIBRATE);
-		// }
 		sc.sendPacket(Packet.LEFTCALIBRATE);
-		// sc.sendPacket(Packet.FRONTCALIBRATE + Packet.Splitter + x + Packet.Splitter +
-		// y + Packet.Splitter + directionNum + "$");
 		setPreviousPacket(Packet.LEFTCALIBRATE);
 	}
 
@@ -276,7 +220,7 @@ public class PacketFactory implements Runnable {
 	}
 
 	public boolean createFullMovementPacketToArduino(Queue<Integer> instructions) {
-		// create one whole command for multiple movement
+		// create one whole command for multiple movements
 		// send to both android and arduino
 		String toSend = null;
 		int count = 1;
@@ -285,6 +229,8 @@ public class PacketFactory implements Runnable {
 			return false;
 		System.out.println("Sending instruction");
 		int subinstruct = instructions.remove();
+
+		// perform while an instruction exists
 		while (!instructions.isEmpty()) {
 			temp = instructions.remove();
 			if (subinstruct == temp && count < 10 && subinstruct == Packet.FORWARDi) {
@@ -295,58 +241,46 @@ public class PacketFactory implements Runnable {
 			}
 			if (subinstruct == FORWARDi) {
 				toSend = Packet.FORWARDCMD + Packet.Splitter + count + "$";
-				// System.out.println("Sending "+ toSend + "...");
 			} else if (subinstruct == TURNRIGHTi) {
 				toSend = Packet.TURNRIGHTCMD + Packet.Splitter + 0 + "$";
-				// System.out.println("Sending "+ toSend + "...");
 			} else if (subinstruct == TURNLEFTi) {
 				toSend = Packet.TURNLEFTCMD + Packet.Splitter + 0 + "$";
-				// System.out.println("Sending "+ toSend + "...");
 			}
 			sc.sendPacket(toSend);
-			/*
-			 * try { Thread.sleep(850); } catch (InterruptedException e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); }
-			 */
-
 			count = 1;
+
+			// if all instructions have been processed
 			if (instructions.isEmpty() && subinstruct != temp) {
 				if (temp == FORWARDi) {
 					toSend = Packet.FORWARDCMD + Packet.Splitter + count + "$";
-					// System.out.println("Sending "+ toSend + "...");
 				} else if (temp == TURNRIGHTi) {
 					toSend = Packet.TURNRIGHTCMD + Packet.Splitter + 0 + "$";
-					// System.out.println("Sending "+ toSend + "...");
 				} else if (temp == TURNLEFTi) {
 					toSend = Packet.TURNLEFTCMD + Packet.Splitter + 0 + "$";
 					System.out.println("Sending " + toSend + "...");
 				}
-				/*
-				 * try { Thread.sleep(1000); } catch (InterruptedException e) { // TODO
-				 * Auto-generated catch block e.printStackTrace(); }
-				 */
 				sc.sendPacket(toSend);
 				break;
 			}
 			subinstruct = temp;
-
 		}
 		sideTurnCalibrate();
 		return true;
-
-		// either send here or return string...(unsure)
 	}
 
+	// get x coordinate of the waypoint
 	public int getWaypoint_X() {
 		return waypoint_x;
 	}
 
+	// get y coordinate of waypoint
 	public int getWaypoint_Y() {
 		return waypoint_y;
 	}
 
+	// send the whole map packet
 	public void sendWholeMap(Map mapP) {
-		// transpose the array...
+		// transpose array
 		int[][] map = mapP.getMapArray();
 		String mapCmd = Packet.MAPDESCRIPTORCMD + "[";
 		int[][] newMapArray = new int[Map.WIDTH][Map.HEIGHT];
@@ -362,13 +296,11 @@ public class PacketFactory implements Runnable {
 		}
 		mapCmd += "]$";
 		sc.sendPacket(mapCmd);
-		// transpose finished
-
-		// send array to android.
 	}
 
+	// send the map packet to the RPi
 	public void sendWholeMapRpi(Map mapP) {
-		// transpose the array...
+		// transpose array
 		int[][] map = mapP.getMapArray();
 		String mapCmd = Packet.MAPDESCRIPTORCMDRPI + "[";
 		int[][] newMapArray = new int[Map.WIDTH][Map.HEIGHT];
@@ -384,26 +316,9 @@ public class PacketFactory implements Runnable {
 		}
 		mapCmd += "]$";
 		sc.sendPacket(mapCmd);
-		// transpose finished
-
-		// send array to android.
 	}
 
 	public boolean isFacingWall(int x, int y, int directionNum) {
-
-		// directionNum
-
-		// case UP:
-		// return 0;
-
-		// case RIGHT:
-		// return 1;
-
-		// case DOWN:
-		// return 2;
-
-		// case LEFT:
-		// return 3;
 
 		if ((y == 1 && directionNum == 0) || // facing top wall
 				(y == 18 && directionNum == 2) || // facing bottom wall
@@ -416,28 +331,27 @@ public class PacketFactory implements Runnable {
 	}
 
 	public boolean createOneMovementPacketToArduino(int instruction, int x, int y, int directionNum) {
-		// for one by one exploration
-		// create one Packet for one movement
+		// for one by one exploration, create one packet for a single movement
 		// send to both android and arduino
 		String instructionString = null;
 		String instructionString2 = null;
 		if (instruction == FORWARDi) {
 			instructionString = Packet.FORWARDCMD;
 			instructionString2 = Packet.FORWARDCMDANDROID;
-			System.out.println("Sending a Forward Packet");
+			System.out.println("Sending a forward packet");
 		} else if (instruction == TURNRIGHTi) {
 			instructionString = Packet.TURNRIGHTCMD;
 			instructionString2 = Packet.TURNRIGHTCMDANDROID;
-			System.out.println("Sending a Turn right Packet");
+			System.out.println("Sending a turn right packet");
 		} else if (instruction == TURNLEFTi) {
 			instructionString = Packet.TURNLEFTCMD;
 			instructionString2 = Packet.TURNLEFTCMDANDROID;
-			System.out.println("Sending a Turn Left Packet");
+			System.out.println("Sending a turn left packet");
 		} else if (instruction == REVERSEi) {
 			instructionString = Packet.REVERSECMD;
 			instructionString2 = Packet.REVERSECMDANDROID;
 
-			System.out.println("Sending a Reverse Packet");
+			System.out.println("Sending a reverse packet");
 		} else {
 			System.out.println("Error: Wrong format");
 			return false;
@@ -451,10 +365,9 @@ public class PacketFactory implements Runnable {
 
 		setPreviousPacket(instructionString);
 		return true;
-		// either send here or return string...(unsure)
-
 	}
 
+	// send command packet
 	public void sendCMD(String cmd) {
 		sc.sendPacket(cmd);
 	}

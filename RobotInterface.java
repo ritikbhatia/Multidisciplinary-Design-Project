@@ -1,3 +1,5 @@
+
+// specify required imports
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.LinkedList;
@@ -5,9 +7,9 @@ import java.util.Queue;
 import java.util.Stack;
 
 public abstract class RobotInterface {
-	Visualization viz;
 
-	// the x and y position of the robot on the map
+	Visualization viz;
+	// the x and y coorsinates of the robot
 	int x;
 	int y;
 
@@ -16,20 +18,20 @@ public abstract class RobotInterface {
 	// radius of the circle to draw the robot
 	final static int radius = 114;
 
-	// the facing direction of the robot
+	// the direction the robot is facing
 	Direction facing;
 
-	// the map reference
 	Map map;
 	final int WIDTH = 15;
 	final int HEIGHT = 20;
 
-	// fastest path from a point to another point
+	// the fastest path between 2 points
 	Stack<Node> fastestPath = new Stack<Node>();
 	// the converted int instructions from the above stack array
-	// Stack<Integer> instructionsForFastestPath;
 	Stack<Integer> instructionsForFastestPath = new Stack<Integer>();
 
+	// define abstract functions to implement later
+	// use to provide only function signatures
 	public abstract void addSensors(RealSensor[] sensors);
 
 	public abstract void addSensors(Sensor[] sensors);
@@ -66,21 +68,25 @@ public abstract class RobotInterface {
 
 	// set the fastest path for the robot to follow
 	public void setFastestInstruction(Stack<Node> fast, int targetX, int targetY) {
-		// for the purpose of this function only, to input the instructions into the
-		// stack
+
+		// to input instructions into the stack
 		Direction tempFacing = facing;
 		int tempX = x;
 		int tempY = y;
 		Node next = null;
 
-		// loop until the stack(fast) is empty
+		// loop until the fast (which is the stack) is empty
 		while (true) {
-			// if the stack is empty, means the nodes have fully been converted
-			// next step will be to TURN towards the correct direction
+			// if the stack empty, then nodes have been fully converted
+			// hence, break
 			if (fast.empty())
 				break;
 			else {
+				// retrieve next node from the stack
 				next = (Node) fast.pop();
+
+				// conditional statements to decide direction to turn to
+				// call getShortestTurnDirection to get fastest steps to turn
 				if (next.getX() > tempX) {
 					if (tempFacing != Direction.RIGHT)
 						tempFacing = getShortestTurnInstruction(tempFacing, Direction.RIGHT);
@@ -103,11 +109,13 @@ public abstract class RobotInterface {
 					tempY += 1;
 				}
 
+				// add instruction for the shortest path to stack
 				instructionsForFastestPath.add(Packet.FORWARDi);
 			}
 		}
 	}
 
+	// simulate a right turn by the robot, by changing direction
 	public Direction simulateTurnRight(Direction tempFacing) {
 		switch (tempFacing) {
 			case RIGHT:
@@ -126,6 +134,7 @@ public abstract class RobotInterface {
 		return tempFacing;
 	}
 
+	// simulate a left turn by the robot, by changing direction
 	public Direction simulateTurnLeft(Direction tempFacing) {
 		switch (tempFacing) {
 			case RIGHT:
@@ -143,9 +152,12 @@ public abstract class RobotInterface {
 		return tempFacing;
 	}
 
+	// method to get shortest way to turn to a specific direction
+	// answer specific to current direction robot is facing
 	public Direction getShortestTurnInstruction(Direction tempFacing, Direction targetFacing) {
 		Stack<Direction> listOfTurnInstructions = new Stack<Direction>();
 
+		// conditional statements specifying direction to turn
 		if (tempFacing == Direction.RIGHT) {
 			if (targetFacing == Direction.UP)
 				instructionsForFastestPath.add(Packet.TURNLEFTi);
@@ -195,12 +207,11 @@ public abstract class RobotInterface {
 			}
 
 		}
-		// return listOfTurnInstructions;
 		return targetFacing;
 	}
 
+	// returns true if the left side has blocks to calibrate
 	public boolean canSide_Calibrate() {
-		// returns true if the right side of the robot have blocks to use to calibrate
 		if (facing == Direction.LEFT && isBlocked(x - 1, y - 2) && isBlocked(x + 1, y - 2))
 			return true;
 		else if (facing == Direction.RIGHT && isBlocked(x - 1, y + 2) && isBlocked(x + 1, y + 2))
@@ -213,8 +224,8 @@ public abstract class RobotInterface {
 		return false;
 	}
 
+	// returns true if the front of the robot has blocks to calibrate
 	public boolean canFront_Calibrate() {
-		// returns true if the front of the robot have blocks to use to calibrate
 		if (facing == Direction.LEFT && isBlocked(x - 2, y - 1) && isBlocked(x - 2, y) && isBlocked(x - 2, y + 1))
 			return true;
 		else if (facing == Direction.RIGHT && isBlocked(x + 2, y - 1) && isBlocked(x + 2, y) && isBlocked(x + 2, y + 1))
@@ -227,8 +238,8 @@ public abstract class RobotInterface {
 		return false;
 	}
 
+	// returns true if the right side of the robot has block to calibrate
 	public boolean canLeft_Calibrate() {
-		// returns true if the right side of the robot have blocks to use to calibrate
 		if (facing == Direction.LEFT && isBlocked(x - 1, y + 2) && isBlocked(x + 1, y + 2))
 			return true;
 		else if (facing == Direction.RIGHT && isBlocked(x - 1, y - 2) && isBlocked(x + 1, y - 2))
@@ -241,36 +252,40 @@ public abstract class RobotInterface {
 		return false;
 	}
 
+	// return the class variable x
 	public int getX() {
-		// TODO Auto-generated method stub
 		return x;
 	}
 
+	// return the class variable y
+	public int getY() {
+		return y;
+	}
+
+	// set position of the robot and facing direction
 	public void setRobotPos(int x, int y, Direction facing) {
 		this.x = x;
 		this.y = y;
 		this.facing = facing;
 	}
 
-	public int getY() {
-		// TODO Auto-generated method stub
-		return y;
-	}
-
+	// get the visualizaton
 	public Visualization getViz() {
 		return viz;
 	}
 
+	// set direction in which robot is facing
 	public void setface(Direction facing) {
 		this.facing = facing;
 	}
 
+	// set visualization
 	public void setViz(Visualization viz) {
 		this.viz = viz;
 	}
 
+	// method to return whether front has a wall/obstacle
 	public boolean isObstacleOrWallFront() {
-		// System.out.println("Current Position: " + x +" " + y);
 		switch (facing) {
 			case UP:
 				if (isBlocked(x - 1, y - 2) || isBlocked(x, y - 2) || isBlocked(x + 1, y - 2))
@@ -294,53 +309,50 @@ public abstract class RobotInterface {
 		return false;
 	}
 
+	// return true if left bound is being violated
 	public boolean checkLeftBound(int xi, int yi) {
 		if ((xi < 0)) {
-
-			// System.out.println("ERROR: out of left bound");
 			return true;
 		}
 		return false;
 	}
 
+	// return true if top bound is being violated
 	public boolean checkTopBound(int xi, int yi) {
 		if ((yi < 0)) {
-			// System.out.println("ERROR: out of top bound");
 			return true;
 		}
 		return false;
 	}
 
+	// return true if bottom bound is being violated
 	public boolean checkBottomBound(int xi, int yi) {
 		if (yi > (HEIGHT)) {
-			// System.out.println("ERROR: out of bottom bound");
 			return true;
 		}
 		return false;
 	}
 
+	// return true if right bound is being violated
 	public boolean checkRightBound(int xi, int yi) {
 		if (xi > (WIDTH)) {
-			// System.out.println("ERROR: out of right bound");
 			return true;
 		}
 		return false;
 	}
 
+	// return true if out of bounds or obstacle at given coordinates
 	public boolean checkObstacle(int xi, int yi) {
 		if (yi >= HEIGHT || xi >= WIDTH || yi < 0 || xi < 0) {
 			return true;
 		} else if (map.getMapArray()[yi][xi] == ExplorationTypes.toInt("OBSTACLE")) {
-			// System.out.println("grid is obstacle");
 			return true;
 		}
 		return false;
 	}
 
-	// input the direction of checking and return true if robot can move that
-	// direction
+	// return true if robot can move in specified direction
 	public boolean isAbleToMove(Direction dir) {
-
 		return isAbleToMove(dir, this.x, this.y);
 	}
 
@@ -392,8 +404,8 @@ public abstract class RobotInterface {
 		return canMove;
 	}
 
+	// return 1 if obstacle present, 0 if no obstacle and -1 if out of bounds
 	public boolean isBlocked(int xi, int yi) {
-		// return 1 if obstacle, 0 if no obstacle, -1 if out of bound
 		boolean rflag = false, tflag = false, bflag = false, lflag = false, obflag = false;
 		lflag = checkLeftBound(xi, yi);
 		tflag = checkTopBound(xi, yi);
@@ -411,7 +423,7 @@ public abstract class RobotInterface {
 		return false;
 	}
 
-	// returns false if cannot move
+	// return false if robot cannot move to given coordinates
 	public boolean canRobotMoveHere(int x, int y) {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
@@ -423,6 +435,7 @@ public abstract class RobotInterface {
 		return true;
 	}
 
+	// draw the robot, using graphics
 	public void paintRobot(Graphics g) {
 		g.setColor(Color.RED);
 		x_g = 10 + (x - 1) * Map.sizeofsquare;
