@@ -69,8 +69,7 @@ public class Main {
 					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
 					{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
 			// for debugging purposes
-			MapIterator.printExploredResultsToFile(test,
-					"C:\\Users\\bhati\\OneDrive\\Desktop\\MDP-All\\MDP\\test.txt\\");
+			MapIterator.printExploredResultsToFile(test, "test.txt");
 			MapIterator.ArraytoHex((test));
 			map.setMapArray(test);
 		}
