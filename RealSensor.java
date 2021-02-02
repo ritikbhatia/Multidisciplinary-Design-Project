@@ -1,16 +1,16 @@
-//need check data
-
 public class RealSensor extends Sensor {
 
+	// parameterized constructor to initialize real sensor
 	public RealSensor(int range, SensorLocation currentDirection, int locationOnRobot_x, int locationOnRobot_y,
 			int robot_x, int robot_y) {
 		super(range, currentDirection, locationOnRobot_x, locationOnRobot_y, robot_x, robot_y);
-		// TODO Auto-generated constructor stub
 	}
 
+	// method to sense location
 	public boolean SenseLocation(Map map, int x, int y, int distanceFromRobot, boolean hitWall) {
 		int score = 0;
 
+		// conditional statements to assign score
 		if (distanceFromRobot == 1)
 			score = -34;
 		else if (distanceFromRobot == 2)
@@ -30,14 +30,11 @@ public class RealSensor extends Sensor {
 		else if (distanceFromRobot == 9)
 			score = -2;
 
-		// System.out.println("X: "+x+"\tY: "+y+"\tScore: "+score);
-
 		if (x < Map.WIDTH && y < Map.HEIGHT && x >= 0 && y >= 0) {
-			// System.out.println("*******X: "+x+"\tY: "+y+"\tScore: "+score);
-			// flip the score to positive to indicate that it is a block
+			// assign a positive score if wall hit
+			// this prevents robot to go there since expensive
 			if (hitWall)
 				score = -score;
-
 			map.setMapScore(x, y, score);
 		}
 
@@ -47,21 +44,17 @@ public class RealSensor extends Sensor {
 	public boolean Sense(Map map, int data, int[][] mapConfirmed) {
 		int nextLocationX = 0;
 		int nextLocationY = 0;
-		// boolean flag = false;
 
-		// is true after robot hits a wall, to prevent it from sensing further
+		// is true after robot hits a wall to prevent further sensing
 		boolean hitWall = false;
 		boolean hitWallret = false;
 
 		for (int i = 1; i <= range; i++) {
-
-			// make sure it is in the map range and bound.
+			// ensure it is within the map
 			if (currentDirection == SensorLocation.FACING_RIGHT) {
 				nextLocationX = robot_x + locationOnRobot_x + i;
 				nextLocationY = robot_y + locationOnRobot_y;
-			}
-
-			else if (currentDirection == SensorLocation.FACING_LEFT) {
+			} else if (currentDirection == SensorLocation.FACING_LEFT) {
 				nextLocationX = robot_x + locationOnRobot_x - i;
 				nextLocationY = robot_y + locationOnRobot_y;
 			} else if (currentDirection == SensorLocation.FACING_TOP) {
@@ -72,24 +65,17 @@ public class RealSensor extends Sensor {
 				nextLocationY = robot_y + locationOnRobot_y + i;
 			}
 
-			// System.out.println("next X: "+nextLocationX+"\tnext Y: "+nextLocationY +
-			// "\ti:" + i + "\tdata:" + data);
-
-			// hitwill will be true when sensor sensed a wall
+			// hitWall will be true when sensor senses a wall
 			if (!hitWall) {
-				// when the sensor sensed a wall, then everything after that will be given score
-				// 0
+				// when the sensor senses wall, then everything after that will be given score 0
 				if (i == data) {
 					hitWall = true;
 					if (SenseLocation(map, nextLocationX, nextLocationY, 0, hitWall) && i == 1)
 						hitWallret = true;
-					// hitWallret = true;
 				}
-				// System.out.println("-----------------Call sense location----------------");
 				SenseLocation(map, nextLocationX, nextLocationY, i, hitWall);
-			}
-			// send a 0 to signify that this is behind a wall
-			else
+			} else
+				// send a 0 to signify that this is behind a wall
 				SenseLocation(map, nextLocationX, nextLocationY, 0, hitWall);
 		}
 		System.out.println(hitWall);
@@ -103,21 +89,17 @@ public class RealSensor extends Sensor {
 	public boolean SenseRight(Map map, int data, int[][] mapConfirmed) {
 		int nextLocationX = 0;
 		int nextLocationY = 0;
-		// boolean flag = false;
 
 		// is true after robot hits a wall, to prevent it from sensing further
 		boolean hitWall = false;
 		boolean hitWallret = false;
 
 		for (int i = 1; i <= range; i++) {
-
-			// make sure it is in the map range and bound.
+			// ensure it is within the map
 			if (currentDirection == SensorLocation.FACING_RIGHT) {
 				nextLocationX = robot_x + locationOnRobot_x + i;
 				nextLocationY = robot_y + locationOnRobot_y;
-			}
-
-			else if (currentDirection == SensorLocation.FACING_LEFT) {
+			} else if (currentDirection == SensorLocation.FACING_LEFT) {
 				nextLocationX = robot_x + locationOnRobot_x - i;
 				nextLocationY = robot_y + locationOnRobot_y;
 			} else if (currentDirection == SensorLocation.FACING_TOP) {
@@ -128,24 +110,21 @@ public class RealSensor extends Sensor {
 				nextLocationY = robot_y + locationOnRobot_y + i;
 			}
 
-			// hitwill will be true when sensor sensed a wall
+			// hitWall will be true when sensor sensed a wall
 			if (!hitWall) {
-				// when the sensor sensed a wall, then everything after that will be given score
-				// 0
+				// when the sensor senses wall, then everything after that will be given score 0
 				if (i == data) {
 					hitWall = true;
 					if (SenseLocation(map, nextLocationX, nextLocationY, 0, hitWall) && i == 2)
 						hitWallret = true;
-					// hitWallret = true;
 				}
 				SenseLocation(map, nextLocationX, nextLocationY, i, hitWall);
-			}
-			// send a 0 to signify that this is behind a wall
-			else
+			} else
+				// send a 0 to signify that this is behind a wall
 				SenseLocation(map, nextLocationX, nextLocationY, 0, hitWall);
 		}
 
-		// update the map score after "sensing"
+		// update the scores on the map after sensing
 		map.updateMapWithScore();
 
 		return hitWallret;

@@ -1,7 +1,10 @@
+
+// specifying imports
 import java.util.HashMap;
 
 public class Sensor {
 
+	// declare class variables
 	private static final int WIDTH = 15;
 	private static final int HEIGHT = 20;
 	int range;
@@ -15,6 +18,7 @@ public class Sensor {
 	HashMap<int[], int[]> coordinatesLeft;
 	HashMap<int[], int[]> coordinatesRight;
 
+	// parameterized constructor to initialize Sensor
 	public Sensor(int range, SensorLocation currentDirection, int locationOnRobot_x, int locationOnRobot_y, int robot_x,
 			int robot_y) {
 		super();
@@ -27,6 +31,7 @@ public class Sensor {
 		this.hitWallCheck = false;
 	}
 
+	// set init direction
 	public void initDirection() {
 		switch (currentDirection) {
 			case FACING_TOP:
@@ -62,9 +67,9 @@ public class Sensor {
 				locationOnRobot_y = -1;
 				break;
 		}
-
 	}
 
+	// change direction to left
 	public void ChangeDirectionLeft() {
 		switch (currentDirection) {
 			case FACING_TOP:
@@ -120,8 +125,8 @@ public class Sensor {
 		}
 	}
 
+	// change direction to right
 	public void ChangeDirectionRight() {
-
 		switch (currentDirection) {
 			case FACING_TOP:
 				currentDirection = currentDirection.FACING_RIGHT;
@@ -177,11 +182,13 @@ public class Sensor {
 
 	}
 
+	// update location of the robot
 	public void updateRobotLocation(int x, int y) {
 		robot_x = x;
 		robot_y = y;
 	}
 
+	// make robot sense the location
 	public boolean SenseLocation(Map map, int x, int y, int distanceFromRobot) {
 		boolean hitWall = false;
 
@@ -207,7 +214,7 @@ public class Sensor {
 			score = -2;
 
 		if (x < WIDTH && y < HEIGHT && x >= 0 && y >= 0) {
-			// flip the score to positive to indicate that it is a block
+			// make the score positive to indicate that it is a block
 			if (map.SimulatedmapArray[y][x] == ExplorationTypes.toInt("OBSTACLE")
 					|| map.SimulatedmapArray[y][x] == ExplorationTypes.toInt("UNEXPLORED_OBSTACLE")) {
 				score = -score;
@@ -222,60 +229,48 @@ public class Sensor {
 	}
 
 	public boolean Sense(Map map, int data, int[][] notWorkinghe) {
-		// have to make sure does not overshort boundary of environment
-
+		// have to make sure does not overshoot boundary of environment
 		int nextLocationX = 0;
 		int nextLocationY = 0;
 
-		// is true after robot hits a wall, to prevent it from sensing further
+		// is true after robot hits a wall, to prevent further sensing
 		boolean hitWall = false;
 		boolean hitWallret = false;
 
 		for (int i = 1; i < range + 1; i++) {
-
-			// if(hitWall)
-			// break;
-
-			// make sure it is in the map range and bound.
+			// make sure it is in the map range and bound
 			if (currentDirection == SensorLocation.FACING_RIGHT) {
 				nextLocationX = robot_x + locationOnRobot_x + i;
 				nextLocationY = robot_y + locationOnRobot_y;
-			}
-
-			else if (currentDirection == SensorLocation.FACING_LEFT) {
+			} else if (currentDirection == SensorLocation.FACING_LEFT) {
 				nextLocationX = robot_x + locationOnRobot_x - i;
 				nextLocationY = robot_y + locationOnRobot_y;
 			} else if (currentDirection == SensorLocation.FACING_TOP) {
 				nextLocationX = robot_x + locationOnRobot_x;
 				nextLocationY = robot_y + locationOnRobot_y - i;
 			} else {
-				// System.out.print("should be sensing right wall\n");
 				nextLocationX = robot_x + locationOnRobot_x;
 				nextLocationY = robot_y + locationOnRobot_y + i;
 			}
 
-			// hitWall will be true when senselocation returns a true which indicates that a
-			// wall has been met
+			// hitWall will be true when senselocation returns a true
+			// that indicates a wall has been encountered
 			if (!hitWall) {
-				// System.out.println("next X: "+nextLocationX+"\tnext Y: "+nextLocationY);
 				hitWall = SenseLocation(map, nextLocationX, nextLocationY, i);
 				if (SenseLocation(map, nextLocationX, nextLocationY, 0) && i == 1)
 					hitWallret = true;
-			}
-			// send a 0 to signify that this is behind a wall
-			else
+			} else
+				// send a 0 to signify that this is behind a wall
 				SenseLocation(map, nextLocationX, nextLocationY, 0);
 		}
-		// hitWallret=SenseLocation(map,nextLocationX, nextLocationY, 0);
 
-		// update the map score after "sensing"
+		// update the map score after sensing
 		map.updateMapWithScore();
 		return hitWallret;
 	}
 
 	public boolean SenseRight(Map map, int data, int[][] notWorkinghe) {
-		// have to make sure does not overshort boundary of environment
-
+		// make sure does not overshoot boundary of environment
 		int nextLocationX = 0;
 		int nextLocationY = 0;
 
@@ -284,45 +279,34 @@ public class Sensor {
 		boolean hitWallret = false;
 
 		for (int i = 1; i < range + 1; i++) {
-
-			// if(hitWall)
-			// break;
-
-			// make sure it is in the map range and bound.
+			// make sure it is in the map range and bound
 			if (currentDirection == SensorLocation.FACING_RIGHT) {
 				nextLocationX = robot_x + locationOnRobot_x + i;
 				nextLocationY = robot_y + locationOnRobot_y;
-			}
-
-			else if (currentDirection == SensorLocation.FACING_LEFT) {
+			} else if (currentDirection == SensorLocation.FACING_LEFT) {
 				nextLocationX = robot_x + locationOnRobot_x - i;
 				nextLocationY = robot_y + locationOnRobot_y;
 			} else if (currentDirection == SensorLocation.FACING_TOP) {
 				nextLocationX = robot_x + locationOnRobot_x;
 				nextLocationY = robot_y + locationOnRobot_y - i;
 			} else {
-				// System.out.print("should be sensing right wall\n");
 				nextLocationX = robot_x + locationOnRobot_x;
 				nextLocationY = robot_y + locationOnRobot_y + i;
 			}
 
-			// hitWall will be true when senselocation returns a true which indicates that a
-			// wall has been met
+			// hitWall will be true when senselocation returns a true
+			// that is when a wall is encountered
 			if (!hitWall) {
 				hitWall = SenseLocation(map, nextLocationX, nextLocationY, i);
 				if (SenseLocation(map, nextLocationX, nextLocationY, 0) && i == 2)
 					hitWallret = true;
-			}
-			// send a 0 to signify that this is behind a wall
-			else
+			} else
+				// send a 0 to signify that this is behind a wall
 				SenseLocation(map, nextLocationX, nextLocationY, 0);
 
 		}
-		// hitWallret=SenseLocation(map,nextLocationX, nextLocationY, 0);
-
-		// update the map score after "sensing"
+		// update the map score after sensing
 		map.updateMapWithScore();
 		return hitWallret;
 	}
-
 }
