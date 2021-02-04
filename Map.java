@@ -49,9 +49,8 @@ public class Map {
 		setScoreArray();
 	}
 
+	// TODO: check if this function is invoked 
 	public Map(int[][] mapDisplay) {
-		// this is not used
-
 		mapArray = mapDisplay;
 		initializeNodes();
 		initializeNeighbors();
@@ -68,6 +67,7 @@ public class Map {
 
 			}
 		}
+
 		int confirmed = -1000;
 		mapScoreArray[17][0] = confirmed;
 		mapScoreArray[19][0] = confirmed;
@@ -98,50 +98,37 @@ public class Map {
 
 	public void setMapArray(int[][] mapArray) {
 		this.mapArray = mapArray;
-		// this.mapArray2 = mapArray;
-		// SimulatedmapArray = mapArray.clone();
+
 		initializeNodes();
 		initializeNeighbors();
 
 		for (int y = 0; y < SimulatedmapArray.length; y++) {
 			for (int x = 0; x < SimulatedmapArray[y].length; x++) {
 				SimulatedmapArray[y][x] = mapArray[y][x];
-				// System.out.print(SimulatedmapArray[y][x]);
 			}
-			// System.out.print("\n");
 		}
 	}
 
 	public void setMapScore(int x, int y, int score) {
-		// System.out.print(" X = " + x + " Y + " + y + " \n");
 		mapScoreArray[y][x] += score;
-
 	}
 
-	// update probabilities on map display for simulation and real robot.
+	// Revise probabilities grid map simulation display & real robot 
 	public void updateMapWithScore() {
 		for (int y = 0; y < mapScoreArray.length; y++) {
 			for (int x = 0; x < mapScoreArray[y].length; x++) {
 				if (mapScoreArray[y][x] == 0) {
 					mapArray[y][x] = ExplorationTypes.toInt("UNEXPLORED_EMPTY");
-					// mapArray2[y][x] = ExplorationTypes.toInt("UNEXPLORED_EMPTY");
+					
 				} else if (mapScoreArray[y][x] > 0) {
 					mapArray[y][x] = ExplorationTypes.toInt("OBSTACLE");
-					// mapArray2[y][x] = ExplorationTypes.toInt("OBSTACLE");
+					
 				} else if (mapScoreArray[y][x] < 0) {
 					mapArray[y][x] = ExplorationTypes.toInt("EMPTY");
-					// mapArray2[y][x] = ExplorationTypes.toInt("EMPTY");
+					
 				}
-				//////////////////////////////////////////////////////////////////// might need
-				//////////////////////////////////////////////////////////////////// changing/////////////////////////////////////////////////////////
-				/*
-				 * if(mapScoreArray[y][x] == -1) { //mapArray[y][x] =
-				 * ExplorationTypes.toInt("UNEXPLORED_EMPTY"); mapArray2[y][x] =
-				 * ExplorationTypes.toInt("UNEXPLORED_EMPTY"); }
-				 */
 			}
 		}
-
 	}
 
 	public void optimiseFP() {
@@ -177,11 +164,14 @@ public class Map {
 	public void initializeNodes() {
 		for (int r = 0; r < HEIGHT; r++) {
 			for (int c = 0; c < WIDTH; c++) {
+				
 				NodeArray[r][c] = new Node(c, r);
+				
 				if (mapArray[r][c] != 0) {
 					NodeArray[r][c].setObstacle(true);
-				} else // if(mapArray[r][c] == 0)
+				} else 
 					NodeArray[r][c].setObstacle(false);
+					
 			}
 		}
 		System.out.println();
@@ -191,23 +181,27 @@ public class Map {
 
 		for (int r = 0; r < HEIGHT; r++) {
 			for (int c = 0; c < WIDTH; c++) {
-				if (c > 0) { // move left
+				// Moving left
+				if (c > 0) { 
 					Node left = NodeArray[r][c - 1];
 					NodeArray[r][c].addNeighbors(left);
 					NodeArray[r][c].setLeft(left);
 				}
-				if (c < WIDTH - 1) { // move right
+				// Moving right
+				if (c < WIDTH - 1) { 
 					Node right = NodeArray[r][c + 1];
 					NodeArray[r][c].addNeighbors(right);
 					NodeArray[r][c].setRight(right);
 
 				}
-				if (r < HEIGHT - 1) { // down
+				// Moving down
+				if (r < HEIGHT - 1) { 
 					Node down = NodeArray[r + 1][c];
 					NodeArray[r][c].addNeighbors(down);
 					NodeArray[r][c].setDown(down);
 				}
-				if (r > 0) { // up
+				// Moving up
+				if (r > 0) { 
 					Node up = NodeArray[r - 1][c];
 					NodeArray[r][c].addNeighbors(up);
 					NodeArray[r][c].setUp(up);
@@ -216,6 +210,7 @@ public class Map {
 		}
 	}
 
+	// Calculate clearence distance between robot and obstacle
 	public void calculateClearance() {
 		Node node;
 		for (int r = 0; r < HEIGHT; r++) {
@@ -235,19 +230,15 @@ public class Map {
 						}
 						if (NodeArray[r + i][c + j].isObstacle())
 							continue columnloop;
-
 					}
 				}
-
 				node.setClearance(3);
-
 			}
-
 		}
 	}
 
+	// Receiving data 
 	public void MapUpdate(int x, int y, int flag) {
-		// for receiving of Data
 		if (x > 0 || y > 0 || x < WIDTH || y < HEIGHT) {
 			mapArray[y][x] = flag;
 		}
@@ -280,20 +271,20 @@ public class Map {
 					mapScoreArray[y + i][x + j] = confirmed;
 			}
 		}
-
 	}
 
+	// Update real robot positions in grid map
 	public void paintMapGridEmpty(Graphics g) {
-		// change for actual robot
 		int distanceY = 0;
 		int distanceX = 0;
+
 		for (int i = 0; i < 20; i++) {
-			// draw Y
+			// Paint Y
 			distanceX = 0;
 			g.drawRect(10, 10 + distanceY, sizeofsquare, sizeofsquare);
 
 			for (int j = 0; j < 15; j++) {
-				// draw X
+				// Paint X
 				g.drawRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
 				distanceX += sizeofsquare;
 			}
@@ -303,51 +294,61 @@ public class Map {
 
 	public void paintMap(Graphics g) {
 
+		// Initialise map variables 
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		String mapScore = "";
 		int distanceY = 0;
 		int distanceX = 0;
+
 		for (int i = 0; i < mapArray.length; i++) {
-			// draw Y
+			// Paint Y
 			distanceX = 0;
 			g.drawRect(10, 10 + distanceY, sizeofsquare, sizeofsquare);
 
 			for (int j = 0; j < mapArray[i].length; j++) {
-				// draw X
+				// Paint X
 				g.setColor(Color.WHITE);
 				g.drawRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+				
 				if (mapArray[i][j] == ExplorationTypes.toInt("OBSTACLE")) {
-					// paint obstacle
+					// Draw obstacle
 					g.setColor(Color.BLACK);
 					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+
 				} else if ((i == 18 && j == 0) || (i == 18 && j == 1) || (i == 18 && j == 2) || (i == 17 && j == 0)
 						|| (i == 17 && j == 1) || (i == 17 && j == 2) || (i == 19 && j == 0) || (i == 19 && j == 1)
 						|| (i == 19 && j == 2)) {
-					// paint start location
+					// Draw start position 
 					g.setColor(Color.BLUE);
 					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+
 				} else if ((i == 0 && j == 12) || (i == 0 && j == 13) || (i == 0 && j == 14) || (i == 1 && j == 12)
 						|| (i == 1 && j == 13) || (i == 1 && j == 14) || (i == 2 && j == 12) || (i == 2 && j == 13)
 						|| (i == 2 && j == 14)) {
-					// paint goal location
+					// Draw goal position 
 					g.setColor(Color.GREEN);
 					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+
 				} else if (mapArray[i][j] == ExplorationTypes.toInt("UNEXPLORED_EMPTY")) {
 					g.setColor(Color.LIGHT_GRAY);
 					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+
 				}
+
 				g.setColor(Color.BLACK);
 				g2.drawString(Integer.toString(mapScoreArray[i][j]), 20 + distanceX, 30 + distanceY);
 				distanceX += sizeofsquare;
 			}
+
 			distanceY += sizeofsquare;
 		}
 
 	}
 
+	// To generate the explored map descriptor 
 	public void generateMapDescriptorExplored() {
-		// for generating MapDescriptorExplored.
+
 		int[][] ExploredMap = new int[HEIGHT][WIDTH];
 		for (int y = 0; y < HEIGHT; y++) {
 			for (int x = 0; x < WIDTH; x++) {
@@ -381,7 +382,6 @@ public class Map {
 	}
 
 	public void resetMap() {
-		// TODO Auto-generated method stub
 		this.mapArray = new int[][] { { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
 				{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 }, { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
 				{ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 }, { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
