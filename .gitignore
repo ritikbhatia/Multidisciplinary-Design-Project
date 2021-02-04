@@ -23,4 +23,5 @@
 /SocketClient.class
 /State.class
 /Visualization.class
-.gitignore
+
+/com.sun.xml.bind.jar

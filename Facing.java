@@ -1,3 +1,6 @@
 public enum Facing {
-    LEFT, RIGHT, UP, DOWN
+    LEFT, 
+    RIGHT, 
+    UP, 
+    DOWN
 }

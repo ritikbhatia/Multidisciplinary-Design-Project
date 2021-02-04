@@ -2,14 +2,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node implements Comparable {
+    
+    // Directional/Positional coordinates 
     final int x;
     final int y;
     Facing facing;
 
+    // Grid variables
     boolean isObstacle;
     boolean isVirtualWall;
     int clearance;
 
+    // Node variables
     Node pathParent;
     Node up;
     Node down;
@@ -17,14 +21,16 @@ public class Node implements Comparable {
     Node right;
     List neighbors = new ArrayList<Node>();
 
+    // Cost of path computation
     float costFromStart;
     float estimatedCostToGoal;
 
+    // GET method: Cost 
     public float getCost() {
         return costFromStart + estimatedCostToGoal;
     }
 
-    // compare the f value and the lower f value put to the front
+    // Compare node costs 
     public int compareTo(Object other) {
         float thisValue = this.getCost();
         float otherValue = ((Node) other).getCost();
@@ -33,16 +39,19 @@ public class Node implements Comparable {
         return (v > 0) ? 1 : (v < 0) ? -1 : 0;
     }
 
+    // Initialise node coordinates
     public Node() {
         x = 0;
         y = 0;
     }
 
+    // Assign node coordinates
     public Node(int xi, int yi) {
         this.x = xi;
         this.y = yi;
     }
 
+    // GET methods: X & Y coordinates
     public int getX() {
         return x;
     }
@@ -55,6 +64,7 @@ public class Node implements Comparable {
         neighbors.add(node);
     }
 
+    // SET methods: Define directions
     public void setLeft(Node left) {
         this.left = left;
     }
@@ -71,6 +81,7 @@ public class Node implements Comparable {
         this.down = down;
     }
 
+    // GET methods: Directions
     public Node getLeft() {
         return left;
     }
@@ -87,23 +98,16 @@ public class Node implements Comparable {
         return down;
     }
 
+    // Compute path cost 
     public float getCost(Node node, Node goalNode, boolean isStartNode) {
         return this.costFromStart + getWeight(node, isStartNode);
-    }
-
-    public float getEstimatedCost(Node node) {
-        Node goal = (Node) node;
-
-        float dx = Math.abs(this.x - goal.x);
-        float dy = Math.abs(this.y - goal.y);
-        return (dx + dy);
     }
 
     public List getNeighbors() {
         return neighbors;
     }
 
-    // if
+    // Compare node coordinates
     public int compareX(Node node) {
         return node.x > this.x ? 1 : node.x < this.x ? -1 : 0;
     }
@@ -112,6 +116,16 @@ public class Node implements Comparable {
         return node.y > this.y ? 1 : node.y < this.y ? -1 : 0;
     }
 
+    // Compute node cost 
+    public float getEstimatedCost(Node node) {
+        Node goal = (Node) node;
+
+        float dx = Math.abs(this.x - goal.x);
+        float dy = Math.abs(this.y - goal.y);
+        return (dx + dy);
+    }
+
+    // Compute node cost 
     public float getWeight(Node anode, boolean isStartNode) {
         Node node = (Node) anode;
         setFacing();
@@ -122,17 +136,19 @@ public class Node implements Comparable {
             return 100;
         }
 
-        // Penalize turns by adding edge cost
+        // Add edge cost to penalise turns 
         return 1500;
     }
 
+    // SET method: Robot's orientation 
     public void setFacing(Facing face) {
         this.facing = face;
     }
 
+    // Initialise robot's orientation
     public void setFacing() {
+
         if (this.pathParent == null) {
-            // Set robot's initial orientation
             this.facing = Facing.RIGHT;
             return;
         }
@@ -148,6 +164,7 @@ public class Node implements Comparable {
         }
     }
 
+    // Grid map navigation methods 
     public void setObstacle(boolean val) {
         this.isObstacle = val;
     }

@@ -1,12 +1,12 @@
 public class Packet {
-	// for mapping amount of instructions together
-
+	
+	// Map instructions together 
 	final static char ARDUINO = 'A';
 	final static char ANDROID = 'B';
 	final static char PC = 'P';
 	final static char RPI = 'R';
 
-	// packet types
+	// Define type of packets
 	final static int StartExploration = 1;
 	final static int StartFastestPath = 2;
 	final static int StopInstruction = 3;
@@ -16,7 +16,7 @@ public class Packet {
 	final static int setObstacle = 7;
 	final static int takePhoto = 8;
 
-	// instruction to map to packet Instruction.
+	// Mapping to packet instructions
 	final static int FORWARDi = 1;
 	final static int TURNRIGHTi = 2;
 	final static int TURNLEFTi = 3;
@@ -24,13 +24,13 @@ public class Packet {
 	public static final int CALIBRATEi = 5;
 	final static int PHOTOi = 6;
 
-	// for movement of the robot.
+	// Robot movements
 	final static String FORWARD = "forward";
 	final static String TURNRIGHT = "right";
 	final static String TURNLEFT = "left";
 	final static String REVERSE = "reverse";
 
-	// start exploration from android
+	// Exploration instrcutions from Android
 	final static String Ok = "ok";
 	final static String Cmd = "cmd";
 	final static String Set = "set";
@@ -40,36 +40,31 @@ public class Packet {
 	final static String StartExplorationType = "explore";
 	final static String StartExplorationTypeOkARD = "A:ok:start_explore";
 	final static String StartExplorationTypeOk = "B:ok:start_explore";
-	final static String StartExplorationTypeFin = "B:ok:finish_explore"; // after going back to start location
+	final static String StartExplorationTypeFin = "B:ok:finish_explore"; // After returning back to start point
 
-	// start fastestpath from android
-	final static String StartFastestPathType = "path";// with waypoint from android
-	final static String StartFastestPathTypeOk = "start_path"; // send to android
-	final static String StartFastestPathTypeFin = "finish_path"; // send to android
+	// Fastest Path instrcutions from Android
+	final static String StartFastestPathType = "path";// Includes waypoint
+	final static String StartFastestPathTypeOk = "start_path"; // Transmit to Android
+	final static String StartFastestPathTypeFin = "finish_path"; // Transmit to Android
 	final static String startExplore = ANDROID + Splitter + Ok + Splitter + StartExplorationTypeOk;
 
-	// Send take photo command to rpi
-	final static String PhotoPacket = "cam"; // sends the command to take pictures along with x,y co-ordinates and
-												// direction
-	/*
-	 * final static String sendPhotoCmd = RPI + Splitter + Ok + PhotoPacket +
-	 * photoData
-	 */
+	// RPi: Click picture command (with direction & X,Y coordinates)
+	final static String PhotoPacket = "cam"; 
 
-	// stop the robot from android
-	final static String Stop = "stop";// send from android
-	final static String StopOk = "B:ok:stop";// send to android
+	// Android: Stop robot
+	final static String Stop = "stop";// Transmit from Android
+	final static String StopOk = "B:ok:stop";// Transmit to Android
 
-	final static String Reset = "reset"; // from android
-	final static String ResetOK = "B:ok:reset";// send to android
+	final static String Reset = "reset"; // Transmit from Android
+	final static String ResetOK = "B:ok:reset";// Transmit to Android
 
-	// need to process this string to become x y coordinate of robot in map
+	// Process string to configure robot to this X,Y coordinates on map
 	final static String SetRobotPos = "startposition";
 	final static String SetRobotPosOk = "B:ok:startposition";
 	final static String SetWayPoint = "waypoint";
 	final static String SetWayPointOK = "ok:waypoint";
 
-	// for map obstacle
+	// Map Obstacles
 	final static String Map = "map";
 	final static String Block = "block";
 
@@ -83,7 +78,7 @@ public class Packet {
 	final static String FORWARDCMDANDROID = ANDROID + Splitter + Stat + Splitter + FORWARD;
 	final static String REVERSECMDANDROID = ANDROID + Splitter + Stat + Splitter + REVERSE;
 
-	final static String SIDECALIBRATE = "A:cmd:sc"; // TODO: @Jarrett removed $
+	final static String SIDECALIBRATE = "A:cmd:sc"; 
 	final static String LEFTCALIBRATE = "A:cmd:lsc";
 	final static String FRONTCALIBRATE = "A:cmd:fc";
 	final static String INITIALCALIBRATE = "A:cmd:ic";
@@ -98,8 +93,8 @@ public class Packet {
 
 	final static String GETMAP = "getmap";
 
-	final static String StartFastestPathTypeOkANDROID = "A:ok:start_path"; // send to android
-	final static String StartFastestPathTypeOkARDURINO = "B:ok:start_path"; // send to android
+	final static String StartFastestPathTypeOkANDROID = "A:ok:start_path"; // Transmit to Android
+	final static String StartFastestPathTypeOkARDURINO = "B:ok:start_path"; // Transmit to Android
 
 	int type = 0;
 	int x = 0;
@@ -107,28 +102,28 @@ public class Packet {
 	Direction Direction = null;
 	int[] SensorData = null;
 
+	// Handle packets with only one type
 	public Packet(int type) {
-		// for packet with only type
 		this.type = type;
 	}
 
+	// Waypoint data
 	public Packet(int type, int x, int y) {
-		// for waypoint packets
 		this.type = type;
 		this.x = x;
 		this.y = y;
 	}
 
+	// Robot position and facing direction
 	public Packet(int type, int x, int y, Direction direction) {
-		// for robot position with direction
 		this.type = type;
 		this.x = x;
 		this.y = y;
 		Direction = direction;
 	}
 
+	// Navigating Grid Obstacles 
 	public Packet(int type, int x, int y, Direction direction, int[] sensorData) {
-		// for map obstacle data
 		super();
 		this.type = type;
 		this.x = x;
@@ -138,7 +133,6 @@ public class Packet {
 	}
 
 	public Packet(int setobstacle2, int[] data) {
-		// TODO Auto-generated constructor stub
 		this.type = setobstacle2;
 		this.SensorData = data;
 	}
