@@ -81,16 +81,16 @@ public class Exploration {
 	boolean goingBackToStart = false;
 
 	// the %that map has to be explored before to terminate
-	float percentageToStop;
+	float percentageToStop = 100;
 
 	// the time that the program has to run before terminating
-	int timeToStop;
+	float timeToStop;
 	long timeSinceLastUpdate;
 	long timeSinceStart;
 	long timeLastupdate;
 
-	int minute;
-	int second;
+	float minute;
+	float second;
 
 	public Exploration(SocketClient sc, boolean simulator, RobotInterface robot, Visualization viz, Map inMap) {
 		this.simulator = simulator;
@@ -143,13 +143,22 @@ public class Exploration {
 
 		// time to stop simulationaa
 		minute = 20;
-		second = 5;
+		second = 20;
 
-		timeToStop = minute * 60000 + second * 1000;
+		// timeToStop = minute * 60000 + second * 1000;
 
 		timeSinceLastUpdate = 0;
 		timeSinceStart = 0;
 		timeLastupdate = System.currentTimeMillis();
+	}
+
+	public void setMazeCoverage(float percentMaze) {
+		percentageToStop = percentMaze;
+	}
+
+	public void setMaxExplorationTime(float mins, float secs) {
+		minute = mins;
+		second = secs;
 	}
 
 	public void initStoredOffsetValues() {
@@ -824,21 +833,32 @@ public class Exploration {
 	// returns 0 in place of false
 	// returns -1 if want to reset
 	public int DoSimulatorExploration() {
+		// record time since the start of the simulation
+		long startTime = System.currentTimeMillis();
+		timeToStop = minute * 60000 + second * 1000;
 		try {
 			while (true) {
 
 				////////////////////////////////// variables for the control of
 				////////////////////////////////// exploration(checklist)///////////////////////////
-				/*
-				 * timeSinceLastUpdate = System.currentTimeMillis() - timeLastupdate;
-				 * timeSinceStart += timeSinceLastUpdate; timeLastupdate =
-				 * System.currentTimeMillis(); if(timeSinceStart > timeToStop) return true;
-				 * float percentageExplored =
-				 * (float)getMapExplored()/(float)(Map.HEIGHT*Map.WIDTH);
-				 * System.out.print("Percentage Explored: "+percentageExplored+"\n");
-				 * System.out.print("Percentage to stop: "+percentageToStop+"\n");
-				 * if(percentageExplored >percentageToStop) return true;
-				 */
+
+				// timeSinceLastUpdate = System.currentTimeMillis() - timeLastupdate;
+				// timeSinceStart += timeSinceLastUpdate;
+				timeSinceStart = System.currentTimeMillis() - startTime;
+				timeLastupdate = System.currentTimeMillis();
+
+				if (timeSinceStart > timeToStop) {
+					System.out.println("Here");
+					return 1;
+				}
+
+				float percentageExplored = ((float) getMapExplored() / (float) (Map.HEIGHT * Map.WIDTH)) * 100;
+				System.out.print("Percentage Explored: " + percentageExplored + "\n");
+				System.out.print("Percentage to stop: " + percentageToStop + "\n");
+
+				if (percentageExplored > percentageToStop)
+					return 1;
+
 				////////////////////////////////// end of variables for the control of
 				////////////////////////////////// exploration(checklist)///////////////////////////
 

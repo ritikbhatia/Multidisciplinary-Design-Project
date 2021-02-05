@@ -53,17 +53,38 @@ public class Main {
 		boolean simulator = true;
 
 		if (simulator) {
-			int[][] test = new int[][] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
+			// int[][] test = new int[][] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
+			// { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			// 0, 0, 0, 0, 0, 0 },
+			// { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 1, 1, 1, 1,
+			// 1, 1, 1, 0, 0, 0 },
+			// { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			// 0, 0, 0, 0, 0, 0 },
+			// { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0, 0, 0,
+			// 0, 0, 0, 0, 0, 0 },
+			// { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0, 0, 0,
+			// 0, 0, 1, 0, 0, 0 },
+			// { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			// 0, 0, 1, 0, 0, 0 },
+			// { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			// 0, 0, 1, 0, 0, 0 },
+			// { 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			// 1, 0, 0, 0, 0, 0 },
+			// { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			// 0, 0, 0, 0, 1, 0 },
+			// { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
+
+			int[][] test = new int[][] { { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 }, { 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-					{ 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
-					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
-					{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 } };
 
 			// Generated to facilitate debugging
 			MapIterator.printExploredResultsToFile(test, "test.txt");
@@ -158,9 +179,13 @@ public class Main {
 						System.out.println("3) Start Exploration");
 						System.out.println("4) Start Fastest Path");
 						System.out.println("5) Stop Instruction");
+						System.out.println("5) Stop Instruction");
 						System.out.println("6) Reset Instruction");
 						System.out.println("7) Get Map Descriptor");
 						System.out.println("8) Set speed for fastest path, default = 10f");
+						System.out.println("9) Set maximum percentage of exploration");
+						System.out.println("10) Set maximum time for exploration");
+
 						int scanType = sc.nextInt();
 
 						if (scanType == 1) {
@@ -211,14 +236,23 @@ public class Main {
 							map.resetMap();
 							viz.repaint();
 
-						} else if (scanType == 7)
+						} else if (scanType == 7) {
 							theRobot.sendMapDescriptor();
-
-						else if (scanType == 8) {
+						} else if (scanType == 8) {
 							System.out.println("Please input intended speed for fastest path\n(1000/stepsPerSecond): ");
 							float stepsPerSecond = sc.nextInt();
 							theRobot.setSpeed(stepsPerSecond);
-
+						} else if (scanType == 9) {
+							System.out.println("Please input maximum percentage of maze exploration: ");
+							float maxPercent = sc.nextFloat();
+							exe.setMazeCoverage(maxPercent);
+						} else if (scanType == 10) {
+							System.out.println("Please input maximum time for maze exploration (minutes:seconds) ");
+							String time = sc.next();
+							String[] parts = time.split(":");
+							float minutes = Float.parseFloat(parts[0]);
+							float seconds = Float.parseFloat(parts[1]);
+							exe.setMaxExplorationTime(minutes, seconds);
 						}
 
 						break;
@@ -299,14 +333,14 @@ public class Main {
 						if (DoSimulatorExplorationResult == 1) {
 							Scanner sc = new Scanner(System.in);
 							theRobot.deactivateSensors();
-							System.out.println("Go to fastest path? \n 1=yes \n 2=no");
+							System.out.println("Go to fastest path? \n 1 = Yes \n 2 = No");
 							int choice = sc.nextInt();
 
 							if (choice == 1)
 								currentState = State.FASTESTPATH;
 							else
 								currentState = State.WAITINGFORCOMMAND;
-							System.out.println("ending Exploration...");
+							System.out.println("Ending Exploration...");
 
 						}
 					} else {
@@ -315,7 +349,7 @@ public class Main {
 						if (DoSimulatorExplorationResult == 1) {
 
 							// Transmit packet to convey exploration is complete
-							System.out.println("ending Exploration...");
+							System.out.println("Ending Exploration...");
 
 							end = Instant.now();
 							System.out.println("Time: " + Duration.between(starts, end));
@@ -326,7 +360,7 @@ public class Main {
 
 							// Transmit map descriptor information
 							System.out.println(
-									"------------------------------Sending this useless descriptor------------------------------\n");
+									"------------------------------ Sending the map descriptor to files ------------------------------\n");
 							System.out.println("doing map descriptor");
 							MapIterator.printExploredResultsToFile(map.getMapArray(), "theExplored.txt");
 							MapIterator.printExploredResultsToHex("ExplorationHex.txt");
@@ -420,7 +454,7 @@ public class Main {
 				case FASTESTPATH:
 					// Initialise fastest path from start to goal node
 					System.out.println(
-							"-------------------------------------FastestPath case-----------------------------------\n");
+							"------------------------------------- Fastest Path Case -----------------------------------\n");
 
 					if (simulator) {
 						theRobot.initial_Calibrate();
@@ -502,7 +536,7 @@ public class Main {
 
 				case SENDINGMAPDESCRIPTOR:
 					System.out.println(
-							"------------------------------Sending this useless descriptor------------------------------\n");
+							"------------------------------ Sending the map descriptor to files ------------------------------\n");
 					System.out.println("doing map descriptor");
 
 					MapIterator.printExploredResultsToFile(map.getMapArray(), "theExplored.txt");

@@ -49,7 +49,7 @@ public class Map {
 		setScoreArray();
 	}
 
-	// TODO: check if this function is invoked 
+	// TODO: check if this function is invoked
 	public Map(int[][] mapDisplay) {
 		mapArray = mapDisplay;
 		initializeNodes();
@@ -113,19 +113,19 @@ public class Map {
 		mapScoreArray[y][x] += score;
 	}
 
-	// Revise probabilities grid map simulation display & real robot 
+	// Revise probabilities grid map simulation display & real robot
 	public void updateMapWithScore() {
 		for (int y = 0; y < mapScoreArray.length; y++) {
 			for (int x = 0; x < mapScoreArray[y].length; x++) {
 				if (mapScoreArray[y][x] == 0) {
 					mapArray[y][x] = ExplorationTypes.toInt("UNEXPLORED_EMPTY");
-					
+
 				} else if (mapScoreArray[y][x] > 0) {
 					mapArray[y][x] = ExplorationTypes.toInt("OBSTACLE");
-					
+
 				} else if (mapScoreArray[y][x] < 0) {
 					mapArray[y][x] = ExplorationTypes.toInt("EMPTY");
-					
+
 				}
 			}
 		}
@@ -164,14 +164,14 @@ public class Map {
 	public void initializeNodes() {
 		for (int r = 0; r < HEIGHT; r++) {
 			for (int c = 0; c < WIDTH; c++) {
-				
+
 				NodeArray[r][c] = new Node(c, r);
-				
+
 				if (mapArray[r][c] != 0) {
 					NodeArray[r][c].setObstacle(true);
-				} else 
+				} else
 					NodeArray[r][c].setObstacle(false);
-					
+
 			}
 		}
 		System.out.println();
@@ -182,26 +182,26 @@ public class Map {
 		for (int r = 0; r < HEIGHT; r++) {
 			for (int c = 0; c < WIDTH; c++) {
 				// Moving left
-				if (c > 0) { 
+				if (c > 0) {
 					Node left = NodeArray[r][c - 1];
 					NodeArray[r][c].addNeighbors(left);
 					NodeArray[r][c].setLeft(left);
 				}
 				// Moving right
-				if (c < WIDTH - 1) { 
+				if (c < WIDTH - 1) {
 					Node right = NodeArray[r][c + 1];
 					NodeArray[r][c].addNeighbors(right);
 					NodeArray[r][c].setRight(right);
 
 				}
 				// Moving down
-				if (r < HEIGHT - 1) { 
+				if (r < HEIGHT - 1) {
 					Node down = NodeArray[r + 1][c];
 					NodeArray[r][c].addNeighbors(down);
 					NodeArray[r][c].setDown(down);
 				}
 				// Moving up
-				if (r > 0) { 
+				if (r > 0) {
 					Node up = NodeArray[r - 1][c];
 					NodeArray[r][c].addNeighbors(up);
 					NodeArray[r][c].setUp(up);
@@ -237,7 +237,7 @@ public class Map {
 		}
 	}
 
-	// Receiving data 
+	// Receiving data
 	public void MapUpdate(int x, int y, int flag) {
 		if (x > 0 || y > 0 || x < WIDTH || y < HEIGHT) {
 			mapArray[y][x] = flag;
@@ -294,7 +294,7 @@ public class Map {
 
 	public void paintMap(Graphics g) {
 
-		// Initialise map variables 
+		// Initialise map variables
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		String mapScore = "";
@@ -310,7 +310,7 @@ public class Map {
 				// Paint X
 				g.setColor(Color.WHITE);
 				g.drawRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
-				
+
 				if (mapArray[i][j] == ExplorationTypes.toInt("OBSTACLE")) {
 					// Draw obstacle
 					g.setColor(Color.BLACK);
@@ -319,14 +319,14 @@ public class Map {
 				} else if ((i == 18 && j == 0) || (i == 18 && j == 1) || (i == 18 && j == 2) || (i == 17 && j == 0)
 						|| (i == 17 && j == 1) || (i == 17 && j == 2) || (i == 19 && j == 0) || (i == 19 && j == 1)
 						|| (i == 19 && j == 2)) {
-					// Draw start position 
+					// Draw start position
 					g.setColor(Color.BLUE);
 					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
 
 				} else if ((i == 0 && j == 12) || (i == 0 && j == 13) || (i == 0 && j == 14) || (i == 1 && j == 12)
 						|| (i == 1 && j == 13) || (i == 1 && j == 14) || (i == 2 && j == 12) || (i == 2 && j == 13)
 						|| (i == 2 && j == 14)) {
-					// Draw goal position 
+					// Draw goal position
 					g.setColor(Color.GREEN);
 					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
 
@@ -346,7 +346,7 @@ public class Map {
 
 	}
 
-	// To generate the explored map descriptor 
+	// To generate the explored map descriptor
 	public void generateMapDescriptorExplored() {
 
 		int[][] ExploredMap = new int[HEIGHT][WIDTH];
