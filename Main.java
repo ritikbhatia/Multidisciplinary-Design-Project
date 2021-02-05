@@ -179,7 +179,6 @@ public class Main {
 						System.out.println("3) Start Exploration");
 						System.out.println("4) Start Fastest Path");
 						System.out.println("5) Stop Instruction");
-						System.out.println("5) Stop Instruction");
 						System.out.println("6) Reset Instruction");
 						System.out.println("7) Get Map Descriptor");
 						System.out.println("8) Set speed for fastest path, default = 10f");
@@ -217,6 +216,12 @@ public class Main {
 							currentState = State.EXPLORATION;
 
 						} else if (scanType == 4) {
+							// map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
+							// exe.adjustMapForFastestPath();
+							// map.updateMapWithScore();
+							// map.setScoreArray();
+							// map.updateMap();
+							// viz.repaint();
 							starts = Instant.now();
 							currentState = State.FASTESTPATH;
 
