@@ -19,7 +19,7 @@ public class PacketFactory implements Runnable {
 	boolean camRun = true;
 	// multi-threading with reference to a queue of strings/commands
 	Queue<Packet> buffer;
-	String ip = "192.168.4.4";
+	String ip = "192.168.9.9";
 	// String ip = "127.0.0.1";
 	String PreviousPacket = null;
 

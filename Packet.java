@@ -1,6 +1,6 @@
 public class Packet {
-	
-	// Map instructions together 
+
+	// Map instructions together
 	final static char ARDUINO = 'A';
 	final static char ANDROID = 'B';
 	final static char PC = 'P';
@@ -29,6 +29,10 @@ public class Packet {
 	final static String TURNRIGHT = "right";
 	final static String TURNLEFT = "left";
 	final static String REVERSE = "reverse";
+	// final static String FORWARD = "W";
+	// final static String TURNRIGHT = "D";
+	// final static String TURNLEFT = "A";
+	// final static String REVERSE = "S";
 
 	// Exploration instrcutions from Android
 	final static String Ok = "ok";
@@ -49,7 +53,7 @@ public class Packet {
 	final static String startExplore = ANDROID + Splitter + Ok + Splitter + StartExplorationTypeOk;
 
 	// RPi: Click picture command (with direction & X,Y coordinates)
-	final static String PhotoPacket = "cam"; 
+	final static String PhotoPacket = "cam";
 
 	// Android: Stop robot
 	final static String Stop = "stop";// Transmit from Android
@@ -78,7 +82,7 @@ public class Packet {
 	final static String FORWARDCMDANDROID = ANDROID + Splitter + Stat + Splitter + FORWARD;
 	final static String REVERSECMDANDROID = ANDROID + Splitter + Stat + Splitter + REVERSE;
 
-	final static String SIDECALIBRATE = "A:cmd:sc"; 
+	final static String SIDECALIBRATE = "A:cmd:sc";
 	final static String LEFTCALIBRATE = "A:cmd:lsc";
 	final static String FRONTCALIBRATE = "A:cmd:fc";
 	final static String INITIALCALIBRATE = "A:cmd:ic";
@@ -122,7 +126,7 @@ public class Packet {
 		Direction = direction;
 	}
 
-	// Navigating Grid Obstacles 
+	// Navigating Grid Obstacles
 	public Packet(int type, int x, int y, Direction direction, int[] sensorData) {
 		super();
 		this.type = type;

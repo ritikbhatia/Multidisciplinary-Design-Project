@@ -12,13 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 enum State {
-	IDLE, 
-	WAITINGFORCOMMAND, 
-	EXPLORATION, 
-	FASTESTPATHHOME, 
-	FASTESTPATH, 
-	DONE, 
-	RESETFASTESTPATHHOME,
+	IDLE, WAITINGFORCOMMAND, EXPLORATION, FASTESTPATHHOME, FASTESTPATH, DONE, RESETFASTESTPATHHOME,
 	SENDINGMAPDESCRIPTOR,
 }
 
@@ -30,7 +24,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		// Initialisation of program objects & variables 
+		// Initialisation of program objects & variables
 		String OS = System.getProperty("os.name").toLowerCase();
 
 		OperatingSystem theOS = OperatingSystem.Windows;
@@ -53,7 +47,9 @@ public class Main {
 		Instant end = null;
 		Map map = new Map();
 
-		//  TODO: Implement switch statement 
+		////////////////////////////////// simulator variable
+		////////////////////////////////// /////////////////////////////////////
+		// TODO: Implement switch statement
 		boolean simulator = true;
 
 		if (simulator) {
@@ -68,14 +64,14 @@ public class Main {
 					{ 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
 					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
 					{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
-			
-			// Generated to facilitate debugging 
+
+			// Generated to facilitate debugging
 			MapIterator.printExploredResultsToFile(test, "test.txt");
 			MapIterator.ArraytoHex((test));
 			map.setMapArray(test);
 		}
 
-		// Initialisation of program objects & variables 
+		// Initialisation of program objects & variables
 		RobotInterface theRobot;
 		Visualization viz = new Visualization();
 		currentState = State.WAITINGFORCOMMAND;
@@ -86,7 +82,7 @@ public class Main {
 
 		// Activate rendering frame for simulation
 		if (simulator) {
-			// Initialise robot simulation 
+			// Initialise robot simulation
 			theRobot = new Robot(1, 18, Direction.RIGHT, map);
 
 			// SENSOR POSITIONS: 3 front, 2 right, 1 (long range) left
@@ -111,7 +107,7 @@ public class Main {
 				frame.setResizable(true);
 			}
 		} else {
-			// Set up real robot, sensors & communications 
+			// Set up real robot, sensors & communications
 			recvPackets = new LinkedList<Packet>();
 			pf = new PacketFactory(recvPackets);
 			theRobot = new RealRobot(1, 18, Direction.RIGHT, map, pf);
@@ -142,7 +138,7 @@ public class Main {
 		// Initialise Exploration algorithms
 		Exploration exe = new Exploration(null, simulator, theRobot, viz, map);
 		exe.initStartPoint(1, 18);
-		
+
 		while (currentState != State.DONE) {
 			switch (currentState) {
 
@@ -152,7 +148,7 @@ public class Main {
 				case WAITINGFORCOMMAND:
 					System.out.println(
 							"\n------------------------------WaitingForCommand Case------------------------------\n");
-					
+
 					// Command line interface for simulator
 					if (simulator) {
 						Scanner sc = new Scanner(System.in);
@@ -205,7 +201,7 @@ public class Main {
 
 						} else if (scanType == 6) {
 							// TODO: Implement this case
-							// TODO: Check hardcoded robot x,y values 
+							// TODO: Check hardcoded robot x,y values
 							// currentState = State.RESETFASTESTPATHHOME;
 							System.out.println("Reseting Map...");
 							map.resetMap();
@@ -228,12 +224,14 @@ public class Main {
 						break;
 
 					} else {
-						// RPi commands being sent to real robot 
+						// RPi commands being sent to real robot
 						System.out.print("\nReal Robot Listening for RPi commands\n");
-		
+
 						pf.listen();
-						if (recvPackets.isEmpty())
+						if (recvPackets.isEmpty()) {
+							System.out.print("\nreceive packets is empty\n");
 							continue;
+						}
 
 						System.out.println("recvPackets is not empty");
 						Packet pkt = recvPackets.remove();
@@ -243,7 +241,7 @@ public class Main {
 							wayx = pkt.getX();
 							wayy = pkt.getY();
 
-							// Assign waypoint posiiton for robot 
+							// Assign waypoint posiiton for robot
 							System.out.println("setting waypoint position at :" + wayx + ", " + wayy);
 							waypoint = new Node(wayx, wayy);
 							map.setWaypointClear(wayx, wayy);
@@ -285,7 +283,7 @@ public class Main {
 						}
 						break;
 					}
-					
+
 				case EXPLORATION:
 					// Initialise algorithmic exploration, invoke StartExploration()
 					System.out.println(
@@ -296,27 +294,27 @@ public class Main {
 					int DoSimulatorExplorationResult = exe.DoSimulatorExploration();
 
 					if (simulator) {
-				
-						// Exploration completes, robot returns to start position again and return TRUE 
+
+						// Exploration completes, robot returns to start position again and return TRUE
 						if (DoSimulatorExplorationResult == 1) {
 							Scanner sc = new Scanner(System.in);
 							theRobot.deactivateSensors();
 							System.out.println("Go to fastest path? \n 1=yes \n 2=no");
 							int choice = sc.nextInt();
-							
+
 							if (choice == 1)
 								currentState = State.FASTESTPATH;
 							else
 								currentState = State.WAITINGFORCOMMAND;
 							System.out.println("ending Exploration...");
-					
-						} 
+
+						}
 					} else {
-						
-						// Exploration completes, robot returns to start position again and return TRUE 
+
+						// Exploration completes, robot returns to start position again and return TRUE
 						if (DoSimulatorExplorationResult == 1) {
 
-							// Transmit packet to convey exploration is complete 
+							// Transmit packet to convey exploration is complete
 							System.out.println("ending Exploration...");
 
 							end = Instant.now();
@@ -326,7 +324,7 @@ public class Main {
 
 							pf.sc.sendPacket(Packet.StartExplorationTypeFin + "$");
 
-							// Transmit map descriptor information 
+							// Transmit map descriptor information
 							System.out.println(
 									"------------------------------Sending this useless descriptor------------------------------\n");
 							System.out.println("doing map descriptor");
@@ -350,7 +348,8 @@ public class Main {
 
 						} else if (DoSimulatorExplorationResult == -1) {
 							System.out.println("Robot resetting prematurely.");
-							System.out.println( "Please bring robot back to (1,18) facing left, send IC command, then start explore with robot facing right after IC");
+							System.out.println(
+									"Please bring robot back to (1,18) facing left, send IC command, then start explore with robot facing right after IC");
 
 							currentState = State.WAITINGFORCOMMAND;
 							as = null;
@@ -376,7 +375,7 @@ public class Main {
 							theRobot.setViz(viz);
 
 							map.resetMap();
-							
+
 							exe = new Exploration(null, simulator, theRobot, viz, map);
 							exe.initStartPoint(1, 18);
 						}
@@ -387,11 +386,11 @@ public class Main {
 					break;
 
 				case FASTESTPATHHOME:
-					// Revise nodes and create new A* solution path 
+					// Revise nodes and create new A* solution path
 					map.updateMap();
 					Astar as1 = new Astar(map.getNodeXY(theRobot.x, theRobot.y), map.getNodeXY(1, 18));
 
-					// Transmit instructions to robot 
+					// Transmit instructions to robot
 					theRobot.getFastestInstruction(as1.getFastestPath());
 					System.out.print("Completed fastest path home");
 
@@ -402,31 +401,31 @@ public class Main {
 					break;
 
 				case RESETFASTESTPATHHOME:
-					// Revise nodes and create new A* solution path 
+					// Revise nodes and create new A* solution path
 					map.updateMap();
 					Astar as3 = new Astar(map.getNodeXY(theRobot.x, theRobot.y), map.getNodeXY(1, 18));
 
-					// Transmit instructions to robot 
+					// Transmit instructions to robot
 					theRobot.getFastestInstruction(as3.getFastestPath());
 					System.out.print("Completed fastest path home, resetting map");
 
 					map.resetMap();
 					theRobot.x = 1;
 					theRobot.y = 18;
-					
+
 					currentState = State.WAITINGFORCOMMAND;
 
 					break;
 
 				case FASTESTPATH:
-					// Initialise fastest path from start to goal node 
+					// Initialise fastest path from start to goal node
 					System.out.println(
 							"-------------------------------------FastestPath case-----------------------------------\n");
 
 					if (simulator) {
 						theRobot.initial_Calibrate();
-						
-						// Revise nodes and create new A* solution path 
+
+						// Revise nodes and create new A* solution path
 						map.updateMap();
 						waypoint = map.getNodeXY(wayx, wayy);
 						Astar as31 = new Astar(map.getNodeXY(theRobot.x, theRobot.y), waypoint);
@@ -445,18 +444,18 @@ public class Main {
 							PathDrawer.update(theRobot.x, theRobot.y, as2.getFastestPath());
 							theRobot.getFastestInstruction(as2.getFastestPath());
 							PathDrawer.removePath();
-							
+
 						}
-						// Transmit instructions to robot 
+						// Transmit instructions to robot
 						currentState = State.SENDINGMAPDESCRIPTOR;
 						System.out.print("finished fastest path TO GOAL");
 
 					} else {
-						// Revise nodes and create new A* solution path 
+						// Revise nodes and create new A* solution path
 						// Test empty map | Assign to empty
 						pf.sendCMD(Packet.StartFastestPathTypeOkANDROID + "$"); // TODO: Check if this is required
-						pf.sendCMD(Packet.StartFastestPathTypeOkARDURINO + "$"); // TODO: Check if this is required 
-						
+						pf.sendCMD(Packet.StartFastestPathTypeOkARDURINO + "$"); // TODO: Check if this is required
+
 						map.updateMap();
 						Stack<Node> stack = null;
 
@@ -490,12 +489,13 @@ public class Main {
 							}
 						}
 
-						// Transmit all data packet to RPi 
+						// Transmit all data packet to RPi
 						viz.repaint();
 						end = Instant.now();
 						System.out.println("Time : " + Duration.between(starts, end));
 						// currentState = State.SENDINGMAPDESCRIPTOR;
-						currentState = State.WAITINGFORCOMMAND; // TODO: Check if this needs to be removed : bug causes robot to die before reaching end goal? 
+						currentState = State.WAITINGFORCOMMAND; // TODO: Check if this needs to be removed : bug causes
+																// robot to die before reaching end goal?
 
 					}
 					break;
@@ -521,6 +521,6 @@ public class Main {
 		}
 	}
 
-	// TODO: Configure IP & port ? 
-	SocketClient cs = new SocketClient("192.168.4.4", 8081);
+	// TODO: Configure IP & port ?
+	SocketClient cs = new SocketClient("192.168.9.9", 8081);
 }
