@@ -320,7 +320,7 @@ public class Map {
 						|| (i == 17 && j == 1) || (i == 17 && j == 2) || (i == 19 && j == 0) || (i == 19 && j == 1)
 						|| (i == 19 && j == 2)) {
 					// Draw start position
-					g.setColor(Color.BLUE);
+					g.setColor(Color.YELLOW);
 					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
 
 				} else if ((i == 0 && j == 12) || (i == 0 && j == 13) || (i == 0 && j == 14) || (i == 1 && j == 12)
