@@ -80,11 +80,13 @@ public class MapIterator {
             // }
             // count--;
             // }
+
+            // traverse P1 and P2
             for (int row = HEIGHT - 1; row >= 0; row--) {
                 for (int col = 0; col < WIDTH; col++) {
                     if (Character.getNumericValue(p1String.charAt(p1Index)) == 0) {
                         // fileMap[row][col] = ExplorationTypes.toInt("EMPTY");
-                        fileMap[row][col] = ExplorationTypes.toInt("EMPTY");
+                        fileMap[row][col] = ExplorationTypes.toInt("UNEXPLORED_EMPTY");
                     } else {
                         if (p2Index < p2String.length() && Character.getNumericValue(p2String.charAt(p2Index)) == 0) {
                             fileMap[row][col] = ExplorationTypes.toInt("EMPTY");
@@ -104,16 +106,23 @@ public class MapIterator {
 
     // convert hexadecimal to binary
     public static String hexToBinary(String hex) {
-        // long i = Long.parseLong(hex, 16);
-        // String bin = Long.toBinaryString(i);
-        // return bin;
-        // StringBuilder sb = new StringBuilder();
-        // for (int i = 0; i < hex.length(); i++) {
-        // int num = Integer.parseInt(Character.toString(hex.charAt(i)), 16);
-        // sb.append(Integer.toBinaryString(num));
-        // }
-        // return sb.toString();
-        return new BigInteger(hex, 16).toString(2);
+        hex = hex.replaceAll("0", "0000");
+        hex = hex.replaceAll("1", "0001");
+        hex = hex.replaceAll("2", "0010");
+        hex = hex.replaceAll("3", "0011");
+        hex = hex.replaceAll("4", "0100");
+        hex = hex.replaceAll("5", "0101");
+        hex = hex.replaceAll("6", "0110");
+        hex = hex.replaceAll("7", "0111");
+        hex = hex.replaceAll("8", "1000");
+        hex = hex.replaceAll("9", "1001");
+        hex = hex.replaceAll("A", "1010");
+        hex = hex.replaceAll("B", "1011");
+        hex = hex.replaceAll("C", "1100");
+        hex = hex.replaceAll("D", "1101");
+        hex = hex.replaceAll("E", "1110");
+        hex = hex.replaceAll("F", "1111");
+        return hex;
     }
 
     // Parse explored grid map results and store in TXT file

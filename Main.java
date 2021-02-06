@@ -89,7 +89,9 @@ public class Main {
 			// Generated to facilitate debugging
 			MapIterator.printExploredResultsToFile(test, "test.txt");
 			MapIterator.ArraytoHex((test));
-			map.setMapArray(test);
+			// map.setMapArray(test);
+			map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
+
 		}
 
 		// Initialisation of program objects & variables

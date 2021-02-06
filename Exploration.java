@@ -583,7 +583,8 @@ public class Exploration {
 	// returns 0 for false
 	// returns -1 for reset
 	public int DoInitialExploration() {
-		// make sure there isnt a stored action before continuing, if have den do stored
+		// make sure there isnt a stored action before continuing, if have then do
+		// stored
 		// actions
 		if (actionsIterator != -1) {
 			System.out.print("doing stored actions\n");
@@ -692,7 +693,7 @@ public class Exploration {
 		// TODO: @JARRETT added new method to check if robot has asked for reset
 		// If yes, then create new Robot
 		if (robot.getWantToReset()) {
-			System.out.println("JARRETT: ROBOT WANTS TO RESET");
+			System.out.println("ROBOT WANTS TO RESET");
 			return -1;
 		}
 
@@ -849,7 +850,7 @@ public class Exploration {
 
 				if (timeSinceStart > timeToStop) {
 					System.out.println("Here");
-					return 1;
+					return 0;
 				}
 
 				float percentageExplored = ((float) getMapExplored() / (float) (Map.HEIGHT * Map.WIDTH)) * 100;

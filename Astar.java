@@ -1,14 +1,14 @@
 import java.util.*;
 
 public class Astar {
-    // A* variables 
+    // A* variables
     // Default accessibility: Private
     Node startNode;
     Node goalNode;
     Robot robot;
     int cost;
 
-    // A* constructor to initialise values 
+    // A* constructor to initialise values
     public Astar(Node start, Node end) {
         startNode = start;
         goalNode = end;
@@ -22,10 +22,10 @@ public class Astar {
 
     // Nested class: PriorityList
     public static class PriorityList extends LinkedList {
-    
+
         // Add nodes to Priority List
         public void add(Comparable object) {
-            
+
             // Implement Insertion Sort
             for (int i = 0; i < size(); i++) {
                 if (object.compareTo(get(i)) <= 0) {
@@ -41,7 +41,7 @@ public class Astar {
     // Return path of nodes to given goal node as stack
     protected Stack<Node> constructPath(Node node) {
         Stack path = new Stack();
-        
+
         while (node.pathParent != null) {
             path.push(node);
             node = node.pathParent;
@@ -102,13 +102,15 @@ public class Astar {
 
                 System.out.println("costFromStart: " + costFromStart);
 
-                // Check 1. if node neighbours have not been explored OR 2. if shorter path to neighbour node exists 
+                // Check 1. if node neighbours have not been explored OR 2. if shorter path to
+                // neighbour node exists
                 if ((!isOpen && !isClosed) || costFromStart < neighborNode.costFromStart) {
                     neighborNode.pathParent = node;
                     neighborNode.costFromStart = costFromStart;
                     neighborNode.estimatedCostToGoal = neighborNode.getEstimatedCost(goalNode);
-                    
-                    // Add neighbour node to openList if 1. node not in openList/closedList AND 2. robot can reach
+
+                    // Add neighbour node to openList if 1. node not in openList/closedList AND 2.
+                    // robot can reach
                     if (!isOpen && !isObstacle && size == clearance) {
                         openList.add(neighborNode);
                     }
@@ -127,7 +129,7 @@ public class Astar {
         return findPath(startNode, goalNode);
     }
 
-    // Find robot direction 
+    // Find robot direction
     public Facing getRobotDirection(Node node, Facing facing) {
 
         Node nodeparent = (Node) node.pathParent;
@@ -136,7 +138,7 @@ public class Astar {
             return facing;
         }
 
-        // if nodeA of current node < nodeA of parent, then move to left 
+        // if nodeA of current node < nodeA of parent, then move to left
         if (node.compareX(nodeparent) == 1) {
             return Facing.LEFT;
         } else if (node.compareX(nodeparent) == -1) {
