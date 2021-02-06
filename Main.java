@@ -90,6 +90,10 @@ public class Main {
 			MapIterator.printExploredResultsToFile(test, "test.txt");
 			MapIterator.ArraytoHex((test));
 			// map.setMapArray(test);
+
+			//////////////////////////////////////// comment out below and uncomment
+			//////////////////////////////////////// statement above to get hardcoded maze
+			//////////////////////////////////////// //////////////////////////////
 			map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
 		}
 
