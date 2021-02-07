@@ -677,6 +677,17 @@ public class Exploration {
 				return 0;
 		}
 
+		/*
+		 * debugging stuff	
+		 * 	
+		 * System.out.print(traceBackSteps.size() + "\n");	
+		 * 	
+		 * if(traceBackSteps.size() > 75) { //if(map.mapScoreArray[13][12] > 22)	
+		 * map.turnoffgrid = true; map.turnoffgrid3 = true; map.turnoffgrid2 = true;	
+		 * map.updateMapWithScore(); }	
+		 * 
+		 */
+
 		// Robot requested reset, request granted and new Robot created 
 		if (robot.getWantToReset()) {
 			System.out.println("ROBOT WANTS TO RESET");
