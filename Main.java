@@ -285,7 +285,7 @@ public class Main {
 							wayx = pkt.getX();
 							wayy = pkt.getY();
 
-							// Assign waypoint posiiton for robot
+							// Assign waypoint position for robot
 							System.out.println("setting waypoint position at :" + wayx + ", " + wayy);
 							waypoint = new Node(wayx, wayy);
 							map.setWaypointClear(wayx, wayy);

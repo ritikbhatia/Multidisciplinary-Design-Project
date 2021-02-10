@@ -16,7 +16,7 @@ public abstract class RobotInterface {
 	// the x and y coordinates to draw the robot on screen
 	int x_g, y_g;
 	// radius of the circle to draw the robot
-	final static int radius = 114;
+	final static int radius = 90;
 
 	// the direction the robot is facing
 	Direction facing;
@@ -448,15 +448,15 @@ public abstract class RobotInterface {
 		int dirOffsetY = 0;
 
 		if (facing == Direction.UP)
-			dirOffsetY = -45;
+			dirOffsetY = -30;
 		else if (facing == Direction.DOWN)
-			dirOffsetY = 45;
+			dirOffsetY = 38;
 		else if (facing == Direction.LEFT)
-			dirOffsetX = -45;
+			dirOffsetX = -30;
 		else if (facing == Direction.RIGHT)
-			dirOffsetX = 45;
+			dirOffsetX = 38;
 
-		g.fillArc(x_g + 45 + dirOffsetX, y_g + 45 + dirOffsetY, 20, 20, 0, 360);
+		g.fillArc(x_g + 30 + dirOffsetX, y_g + 30 + dirOffsetY, 20, 20, 0, 360);
 	}
 
 	public abstract boolean getWantToReset();

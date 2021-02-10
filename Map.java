@@ -19,7 +19,7 @@ public class Map {
 	double exploredPercentage;
 	final static int WIDTH = 15;
 	final static int HEIGHT = 20;
-	final static int sizeofsquare = 38;
+	final static int sizeofsquare = 30;
 	public static Node[][] NodeArray = new Node[HEIGHT][WIDTH];
 
 	public Map() {
