@@ -14,7 +14,7 @@ public class Exploration {
 	ExplorationState state;
 	//////////////////////////////////////// import
 	//////////////////////////////////////// variable!!!////////////////////////////////////////////
-	boolean exploreUnexplored = true;
+	boolean exploreUnexplored = false;
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	Visualization viz;
@@ -40,7 +40,7 @@ public class Exploration {
 	int stepsToBacktrack;
 	boolean backTracking;
 
-	// Count number of sequential moveForward() & tell robot to 
+	// Count number of sequential moveForward() & tell robot to
 	// calibrate when a certain number is reached
 	int numTimesMoveForward;
 	int timeToSideCalibrate;
@@ -49,7 +49,7 @@ public class Exploration {
 	int startX;
 	int startY;
 
-	// Check if robot movement, to prevent end of exploration immediately 
+	// Check if robot movement, to prevent end of exploration immediately
 	boolean robotMoved;
 
 	// Prevent double front calibration for robot
@@ -79,7 +79,7 @@ public class Exploration {
 	// % robot has to explore map, before terminating exploration
 	float percentageToStop = 100;
 
-	// Time program has to execute, before terminating exploration 
+	// Time program has to execute, before terminating exploration
 	float timeToStop;
 	long timeSinceLastUpdate;
 	long timeSinceStart;
@@ -123,7 +123,7 @@ public class Exploration {
 		// Initialise to False to prevent robot calibration twice
 		hasJustFrontCalibrated = false;
 
-		// Initialise stack 
+		// Initialise stack
 		unexploredAreas = new Stack<int[]>();
 
 		// Values stored for checking of offset
@@ -292,7 +292,7 @@ public class Exploration {
 		// return mostEfficientPath;
 
 		// Convey error by returning {-1,-1}
-		// Error signifiance: need to explore other paths before exploring the block 
+		// Error signifiance: need to explore other paths before exploring the block
 		return new int[] { -1, -1, -1, -1 };
 	}
 
@@ -311,7 +311,7 @@ public class Exploration {
 	}
 
 	void inputAllUnexploredAreas() {
-		// Load grid map array to work with 
+		// Load grid map array to work with
 		int[][] mapArray = map.getMapArray();
 
 		int[] mapCoordinate;
@@ -319,9 +319,9 @@ public class Exploration {
 			for (int x = 0; x < Map.WIDTH; x++) {
 				if (mapArray[y][x] == ExplorationTypes.toInt("UNEXPLORED_EMPTY")
 						|| mapArray[y][x] == ExplorationTypes.toInt("UNEXPLORED_OBSTACLE")) {
-				
-					// Input areas explored by robot, next to unexplored areas, 
-					// and feasible for robot to fit/move in 
+
+					// Input areas explored by robot, next to unexplored areas,
+					// and feasible for robot to fit/move in
 					mapCoordinate = getNearestCoordinateToUnExploredArea(x, y);
 
 					// Don't push onto stack if (values == -1) OR (values already in stack )
@@ -334,13 +334,14 @@ public class Exploration {
 	}
 
 	void updateUnexploredAreas() {
-		// Load grid map array to work with 
+		// Load grid map array to work with
 		int[][] mapArray = map.getMapArray();
 
-		// Iterate through entire list to remove those that were halfway explored 
+		// Iterate through entire list to remove those that were halfway explored
 		for (int i = 0; i < unexploredAreas.size(); i++) {
-		
-			// Remove area from stack if area NOT unexplored (i.e. it was explored on the way)
+
+			// Remove area from stack if area NOT unexplored (i.e. it was explored on the
+			// way)
 			if (mapArray[unexploredAreas.get(i)[1]][unexploredAreas.get(i)[0]] == ExplorationTypes.toInt("EMPTY")
 					|| mapArray[unexploredAreas.get(i)[1]][unexploredAreas.get(i)[0]] == ExplorationTypes
 							.toInt("OBSTACLE")) {
@@ -351,7 +352,7 @@ public class Exploration {
 			}
 		}
 
-		// Include all new unexplored areas now available to explore 
+		// Include all new unexplored areas now available to explore
 		inputAllUnexploredAreas();
 	}
 
@@ -396,7 +397,7 @@ public class Exploration {
 
 					numSteps++;
 
-					// Break & return steps if obstacle encountered 
+					// Break & return steps if obstacle encountered
 					if (haveObstaclesAroundRobot(tempX, tempY))
 						return numSteps;
 					break;
@@ -418,13 +419,15 @@ public class Exploration {
 			iterator--;
 		}
 
-		// Return total number of steps to move, before returning beside wall to rerun algo
+		// Return total number of steps to move, before returning beside wall to rerun
+		// algo
 		return numSteps;
 	}
 
 	void doStoredActions() {
-		
-		// Instead of calculations in StartExploration(), robot executes actions stored here
+
+		// Instead of calculations in StartExploration(), robot executes actions stored
+		// here
 		switch (listOfActions[actionsIterator]) {
 			case TURN_LEFT:
 				// System.out.print("turning left at the stored actions\n");
@@ -489,8 +492,8 @@ public class Exploration {
 
 		// once timeToSideCalibrate
 		if (numTimesMoveForward >= timeToSideCalibrate) {
-			
-			// Check if blocks next to robot, using side sensors 
+
+			// Check if blocks next to robot, using side sensors
 			if (robot.canSide_Calibrate()) {
 				System.out.print("align right\n");
 				robot.side_Calibrate();
@@ -582,25 +585,25 @@ public class Exploration {
 	// False: return 0
 	// Reset: return -1
 	public int DoInitialExploration() {
-		
+
 		// Only continue if no stored actions, else execute stored actions
 		if (actionsIterator != -1) {
 			System.out.print("doing stored actions\n");
 			doStoredActions();
-			
+
 			return 0;
 		}
 
 		// Do not execute other actions when backtracking
 		if (backTracking) {
 			DoIEBackTrack();
-			
+
 			return 0;
 		}
 
 		switch (robot.facing) {
 			case LEFT:
-				
+
 				// Do stored actions, if robot previously facing left wall & can move up
 				if (robot.isAbleToMove(Direction.UP) && previousFacing == Facing.LEFT)
 					DoIETurnRight();
@@ -678,17 +681,17 @@ public class Exploration {
 		}
 
 		/*
-		 * debugging stuff	
-		 * 	
-		 * System.out.print(traceBackSteps.size() + "\n");	
-		 * 	
-		 * if(traceBackSteps.size() > 75) { //if(map.mapScoreArray[13][12] > 22)	
-		 * map.turnoffgrid = true; map.turnoffgrid3 = true; map.turnoffgrid2 = true;	
-		 * map.updateMapWithScore(); }	
+		 * debugging stuff
+		 * 
+		 * System.out.print(traceBackSteps.size() + "\n");
+		 * 
+		 * if(traceBackSteps.size() > 75) { //if(map.mapScoreArray[13][12] > 22)
+		 * map.turnoffgrid = true; map.turnoffgrid3 = true; map.turnoffgrid2 = true;
+		 * map.updateMapWithScore(); }
 		 * 
 		 */
 
-		// Robot requested reset, request granted and new Robot created 
+		// Robot requested reset, request granted and new Robot created
 		if (robot.getWantToReset()) {
 			System.out.println("ROBOT WANTS TO RESET");
 			return -1;
@@ -705,17 +708,17 @@ public class Exploration {
 	// Optimise to minimise no. of turns taken when robot navigating unknown maze
 	public boolean DoClearingUnknown() {
 		System.out.println("doing clear unknown");
-		
+
 		// while(true) {
 
 		// Iterate step by step, if robot going to a block
 		if (goingToBlock) {
 			System.out.println("goingToBlock");
-			
-			// Function returns true if robot has reached unexplored area 
+
+			// Function returns true if robot has reached unexplored area
 			if (robot.doStepFastestPath()) {
 				System.out.println("robot.doStepFastestPath()");
-				
+
 				// Ensure robot is facing the un-explored area before completing current path
 				// if(robot.isFacingArea(nextUnexploredArea[0], nextUnexploredArea[1]))
 				goingToBlock = false;
@@ -723,8 +726,9 @@ public class Exploration {
 
 		} else {
 			System.out.println("else");
-			
-			// If array == empty, check if robot returned to start location, else return to start
+
+			// If array == empty, check if robot returned to start location, else return to
+			// start
 			if (unexploredAreas.empty()) {
 				System.out.println("unexploredAreas.empty()\n++++++++++++++++++++++++++++++++++");
 				System.out.println("unexploredAreas.empty()");
@@ -737,7 +741,7 @@ public class Exploration {
 					return true;
 
 				}
-				// Continue exploring if grid not fully explored/still unexplored 
+				// Continue exploring if grid not fully explored/still unexplored
 				else if (getMapExplored() < 290)// != map.HEIGHT*map.WIDTH)
 				{
 					System.out.print("checking if map got properly explored aka 90% of map");
@@ -767,7 +771,8 @@ public class Exploration {
 				// Update grid nodes for A*
 				map.updateMap();
 
-				// Update unexploredAreas<Stack> (to clear blocks encountered on the way to other blocks)
+				// Update unexploredAreas<Stack> (to clear blocks encountered on the way to
+				// other blocks)
 				updateUnexploredAreas();
 
 				int indexOfClosestArea = 0;
@@ -810,7 +815,7 @@ public class Exploration {
 
 					nextUnexploredArea = unexploredAreas.remove(indexOfClosestArea);
 
-					// Transmit to robot to store instructions 
+					// Transmit to robot to store instructions
 					Stack<Node> fast = pathToNextUnexploredArea.getFastestPath();
 					System.out.print("setting fastest instructions\n++++++++++++++++++++++++++++++");
 					robot.setFastestInstruction(fast, nextUnexploredArea[0], nextUnexploredArea[1]);
@@ -831,7 +836,7 @@ public class Exploration {
 	// Reset: return 1
 	public int DoSimulatorExploration() {
 
-		// Record time since start of simulation 
+		// Record time since start of simulation
 		long startTime = System.currentTimeMillis();
 		timeToStop = minute * 60000 + second * 1000;
 		try {
@@ -897,9 +902,10 @@ public class Exploration {
 
 					case CLEARING_UNKNOWN:
 						// System.out.println("doing clear unknown");
-						
-						// Method returns true (1) when robot completes clearing map & returns to start location 
-						// For debugging purposes, stepsPerSecond set to 2f 
+
+						// Method returns true (1) when robot completes clearing map & returns to start
+						// location
+						// For debugging purposes, stepsPerSecond set to 2f
 						stepsPerSecond = 2f;
 						if (DoClearingUnknown()) {
 							return 1;
@@ -910,7 +916,7 @@ public class Exploration {
 						break;
 				}
 
-				// Update simulation graphics after every iteration 
+				// Update simulation graphics after every iteration
 				viz.repaint();
 			}
 
@@ -925,9 +931,9 @@ public class Exploration {
 	}
 
 	public void adjustMapForFastestPath() {
-		
+
 		// Count total number of obstacles
-		// If obstacles > 30, remove those with lowest score 
+		// If obstacles > 30, remove those with lowest score
 		// Also set all unexplored areas to explored with score of 1
 
 		// Load grid map array
@@ -945,7 +951,7 @@ public class Exploration {
 					obstacleAndScore.push(obstacle);
 				}
 
-				// Mark unexplored areas as explored 
+				// Mark unexplored areas as explored
 				if (mapArray[y][x] == ExplorationTypes.toInt("UNEXPLORED_EMPTY")
 						|| mapArray[y][x] == ExplorationTypes.toInt("UNEXPLORED_OBSTACLE")) {
 					map.mapScoreArray[y][x] = -1;
@@ -960,18 +966,18 @@ public class Exploration {
 		while (obstacleAndScore.size() > 30) {
 			lowestScoreIndex = 0;
 			lowestScore = 999;
-			
-			// Iterate list to find obstacle with lowest score 
+
+			// Iterate list to find obstacle with lowest score
 			for (int i = 0; i < obstacleAndScore.size(); i++) {
 
-				// if (current_score < recorded lowestScore), then replace it 
+				// if (current_score < recorded lowestScore), then replace it
 				if (obstacleAndScore.get(i)[2] < lowestScore) {
 					lowestScoreIndex = i;
 					lowestScore = obstacleAndScore.get(i)[2];
 				}
 			}
 
-			// Set obstacle with minimum score to an empty block 
+			// Set obstacle with minimum score to an empty block
 			map.mapScoreArray[obstacleAndScore.get(lowestScoreIndex)[1]][obstacleAndScore
 					.get(lowestScoreIndex)[0]] = -1;
 

@@ -29,10 +29,6 @@ public class Packet {
 	final static String TURNRIGHT = "right";
 	final static String TURNLEFT = "left";
 	final static String REVERSE = "reverse";
-	// final static String FORWARD = "W";
-	// final static String TURNRIGHT = "D";
-	// final static String TURNLEFT = "A";
-	// final static String REVERSE = "S";
 
 	// Exploration instrcutions from Android
 	final static String Ok = "ok";

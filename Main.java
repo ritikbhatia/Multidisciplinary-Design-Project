@@ -31,6 +31,9 @@ public class Main {
 		int wayx = 1;
 		int wayy = 1;
 
+		// variable to indicate whether exploration for fastest path is done or not
+		boolean explorationForFastestPathDone = false;
+
 		if (OS.indexOf("win") >= 0)
 			theOS = OperatingSystem.Windows;
 		else if ((OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0))
@@ -91,11 +94,14 @@ public class Main {
 			MapIterator.ArraytoHex((test));
 			// map.setMapArray(test);
 
-			//////////////////////////////////////// comment out below and uncomment
-			//////////////////////////////////////// statement above to get hardcoded maze
-			//////////////////////////////////////// //////////////////////////////
-			map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
 		}
+
+		//////////////////////////////////////// comment out below and uncomment
+		//////////////////////////////////////// statement above to get hardcoded maze
+		//////////////////////////////////////// //////////////////////////////
+
+		// remove below statement if exploration but keep if doing fastest path
+		map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
 
 		// Initialisation of program objects & variables
 		RobotInterface theRobot;
@@ -430,6 +436,7 @@ public class Main {
 					break;
 
 				case FASTESTPATHHOME:
+
 					// Revise nodes and create new A* solution path
 					map.updateMap();
 					Astar as1 = new Astar(map.getNodeXY(theRobot.x, theRobot.y), map.getNodeXY(1, 18));
@@ -465,6 +472,22 @@ public class Main {
 					// Initialise fastest path from start to goal node
 					System.out.println(
 							"------------------------------------- Fastest Path Case -----------------------------------\n");
+
+					///////////////////// RITIK - CODE SEGMENT ADDED HERE!!!
+					///////////////////// //////////////////////////////
+
+					// perform simulator exploration before fastest path
+					if (!explorationForFastestPathDone) {
+						DoSimulatorExplorationResult = exe.DoSimulatorExploration();
+						explorationForFastestPathDone = true;
+						Scanner sc = new Scanner(System.in);
+						System.out.println("Exploration for fastest path done..");
+						System.out.print("Enter 1 to continue to fastest: ");
+						sc.nextInt();
+					}
+
+					///////////////////// RITIK - END OF CODE SEGMENT!!!
+					///////////////////// //////////////////////////////////
 
 					if (simulator) {
 						theRobot.initial_Calibrate();
