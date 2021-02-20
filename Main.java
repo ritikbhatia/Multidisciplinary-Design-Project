@@ -178,6 +178,23 @@ public class Main {
 					break;
 
 				case WAITINGFORCOMMAND:
+
+					///////////////////// RITIK - CODE SEGMENT ADDED HERE!!!
+					///////////////////// //////////////////////////////
+
+					// perform simulator exploration before fastest path
+					if (!explorationForFastestPathDone) {
+						Scanner sc = new Scanner(System.in);
+						System.out.println("Perform simulator exploration for fastest path? \n 1 = Yes \n 2 = No");
+						int choice = sc.nextInt();
+						if (choice == 1) {
+							exe.DoSimulatorExploration();
+						}
+						explorationForFastestPathDone = true;
+					}
+
+					///////////////////// RITIK - END OF CODE SEGMENT!!!
+					///////////////////// //////////////////////////////////
 					System.out.println(
 							"\n------------------------------WaitingForCommand Case------------------------------\n");
 
@@ -473,21 +490,21 @@ public class Main {
 					System.out.println(
 							"------------------------------------- Fastest Path Case -----------------------------------\n");
 
-					///////////////////// RITIK - CODE SEGMENT ADDED HERE!!!
-					///////////////////// //////////////////////////////
+					// ///////////////////// RITIK - CODE SEGMENT ADDED HERE!!!
+					// ///////////////////// //////////////////////////////
 
-					// perform simulator exploration before fastest path
-					if (!explorationForFastestPathDone) {
-						DoSimulatorExplorationResult = exe.DoSimulatorExploration();
-						explorationForFastestPathDone = true;
-						Scanner sc = new Scanner(System.in);
-						System.out.println("Exploration for fastest path done..");
-						System.out.print("Enter 1 to continue to fastest: ");
-						sc.nextInt();
-					}
+					// // perform simulator exploration before fastest path
+					// if (!explorationForFastestPathDone) {
+					// DoSimulatorExplorationResult = exe.DoSimulatorExploration();
+					// explorationForFastestPathDone = true;
+					// Scanner sc = new Scanner(System.in);
+					// System.out.println("Exploration for fastest path done..");
+					// System.out.print("Enter 1 to continue to fastest path: ");
+					// sc.nextInt();
+					// }
 
-					///////////////////// RITIK - END OF CODE SEGMENT!!!
-					///////////////////// //////////////////////////////////
+					// ///////////////////// RITIK - END OF CODE SEGMENT!!!
+					// ///////////////////// //////////////////////////////////
 
 					if (simulator) {
 						theRobot.initial_Calibrate();
