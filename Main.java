@@ -53,7 +53,7 @@ public class Main {
 		////////////////////////////////// simulator variable
 		////////////////////////////////// /////////////////////////////////////
 		// TODO: Implement switch statement
-		boolean simulator = true;
+		boolean simulator = false;
 
 		if (simulator) {
 			int[][] test = new int[][] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
@@ -139,6 +139,38 @@ public class Main {
 				frame.setResizable(true);
 			}
 		} else {
+			// make simulator do exploration first
+			// Initialise robot simulation
+			Robot simRobot = new Robot(1, 18, Direction.RIGHT, map);
+
+			// SENSOR POSITIONS: 3 front, 2 right, 1 (long range) left
+			Sensor sim1 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 1, simRobot.x, simRobot.y);
+			Sensor sim2 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 0, simRobot.x, simRobot.y);
+			Sensor sim3 = new Sensor(3, SensorLocation.FACING_DOWN, 1, 0, simRobot.x, simRobot.y);
+			Sensor sim4 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, -1, simRobot.x, simRobot.y);
+			Sensor sim5 = new Sensor(3, SensorLocation.FACING_DOWN, -1, 0, simRobot.x, simRobot.y);
+			Sensor sim6 = new Sensor(5, SensorLocation.FACING_TOP, 1, -1, simRobot.x, simRobot.y);
+
+			Sensor[] simSensors = { sim1, sim2, sim3, sim4, sim5, sim6 };
+			simRobot.addSensors(simSensors);
+
+			viz.setRobot(simRobot);
+			simRobot.setViz(viz);
+			simRobot.setSpeed(10f);
+
+			if (theOS == OperatingSystem.Windows) {
+				frame.getContentPane().add(viz);
+				frame.setVisible(true);
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				frame.setResizable(true);
+			}
+
+			Exploration simexe = new Exploration(null, true, simRobot, viz, map);
+			simexe.initStartPoint(1, 18);
+			simexe.DoSimulatorExploration();
+
+			///////////////////////////////////////////////////////////////////
+
 			// Set up real robot, sensors & communications
 			recvPackets = new LinkedList<Packet>();
 			pf = new PacketFactory(recvPackets);
@@ -167,7 +199,6 @@ public class Main {
 
 		}
 
-		// Initialise Exploration algorithms
 		Exploration exe = new Exploration(null, simulator, theRobot, viz, map);
 		exe.initStartPoint(1, 18);
 
@@ -183,15 +214,16 @@ public class Main {
 					///////////////////// //////////////////////////////
 
 					// perform simulator exploration before fastest path
-					if (!explorationForFastestPathDone) {
-						Scanner sc = new Scanner(System.in);
-						System.out.println("Perform simulator exploration for fastest path? \n 1 = Yes \n 2 = No");
-						int choice = sc.nextInt();
-						if (choice == 1) {
-							exe.DoSimulatorExploration();
-						}
-						explorationForFastestPathDone = true;
-					}
+					// if (!explorationForFastestPathDone) {
+					// Scanner sc = new Scanner(System.in);
+					// System.out.println("Perform simulator exploration for fastest path? \n 1 =Yes
+					// \n 2 = No");
+					// int choice = sc.nextInt();
+					// if (choice == 1) {
+					// exe.DoSimulatorExploration();
+					// }
+					// explorationForFastestPathDone = true;
+					// }
 
 					///////////////////// RITIK - END OF CODE SEGMENT!!!
 					///////////////////// //////////////////////////////////
@@ -306,7 +338,7 @@ public class Main {
 
 						if (pkt.getType() == Packet.SetWayPointi) {
 							wayx = pkt.getX();
-							wayy = pkt.getY();
+							wayy = 19 - pkt.getY();
 
 							// Assign waypoint position for robot
 							System.out.println("setting waypoint position at :" + wayx + ", " + wayy);
@@ -598,7 +630,7 @@ public class Main {
 						pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
 						pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
 
-						pf.sendCMD("B:stat:finish_exe_mdf$");
+						// pf.sendCMD("B:stat:finish_exe_mdf$");
 					}
 					currentState = State.WAITINGFORCOMMAND;
 			}

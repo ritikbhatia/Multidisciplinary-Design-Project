@@ -12,9 +12,9 @@ public class Exploration {
 	}
 
 	ExplorationState state;
-	//////////////////////////////////////// import
+	//////////////////////////////////////// important
 	//////////////////////////////////////// variable!!!////////////////////////////////////////////
-	boolean exploreUnexplored = false;
+	boolean exploreUnexplored = true;
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	Visualization viz;
@@ -867,7 +867,7 @@ public class Exploration {
 
 				// Only do sleeps when in simulation
 				if (simulator)
-					Thread.sleep((long) (1000 / stepsPerSecond));
+					Thread.sleep((long) (500 / stepsPerSecond));
 
 				switch (state) {
 					case INITIAL_EXPLORATION:
