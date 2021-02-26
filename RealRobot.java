@@ -266,6 +266,8 @@ public class RealRobot extends RobotInterface {
 	// get fastest path instructions
 	public boolean getFastestInstruction(Stack<Node> fast) {
 		stepByStep = false;
+
+		///////////// check here whether you need calibration!!! ////////////////////
 		int numberofPacketCalibrate = 10;
 		int counttocalibrate = 0;
 		Queue<Integer> instruction = new LinkedList<Integer>();

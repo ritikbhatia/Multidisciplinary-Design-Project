@@ -101,7 +101,7 @@ public class Main {
 		//////////////////////////////////////// //////////////////////////////
 
 		// remove below statement if exploration but keep if doing fastest path
-		map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
+		// map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
 
 		// Initialisation of program objects & variables
 		RobotInterface theRobot;
@@ -139,35 +139,41 @@ public class Main {
 				frame.setResizable(true);
 			}
 		} else {
-			// make simulator do exploration first
-			// Initialise robot simulation
-			Robot simRobot = new Robot(1, 18, Direction.RIGHT, map);
+			// // make simulator do exploration first
+			// // Initialise robot simulation
 
-			// SENSOR POSITIONS: 3 front, 2 right, 1 (long range) left
-			Sensor sim1 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 1, simRobot.x, simRobot.y);
-			Sensor sim2 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 0, simRobot.x, simRobot.y);
-			Sensor sim3 = new Sensor(3, SensorLocation.FACING_DOWN, 1, 0, simRobot.x, simRobot.y);
-			Sensor sim4 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, -1, simRobot.x, simRobot.y);
-			Sensor sim5 = new Sensor(3, SensorLocation.FACING_DOWN, -1, 0, simRobot.x, simRobot.y);
-			Sensor sim6 = new Sensor(5, SensorLocation.FACING_TOP, 1, -1, simRobot.x, simRobot.y);
+			// Robot simRobot = new Robot(1, 18, Direction.RIGHT, map);
 
-			Sensor[] simSensors = { sim1, sim2, sim3, sim4, sim5, sim6 };
-			simRobot.addSensors(simSensors);
+			// // SENSOR POSITIONS: 3 front, 2 right, 1 (long range) left
+			// Sensor sim1 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 1, simRobot.x,
+			// simRobot.y);
+			// Sensor sim2 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 0, simRobot.x,
+			// simRobot.y);
+			// Sensor sim3 = new Sensor(3, SensorLocation.FACING_DOWN, 1, 0, simRobot.x,
+			// simRobot.y);
+			// Sensor sim4 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, -1, simRobot.x,
+			// simRobot.y);
+			// Sensor sim5 = new Sensor(3, SensorLocation.FACING_DOWN, -1, 0, simRobot.x,
+			// simRobot.y);
+			// Sensor sim6 = new Sensor(5, SensorLocation.FACING_TOP, 1, -1, simRobot.x,
+			// simRobot.y);
 
-			viz.setRobot(simRobot);
-			simRobot.setViz(viz);
-			simRobot.setSpeed(10f);
+			// Sensor[] simSensors = { sim1, sim2, sim3, sim4, sim5, sim6 };
+			// simRobot.addSensors(simSensors);
 
-			if (theOS == OperatingSystem.Windows) {
-				frame.getContentPane().add(viz);
-				frame.setVisible(true);
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setResizable(true);
-			}
+			// viz.setRobot(simRobot);
+			// simRobot.setViz(viz);
+			// simRobot.setSpeed(10f);
 
-			Exploration simexe = new Exploration(null, true, simRobot, viz, map);
-			simexe.initStartPoint(1, 18);
-			simexe.DoSimulatorExploration();
+			// if (theOS == OperatingSystem.Windows) {
+			// frame.getContentPane().add(viz);
+			// frame.setVisible(true);
+			// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			// frame.setResizable(true);
+			// }
+			// Exploration simexe = new Exploration(null, true, simRobot, viz, map);
+			// simexe.initStartPoint(1, 18);
+			// simexe.DoSimulatorExploration();
 
 			///////////////////////////////////////////////////////////////////
 
@@ -344,6 +350,41 @@ public class Main {
 							System.out.println("setting waypoint position at :" + wayx + ", " + wayy);
 							waypoint = new Node(wayx, wayy);
 							map.setWaypointClear(wayx, wayy);
+
+							///////////////////// RITIK - CODE ADDED HERE ///////////////
+							// make simulator do exploration first
+							// Initialise robot simulation
+
+							Robot simRobot = new Robot(1, 18, Direction.RIGHT, map);
+
+							// SENSOR POSITIONS: 3 front, 2 right, 1 (long range) left
+							Sensor sim1 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 1, simRobot.x, simRobot.y);
+							Sensor sim2 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 0, simRobot.x, simRobot.y);
+							Sensor sim3 = new Sensor(3, SensorLocation.FACING_DOWN, 1, 0, simRobot.x, simRobot.y);
+							Sensor sim4 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, -1, simRobot.x, simRobot.y);
+							Sensor sim5 = new Sensor(3, SensorLocation.FACING_DOWN, -1, 0, simRobot.x, simRobot.y);
+							Sensor sim6 = new Sensor(5, SensorLocation.FACING_TOP, 1, -1, simRobot.x, simRobot.y);
+
+							Sensor[] simSensors = { sim1, sim2, sim3, sim4, sim5, sim6 };
+							simRobot.addSensors(simSensors);
+
+							viz.setRobot(simRobot);
+							simRobot.setViz(viz);
+							simRobot.setSpeed(10f);
+
+							if (theOS == OperatingSystem.Windows) {
+								frame.getContentPane().add(viz);
+								frame.setVisible(true);
+								frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+								frame.setResizable(true);
+							}
+							Exploration simexe = new Exploration(null, true, simRobot, viz, map);
+							simexe.initStartPoint(1, 18);
+							simexe.DoSimulatorExploration();
+							///////////////////// RITIK - CODE ENDS HERE ///////////////
+
+							viz.setRobot(theRobot);
+							viz.repaint();
 							currentState = State.WAITINGFORCOMMAND;
 
 						} else if (pkt.getType() == Packet.setRobotPosition) {
