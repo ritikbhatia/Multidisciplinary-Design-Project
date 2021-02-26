@@ -139,6 +139,7 @@ public class Main {
 				frame.setResizable(true);
 			}
 		} else {
+			///////////////////////////////////////////////////////////////////
 			// // make simulator do exploration first
 			// // Initialise robot simulation
 
@@ -215,24 +216,6 @@ public class Main {
 					break;
 
 				case WAITINGFORCOMMAND:
-
-					///////////////////// RITIK - CODE SEGMENT ADDED HERE!!!
-					///////////////////// //////////////////////////////
-
-					// perform simulator exploration before fastest path
-					// if (!explorationForFastestPathDone) {
-					// Scanner sc = new Scanner(System.in);
-					// System.out.println("Perform simulator exploration for fastest path? \n 1 =Yes
-					// \n 2 = No");
-					// int choice = sc.nextInt();
-					// if (choice == 1) {
-					// exe.DoSimulatorExploration();
-					// }
-					// explorationForFastestPathDone = true;
-					// }
-
-					///////////////////// RITIK - END OF CODE SEGMENT!!!
-					///////////////////// //////////////////////////////////
 					System.out.println(
 							"\n------------------------------WaitingForCommand Case------------------------------\n");
 
