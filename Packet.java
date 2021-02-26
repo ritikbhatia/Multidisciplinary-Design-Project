@@ -45,7 +45,7 @@ public class Packet {
 	// Fastest Path instrcutions from Android
 	final static String StartFastestPathType = "path";// Includes waypoint
 	final static String StartFastestPathTypeOk = "start_path"; // Transmit to Android
-	final static String StartFastestPathTypeFin = "finish_path"; // Transmit to Android
+	final static String StartFastestPathTypeFin = "B:ok:finish_path"; // Transmit to Android
 	final static String startExplore = ANDROID + Splitter + Ok + Splitter + StartExplorationTypeOk;
 
 	// RPi: Click picture command (with direction & X,Y coordinates)

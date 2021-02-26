@@ -381,6 +381,14 @@ public class Main {
 							Exploration simexe = new Exploration(null, true, simRobot, viz, map);
 							simexe.initStartPoint(1, 18);
 							simexe.DoSimulatorExploration();
+
+							MapIterator.printExploredResultsToFile(map.getMapArray(), "theExplored.txt");
+							MapIterator.printExploredResultsToHex("ExplorationHex.txt");
+							MapIterator.printObstacleResultsToFile(map.getMapArray(), "theObstacle.txt");
+							MapIterator.printObstacleResultsToHex("ObstacleHex.txt");
+							pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
+							pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
+
 							///////////////////// RITIK - CODE ENDS HERE ///////////////
 
 							viz.setRobot(theRobot);
@@ -649,6 +657,7 @@ public class Main {
 						// Transmit all data packet to RPi
 						viz.repaint();
 						end = Instant.now();
+						pf.sc.sendPacket(Packet.StartFastestPathTypeFin + "$");
 						System.out.println("Time : " + Duration.between(starts, end));
 						// currentState = State.SENDINGMAPDESCRIPTOR;
 						currentState = State.WAITINGFORCOMMAND; // TODO: Check if this needs to be removed : bug causes
