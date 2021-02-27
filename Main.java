@@ -32,7 +32,7 @@ public class Main {
 		int wayy = 1;
 
 		// variable to indicate whether exploration for fastest path is done or not
-		boolean explorationForFastestPathDone = false;
+		// boolean explorationForFastestPathDone = false;
 
 		if (OS.indexOf("win") >= 0)
 			theOS = OperatingSystem.Windows;
@@ -50,9 +50,7 @@ public class Main {
 		Instant end = null;
 		Map map = new Map();
 
-		////////////////////////////////// simulator variable
-		////////////////////////////////// /////////////////////////////////////
-		// TODO: Implement switch statement
+		////////////////////////// simulator variable //////////////////////////
 		boolean simulator = false;
 
 		if (simulator) {
@@ -335,9 +333,10 @@ public class Main {
 							map.setWaypointClear(wayx, wayy);
 
 							///////////////////// RITIK - CODE ADDED HERE ///////////////
-							// make simulator do exploration first
-							// Initialise robot simulation
 
+							// once waypoint received, perform exploration, get fastest path based on it
+
+							// Initialise robot simulation
 							Robot simRobot = new Robot(1, 18, Direction.RIGHT, map);
 
 							// SENSOR POSITIONS: 3 front, 2 right, 1 (long range) left
@@ -361,10 +360,13 @@ public class Main {
 								frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 								frame.setResizable(true);
 							}
+
 							Exploration simexe = new Exploration(null, true, simRobot, viz, map);
 							simexe.initStartPoint(1, 18);
 							simexe.DoSimulatorExploration();
 
+							// calculate P1 and P2
+							// send to Android so that they can update their virtual map
 							MapIterator.printExploredResultsToFile(map.getMapArray(), "theExplored.txt");
 							MapIterator.printExploredResultsToHex("ExplorationHex.txt");
 							MapIterator.printObstacleResultsToFile(map.getMapArray(), "theObstacle.txt");
@@ -372,10 +374,12 @@ public class Main {
 							pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
 							pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
 
-							///////////////////// RITIK - CODE ENDS HERE ///////////////
-
+							// once exploration complete, reset viz to original REAL robot
 							viz.setRobot(theRobot);
 							viz.repaint();
+
+							///////////////////// RITIK - CODE ENDS HERE ///////////////
+
 							currentState = State.WAITINGFORCOMMAND;
 
 						} else if (pkt.getType() == Packet.setRobotPosition) {
