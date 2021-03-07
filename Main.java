@@ -99,7 +99,7 @@ public class Main {
 		//////////////////////////////////////// //////////////////////////////
 
 		// remove below statement if exploration but keep if doing fastest path
-		// map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
+		map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
 
 		// Initialisation of program objects & variables
 		RobotInterface theRobot;
@@ -371,8 +371,14 @@ public class Main {
 							MapIterator.printExploredResultsToHex("ExplorationHex.txt");
 							MapIterator.printObstacleResultsToFile(map.getMapArray(), "theObstacle.txt");
 							MapIterator.printObstacleResultsToHex("ObstacleHex.txt");
+
+							// send exploration mdf to android for them to update the map
 							pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
 							pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
+
+							// send waypoint to android for them to update the map
+							pf.sendCMD(
+									"B:stat:waypoint:" + String.valueOf(wayx) + ":" + String.valueOf(19 - wayy) + "$");
 
 							// once exploration complete, reset viz to original REAL robot
 							viz.setRobot(theRobot);
