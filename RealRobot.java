@@ -54,16 +54,16 @@ public class RealRobot extends RobotInterface {
 	// retrieve direction (integer, as enum)
 	public int getDirectionNum() {
 		switch (facing) {
-			case UP:
-				return 0;
-			case RIGHT:
-				return 1;
-			case DOWN:
-				return 2;
-			case LEFT:
-				return 3;
-			default:
-				return -1;
+		case UP:
+			return 0;
+		case RIGHT:
+			return 1;
+		case DOWN:
+			return 2;
+		case LEFT:
+			return 3;
+		default:
+			return -1;
 		}
 	}
 
@@ -193,19 +193,19 @@ public class RealRobot extends RobotInterface {
 	public void turnRight() {
 		System.out.print("turn right robot\n");
 		switch (facing) {
-			// turn right
-			case RIGHT:
-				facing = Direction.DOWN;
-				break;
-			case LEFT:
-				facing = Direction.UP;
-				break;
-			case UP:
-				facing = Direction.RIGHT;
-				break;
-			case DOWN:
-				facing = Direction.LEFT;
-				break;
+		// turn right
+		case RIGHT:
+			facing = Direction.DOWN;
+			break;
+		case LEFT:
+			facing = Direction.UP;
+			break;
+		case UP:
+			facing = Direction.RIGHT;
+			break;
+		case DOWN:
+			facing = Direction.LEFT;
+			break;
 		}
 
 		for (int i = 0; i < Sen.length; i++) {
@@ -227,18 +227,18 @@ public class RealRobot extends RobotInterface {
 		System.out.print("turn left robot\n");
 
 		switch (facing) {
-			case RIGHT:
-				facing = Direction.UP;
-				break;
-			case LEFT:
-				facing = Direction.DOWN;
-				break;
-			case UP:
-				facing = Direction.LEFT;
-				break;
-			case DOWN:
-				facing = Direction.RIGHT;
-				break;
+		case RIGHT:
+			facing = Direction.UP;
+			break;
+		case LEFT:
+			facing = Direction.DOWN;
+			break;
+		case UP:
+			facing = Direction.LEFT;
+			break;
+		case DOWN:
+			facing = Direction.RIGHT;
+			break;
 		}
 		// change sensor direction to follow robot
 		for (int i = 0; i < Sen.length; i++) {
@@ -285,89 +285,89 @@ public class RealRobot extends RobotInterface {
 			System.out.println("Y" + two.getY());
 			if (two.getX() > x) {
 				switch (facing) {
-					// turn right the fastest way
-					case RIGHT:
-						break;
-					case LEFT:
-						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
-						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
-						break;
-					case UP:
-						turnRight();
-						instruction.add(Packet.TURNRIGHTi);
-						break;
-					case DOWN:
-						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
-						break;
+				// turn right the fastest way
+				case RIGHT:
+					break;
+				case LEFT:
+					turnLeft();
+					instruction.add(Packet.TURNLEFTi);
+					turnLeft();
+					instruction.add(Packet.TURNLEFTi);
+					break;
+				case UP:
+					turnRight();
+					instruction.add(Packet.TURNRIGHTi);
+					break;
+				case DOWN:
+					turnLeft();
+					instruction.add(Packet.TURNLEFTi);
+					break;
 				}
 
 			} else if (two.getX() < x) {
 				switch (facing) {
-					// turn right the fastest way
-					// to face left
-					case RIGHT:
-						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
-						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
-						break;
-					case LEFT:
-						break;
-					case UP:
-						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
-						break;
-					case DOWN:
-						turnRight();
-						instruction.add(Packet.TURNRIGHTi);
-						break;
+				// turn right the fastest way
+				// to face left
+				case RIGHT:
+					turnLeft();
+					instruction.add(Packet.TURNLEFTi);
+					turnLeft();
+					instruction.add(Packet.TURNLEFTi);
+					break;
+				case LEFT:
+					break;
+				case UP:
+					turnLeft();
+					instruction.add(Packet.TURNLEFTi);
+					break;
+				case DOWN:
+					turnRight();
+					instruction.add(Packet.TURNRIGHTi);
+					break;
 				}
 
 			} else if (two.getY() < y) {
 				// facing up
 				switch (facing) {
-					// to face up
-					case RIGHT:
-						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
-						break;
-					case LEFT:
-						turnRight();
-						instruction.add(Packet.TURNRIGHTi);
-						break;
-					case UP:
-						break;
-					case DOWN:
-						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
-						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
-						break;
+				// to face up
+				case RIGHT:
+					turnLeft();
+					instruction.add(Packet.TURNLEFTi);
+					break;
+				case LEFT:
+					turnRight();
+					instruction.add(Packet.TURNRIGHTi);
+					break;
+				case UP:
+					break;
+				case DOWN:
+					turnLeft();
+					instruction.add(Packet.TURNLEFTi);
+					turnLeft();
+					instruction.add(Packet.TURNLEFTi);
+					break;
 				}
 
 			} else if (two.getY() > y) {
 				while (facing != Direction.DOWN) {
 					switch (facing) {
-						// turn right the fastest way
-						case RIGHT:
-							turnRight();
-							instruction.add(Packet.TURNRIGHTi);
-							break;
-						case LEFT:
-							turnLeft();
-							instruction.add(Packet.TURNLEFTi);
-							break;
-						case UP:
-							turnLeft();
-							instruction.add(Packet.TURNLEFTi);
-							turnLeft();
-							instruction.add(Packet.TURNLEFTi);
-							break;
-						case DOWN:
-							break;
+					// turn right the fastest way
+					case RIGHT:
+						turnRight();
+						instruction.add(Packet.TURNRIGHTi);
+						break;
+					case LEFT:
+						turnLeft();
+						instruction.add(Packet.TURNLEFTi);
+						break;
+					case UP:
+						turnLeft();
+						instruction.add(Packet.TURNLEFTi);
+						turnLeft();
+						instruction.add(Packet.TURNLEFTi);
+						break;
+					case DOWN:
+						break;
 					}
 				}
 
@@ -388,38 +388,38 @@ public class RealRobot extends RobotInterface {
 		boolean fourthflag = false;
 		boolean fifthflag = false;
 		switch (facing) {
-			case RIGHT:
-				if (isBlocked(x - 1, y - 2))
-					thirdflag = true;
-				if (isBlocked(x, y - 2))
-					fourthflag = true;
-				if (isBlocked(x + 1, y - 2))
-					fifthflag = true;
-				break;
-			case LEFT:
-				if (isBlocked(x - 1, y + 2))
-					thirdflag = true;
-				if (isBlocked(x, y + 2))
-					fourthflag = true;
-				if (isBlocked(x + 1, y + 2))
-					fifthflag = true;
-				break;
-			case UP:
-				if (isBlocked(x + 2, y - 1))
-					thirdflag = true;
-				if (isBlocked(x + 2, y))
-					fourthflag = true;
-				if (isBlocked(x + 2, y + 1))
-					fifthflag = true;
-				break;
-			case DOWN:
-				if (isBlocked(x - 2, y - 1))
-					thirdflag = true;
-				if (isBlocked(x - 2, y))
-					fourthflag = true;
-				if (isBlocked(x - 2, y + 1))
-					fifthflag = true;
-				break;
+		case RIGHT:
+			if (isBlocked(x - 1, y - 2))
+				thirdflag = true;
+			if (isBlocked(x, y - 2))
+				fourthflag = true;
+			if (isBlocked(x + 1, y - 2))
+				fifthflag = true;
+			break;
+		case LEFT:
+			if (isBlocked(x - 1, y + 2))
+				thirdflag = true;
+			if (isBlocked(x, y + 2))
+				fourthflag = true;
+			if (isBlocked(x + 1, y + 2))
+				fifthflag = true;
+			break;
+		case UP:
+			if (isBlocked(x + 2, y - 1))
+				thirdflag = true;
+			if (isBlocked(x + 2, y))
+				fourthflag = true;
+			if (isBlocked(x + 2, y + 1))
+				fifthflag = true;
+			break;
+		case DOWN:
+			if (isBlocked(x - 2, y - 1))
+				thirdflag = true;
+			if (isBlocked(x - 2, y))
+				fourthflag = true;
+			if (isBlocked(x - 2, y + 1))
+				fifthflag = true;
+			break;
 		}
 		if (thirdflag && fourthflag && fifthflag) {
 			return true;
@@ -430,18 +430,18 @@ public class RealRobot extends RobotInterface {
 
 	public void finalIC() {
 		switch (facing) {
-			case RIGHT:
-				break;
-			case LEFT:
-				turnLeft();
-				turnLeft();
-				break;
-			case UP:
-				turnRight();
-				break;
-			case DOWN:
-				turnLeft();
-				break;
+		case RIGHT:
+			break;
+		case LEFT:
+			turnLeft();
+			turnLeft();
+			break;
+		case UP:
+			turnRight();
+			break;
+		case DOWN:
+			turnLeft();
+			break;
 		}
 		pf.initialCalibrate();
 	}
@@ -456,38 +456,38 @@ public class RealRobot extends RobotInterface {
 			sideCalibrated = false;
 			int instruction = (Integer) instructionsForFastestPath.remove(0);
 			switch (instruction) {
-				case Packet.TURNRIGHTi:
-					turnRight();
-					break;
-				case Packet.TURNLEFTi:
-					turnLeft();
-					break;
-				case Packet.FORWARDi:
-					if (sideCalibrateCount >= sideCalibrateNum) {
-						if (canSide_Calibrate()) {
-							System.out.println("Right calibrating\n+++++++++++++++++++++++++++++++++");
-							side_Calibrate();
-							sideCalibrateCount = 0;
-						} else if (canLeft_Calibrate()) {
-							System.out.println("Left calibrating\n---------------------------------");
-							left_Calibrate();
-							sideCalibrateCount = 0;
-						}
-						sideCalibrated = true;
+			case Packet.TURNRIGHTi:
+				turnRight();
+				break;
+			case Packet.TURNLEFTi:
+				turnLeft();
+				break;
+			case Packet.FORWARDi:
+				if (sideCalibrateCount >= sideCalibrateNum) {
+					if (canSide_Calibrate()) {
+						System.out.println("Right calibrating\n+++++++++++++++++++++++++++++++++");
+						side_Calibrate();
+						sideCalibrateCount = 0;
+					} else if (canLeft_Calibrate()) {
+						System.out.println("Left calibrating\n---------------------------------");
+						left_Calibrate();
+						sideCalibrateCount = 0;
 					}
-					if (frontCalibrateCount >= FrontCalibrateNum) {
-						if (canFront_Calibrate()) {
-							front_Calibrate();
-							frontCalibrateCount = 0;
-							frontCalibrated = true;
-						}
+					sideCalibrated = true;
+				}
+				if (frontCalibrateCount >= FrontCalibrateNum) {
+					if (canFront_Calibrate()) {
+						front_Calibrate();
+						frontCalibrateCount = 0;
+						frontCalibrated = true;
 					}
-					if (!frontCalibrated)
-						frontCalibrateCount++;
-					if (!sideCalibrated)
-						sideCalibrateCount++;
-					moveRobot();
-					break;
+				}
+				if (!frontCalibrated)
+					frontCalibrateCount++;
+				if (!sideCalibrated)
+					sideCalibrateCount++;
+				moveRobot();
+				break;
 			}
 		}
 		return false;
@@ -525,19 +525,19 @@ public class RealRobot extends RobotInterface {
 	@Override
 	public void initial_Calibrate() {
 		switch (facing) {
-			// ensure the robot is facing the left wall for calibration
-			case RIGHT:
-				turnLeft();
-				turnLeft();
-				break;
-			case LEFT:
-				break;
-			case UP:
-				turnLeft();
-				break;
-			case DOWN:
-				turnRight();
-				break;
+		// ensure the robot is facing the left wall for calibration
+		case RIGHT:
+			turnLeft();
+			turnLeft();
+			break;
+		case LEFT:
+			break;
+		case UP:
+			turnLeft();
+			break;
+		case DOWN:
+			turnRight();
+			break;
 
 		}
 		pf.initialCalibrate();
@@ -556,6 +556,14 @@ public class RealRobot extends RobotInterface {
 	@Override
 	public void sendMapDescriptor() {
 		pf.sendWholeMap(map);
+
+		/////////////////// check if you want to add this!! /////////////////////////
+		// MapIterator.printExploredResultsToFile(map.getMapArray(), "theExplored.txt");
+		// MapIterator.printExploredResultsToHex("ExplorationHex.txt");
+		// MapIterator.printObstacleResultsToFile(map.getMapArray(), "theObstacle.txt");
+		// MapIterator.printObstacleResultsToHex("ObstacleHex.txt");
+		// pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
+		// pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
 	}
 
 	// send map descriptor to the RPi

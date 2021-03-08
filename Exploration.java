@@ -138,8 +138,8 @@ public class Exploration {
 		// % of map explored before stopping
 
 		// Time to stop simulations
-		minute = 20;
-		second = 20;
+		minute = 6;
+		second = 0;
 
 		// timeToStop = minute * 60000 + second * 1000;
 
@@ -382,37 +382,37 @@ public class Exploration {
 			curAction = traceBackSteps.get(iterator);
 
 			switch (curAction) {
-				// Move backwards
-				case MOVE_FORWARD:
-					int movementDistance = 1;
+			// Move backwards
+			case MOVE_FORWARD:
+				int movementDistance = 1;
 
-					if (tempFacing == Direction.UP)
-						tempY += movementDistance;
-					else if (tempFacing == Direction.DOWN)
-						tempY -= movementDistance;
-					else if (tempFacing == Direction.RIGHT)
-						tempX -= movementDistance;
-					else if (tempFacing == Direction.LEFT)
-						tempX += movementDistance;
+				if (tempFacing == Direction.UP)
+					tempY += movementDistance;
+				else if (tempFacing == Direction.DOWN)
+					tempY -= movementDistance;
+				else if (tempFacing == Direction.RIGHT)
+					tempX -= movementDistance;
+				else if (tempFacing == Direction.LEFT)
+					tempX += movementDistance;
 
-					numSteps++;
+				numSteps++;
 
-					// Break & return steps if obstacle encountered
-					if (haveObstaclesAroundRobot(tempX, tempY))
-						return numSteps;
-					break;
-				case TURN_LEFT:
-					tempFacing = robot.simulateTurnRight(tempFacing);
+				// Break & return steps if obstacle encountered
+				if (haveObstaclesAroundRobot(tempX, tempY))
+					return numSteps;
+				break;
+			case TURN_LEFT:
+				tempFacing = robot.simulateTurnRight(tempFacing);
 
-					numSteps++;
-					break;
-				case TURN_RIGHT:
-					tempFacing = robot.simulateTurnLeft(tempFacing);
+				numSteps++;
+				break;
+			case TURN_RIGHT:
+				tempFacing = robot.simulateTurnLeft(tempFacing);
 
-					numSteps++;
-					break;
-				default:
-					break;
+				numSteps++;
+				break;
+			default:
+				break;
 
 			}
 
@@ -429,28 +429,28 @@ public class Exploration {
 		// Instead of calculations in StartExploration(), robot executes actions stored
 		// here
 		switch (listOfActions[actionsIterator]) {
-			case TURN_LEFT:
-				// System.out.print("turning left at the stored actions\n");
-				robot.turnLeft();
-				System.out.print("Robot turn left\n");
-				traceBackSteps.push(Action.TURN_LEFT);
-				break;
+		case TURN_LEFT:
+			// System.out.print("turning left at the stored actions\n");
+			robot.turnLeft();
+			System.out.print("Robot turn left\n");
+			traceBackSteps.push(Action.TURN_LEFT);
+			break;
 
-			case TURN_RIGHT:
-				robot.turnRight();
-				System.out.print("Robot turn right\n");
-				traceBackSteps.push(Action.TURN_RIGHT);
-				break;
+		case TURN_RIGHT:
+			robot.turnRight();
+			System.out.print("Robot turn right\n");
+			traceBackSteps.push(Action.TURN_RIGHT);
+			break;
 
-			case MOVE_FORWARD:
-				// DoIEMoveForward();
-				robot.moveRobot();
-				System.out.print("Robot move forward\n");
-				traceBackSteps.push(Action.MOVE_FORWARD);
-				numTimesMoveForward++;
-				break;
-			default:
-				break;
+		case MOVE_FORWARD:
+			// DoIEMoveForward();
+			robot.moveRobot();
+			System.out.print("Robot move forward\n");
+			traceBackSteps.push(Action.MOVE_FORWARD);
+			numTimesMoveForward++;
+			break;
+		default:
+			break;
 		}
 
 		actionsIterator -= 1;
@@ -559,20 +559,20 @@ public class Exploration {
 		Action prevAction = traceBackSteps.pop();
 
 		switch (prevAction) {
-			case TURN_LEFT:
-				robot.turnRight();
-				break;
+		case TURN_LEFT:
+			robot.turnRight();
+			break;
 
-			case TURN_RIGHT:
-				robot.turnLeft();
-				break;
+		case TURN_RIGHT:
+			robot.turnLeft();
+			break;
 
-			case MOVE_FORWARD:
-				robot.reverse();
-				break;
-			default:
-				System.out.print("back track error\n");
-				break;
+		case MOVE_FORWARD:
+			robot.reverse();
+			break;
+		default:
+			System.out.print("back track error\n");
+			break;
 		}
 
 		stepsToBacktrack--;
@@ -602,82 +602,82 @@ public class Exploration {
 		}
 
 		switch (robot.facing) {
-			case LEFT:
+		case LEFT:
 
-				// Do stored actions, if robot previously facing left wall & can move up
-				if (robot.isAbleToMove(Direction.UP) && previousFacing == Facing.LEFT)
-					DoIETurnRight();
+			// Do stored actions, if robot previously facing left wall & can move up
+			if (robot.isAbleToMove(Direction.UP) && previousFacing == Facing.LEFT)
+				DoIETurnRight();
 
-				// Move left, if left is clear and wall is above
-				else if (!robot.isAbleToMove(Direction.UP) && robot.isAbleToMove(Direction.LEFT))
-					DoIEMoveForward(Facing.LEFT);
+			// Move left, if left is clear and wall is above
+			else if (!robot.isAbleToMove(Direction.UP) && robot.isAbleToMove(Direction.LEFT))
+				DoIEMoveForward(Facing.LEFT);
 
-				// Turn left to face down, if can't move left or up
-				else if (!robot.isAbleToMove(Direction.UP) && !robot.isAbleToMove(Direction.LEFT))
-					DoIETurnLeft();
+			// Turn left to face down, if can't move left or up
+			else if (!robot.isAbleToMove(Direction.UP) && !robot.isAbleToMove(Direction.LEFT))
+				DoIETurnLeft();
 
-				// Backtrack if no wall beside robot
-				else
-					DoIEBackTrack();
+			// Backtrack if no wall beside robot
+			else
+				DoIEBackTrack();
 
-				break;
+			break;
 
-			case RIGHT:
-				// if can move down and it was facing right previously, execute stored actions
-				if (robot.isAbleToMove(Direction.DOWN) && previousFacing == Facing.RIGHT)
-					DoIETurnRight();
+		case RIGHT:
+			// if can move down and it was facing right previously, execute stored actions
+			if (robot.isAbleToMove(Direction.DOWN) && previousFacing == Facing.RIGHT)
+				DoIETurnRight();
 
-				// Move right, if right is clear & down is a wall
-				else if (!robot.isAbleToMove(Direction.DOWN) && robot.isAbleToMove(Direction.RIGHT))
-					DoIEMoveForward(Facing.RIGHT);
+			// Move right, if right is clear & down is a wall
+			else if (!robot.isAbleToMove(Direction.DOWN) && robot.isAbleToMove(Direction.RIGHT))
+				DoIEMoveForward(Facing.RIGHT);
 
-				// Turn left to face up, if can't move right or down
-				else if (!robot.isAbleToMove(Direction.DOWN) && !robot.isAbleToMove(Direction.RIGHT))
-					DoIETurnLeft();
+			// Turn left to face up, if can't move right or down
+			else if (!robot.isAbleToMove(Direction.DOWN) && !robot.isAbleToMove(Direction.RIGHT))
+				DoIETurnLeft();
 
-				// Backtrack if no wall next to robot
-				else
-					DoIEBackTrack();
-				break;
+			// Backtrack if no wall next to robot
+			else
+				DoIEBackTrack();
+			break;
 
-			case UP:
-				// Do stored actions, if previously facing up & can move right
-				if (robot.isAbleToMove(Direction.RIGHT) && previousFacing == Facing.UP)
-					DoIETurnRight();
+		case UP:
+			// Do stored actions, if previously facing up & can move right
+			if (robot.isAbleToMove(Direction.RIGHT) && previousFacing == Facing.UP)
+				DoIETurnRight();
 
-				// Move up, if up is clear & right is a wall
-				else if (!robot.isAbleToMove(Direction.RIGHT) && robot.isAbleToMove(Direction.UP))
-					DoIEMoveForward(Facing.UP);
+			// Move up, if up is clear & right is a wall
+			else if (!robot.isAbleToMove(Direction.RIGHT) && robot.isAbleToMove(Direction.UP))
+				DoIEMoveForward(Facing.UP);
 
-				// Turn left to face left, if can't move up or right
-				else if (!robot.isAbleToMove(Direction.RIGHT) && !robot.isAbleToMove(Direction.UP))
-					DoIETurnLeft();
+			// Turn left to face left, if can't move up or right
+			else if (!robot.isAbleToMove(Direction.RIGHT) && !robot.isAbleToMove(Direction.UP))
+				DoIETurnLeft();
 
-				// Backtrack if no wall next to robot
-				else
-					DoIEBackTrack();
+			// Backtrack if no wall next to robot
+			else
+				DoIEBackTrack();
 
-				break;
+			break;
 
-			case DOWN:
-				if (robot.isAbleToMove(Direction.LEFT) && previousFacing == Facing.DOWN)
-					DoIETurnRight();
+		case DOWN:
+			if (robot.isAbleToMove(Direction.LEFT) && previousFacing == Facing.DOWN)
+				DoIETurnRight();
 
-				// Move right, if down is clear & left is a wall
-				else if (!robot.isAbleToMove(Direction.LEFT) && robot.isAbleToMove(Direction.DOWN))
-					DoIEMoveForward(Facing.DOWN);
+			// Move right, if down is clear & left is a wall
+			else if (!robot.isAbleToMove(Direction.LEFT) && robot.isAbleToMove(Direction.DOWN))
+				DoIEMoveForward(Facing.DOWN);
 
-				else if (!robot.isAbleToMove(Direction.LEFT) && !robot.isAbleToMove(Direction.DOWN))
-					DoIETurnLeft();
+			else if (!robot.isAbleToMove(Direction.LEFT) && !robot.isAbleToMove(Direction.DOWN))
+				DoIETurnLeft();
 
-				// Backtrack if no wall next to robot
-				else
-					DoIEBackTrack();
+			// Backtrack if no wall next to robot
+			else
+				DoIEBackTrack();
 
-				break;
+			break;
 
-			default:
-				return 0;
+		default:
+			return 0;
 		}
 
 		/*
@@ -850,16 +850,16 @@ public class Exploration {
 				timeSinceStart = System.currentTimeMillis() - startTime;
 				timeLastupdate = System.currentTimeMillis();
 
-				if (timeSinceStart > timeToStop) {
+				if (timeSinceStart >= timeToStop) {
 					System.out.println("Here");
-					return 0;
+					return 1;
 				}
 
 				float percentageExplored = ((float) getMapExplored() / (float) (Map.HEIGHT * Map.WIDTH)) * 100;
 				System.out.print("Percentage Explored: " + percentageExplored + "\n");
 				System.out.print("Percentage to stop: " + percentageToStop + "\n");
 
-				if (percentageExplored > percentageToStop)
+				if (percentageExplored >= percentageToStop)
 					return 1;
 
 				////////////////////////////////// end of variables for the control of
@@ -870,50 +870,50 @@ public class Exploration {
 					Thread.sleep((long) (500 / stepsPerSecond));
 
 				switch (state) {
-					case INITIAL_EXPLORATION:
+				case INITIAL_EXPLORATION:
 
-						// After robot reaches start location, DoInitialExploration() returns 1
-						int DoInitialExplorationResult = DoInitialExploration();
+					// After robot reaches start location, DoInitialExploration() returns 1
+					int DoInitialExplorationResult = DoInitialExploration();
 
-						if (DoInitialExplorationResult == 1) {
-							robot.sendMapDescriptor();
+					if (DoInitialExplorationResult == 1) {
+						robot.sendMapDescriptor();
 
-							if (exploreUnexplored) {
-								System.out.println("Doing explore Unexplored\n\n\n\n\n");
-								state = ExplorationState.CLEARING_UNKNOWN;
-								inputAllUnexploredAreas();
-								break;
+						if (exploreUnexplored) {
+							System.out.println("Doing explore Unexplored\n\n\n\n\n");
+							state = ExplorationState.CLEARING_UNKNOWN;
+							inputAllUnexploredAreas();
+							break;
 
-							} else {
-								System.out.println("NOT!!! doing explore Unexplored\n\n\n\n\n");
-								adjustMapForFastestPath();
-								// map.updateMap();
-								viz.repaint();
-								return 1;
-							}
-
-						} else if (DoInitialExplorationResult == -1) {
-							System.out.println("Reset ordered by robot!");
-							return -1;
-						}
-
-						map.updateMap();
-						break;
-
-					case CLEARING_UNKNOWN:
-						// System.out.println("doing clear unknown");
-
-						// Method returns true (1) when robot completes clearing map & returns to start
-						// location
-						// For debugging purposes, stepsPerSecond set to 2f
-						stepsPerSecond = 2f;
-						if (DoClearingUnknown()) {
+						} else {
+							System.out.println("NOT!!! doing explore Unexplored\n\n\n\n\n");
+							adjustMapForFastestPath();
+							// map.updateMap();
+							viz.repaint();
 							return 1;
 						}
-						map.updateMap();
-						PathDrawer.updateUnexploredAreas(unexploredAreas);
 
-						break;
+					} else if (DoInitialExplorationResult == -1) {
+						System.out.println("Reset ordered by robot!");
+						return -1;
+					}
+
+					map.updateMap();
+					break;
+
+				case CLEARING_UNKNOWN:
+					// System.out.println("doing clear unknown");
+
+					// Method returns true (1) when robot completes clearing map & returns to start
+					// location
+					// For debugging purposes, stepsPerSecond set to 2f
+					stepsPerSecond = 2f;
+					if (DoClearingUnknown()) {
+						return 1;
+					}
+					map.updateMap();
+					PathDrawer.updateUnexploredAreas(unexploredAreas);
+
+					break;
 				}
 
 				// Update simulation graphics after every iteration
