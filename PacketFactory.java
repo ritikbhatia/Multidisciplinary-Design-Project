@@ -264,7 +264,9 @@ public class PacketFactory implements Runnable {
 			}
 			subinstruct = temp;
 		}
-		sideTurnCalibrate();
+
+		// check here, have removed the A:cmd:frontc sent in the end of fastest path
+		// sideTurnCalibrate();
 		return true;
 	}
 
