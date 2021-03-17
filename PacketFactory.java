@@ -14,6 +14,7 @@ public class PacketFactory implements Runnable {
 	// create class variables
 	static SocketClient sc = null;
 	int delay = 0;
+	//// check the value of whatever to toggle!!! - originally - 0 ///////////
 	int whatever = 0;
 	int waypoint_x = 0, waypoint_y = 0;
 	boolean camRun = true;
@@ -266,7 +267,7 @@ public class PacketFactory implements Runnable {
 		}
 
 		// check here, have removed the A:cmd:frontc sent in the end of fastest path
-		// sideTurnCalibrate();
+		sideTurnCalibrate();
 		return true;
 	}
 

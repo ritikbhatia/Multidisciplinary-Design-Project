@@ -99,7 +99,7 @@ public class Main {
 		//////////////////////////////////////// //////////////////////////////
 
 		// remove below statement if exploration but keep if doing fastest path
-		map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
+		// map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
 
 		// Initialisation of program objects & variables
 		RobotInterface theRobot;

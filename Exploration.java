@@ -138,7 +138,7 @@ public class Exploration {
 		// % of map explored before stopping
 
 		// Time to stop simulations
-		minute = 6;
+		minute = 5;
 		second = 0;
 
 		// timeToStop = minute * 60000 + second * 1000;

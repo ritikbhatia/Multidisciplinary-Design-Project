@@ -55,8 +55,8 @@ public class MapIterator {
 
         // read hexadecimal values
         try {
-            String p1StringHex = p1br.readLine();
-            String p2StringHex = p2br.readLine();
+            String p1StringHex = p1br.readLine().toUpperCase();
+            String p2StringHex = p2br.readLine().toUpperCase();
 
             // convert hex to binary string
             String p1String = hexToBinary(p1StringHex);
