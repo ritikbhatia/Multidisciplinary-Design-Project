@@ -75,9 +75,20 @@ public class PacketFactory implements Runnable {
 		boolean flag = true;
 		String data = null;
 
+		float startTime = System.currentTimeMillis();
+		boolean alreadyRequestedSensor = false;
+
 		// while no data received, keep probing for the packet
 		while (data == null) {
 			data = sc.receivePacket(explorationflag, PreviousPacket);
+
+			////////////////////// Ritik - added code ///////////////////////
+			float currTime = System.currentTimeMillis();
+			if (currTime - startTime > 10 * 1000 && !alreadyRequestedSensor) {
+				sendCMD("A:cmd:send_sensor");
+				alreadyRequestedSensor = true;
+			}
+			//////////////////// added code ends here ///////////////////////
 		}
 
 		System.out.println("Receiving data: " + data);

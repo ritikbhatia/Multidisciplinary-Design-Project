@@ -1,4 +1,6 @@
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Exploration {
 	private static final int listOfActionsSize = 4;
@@ -839,6 +841,15 @@ public class Exploration {
 		// Record time since start of simulation
 		long startTime = System.currentTimeMillis();
 		timeToStop = minute * 60000 + second * 1000;
+
+		// Timer timer = new Timer();
+		// timer.schedule(new TimerTask() {
+		// @Override
+		// public void run() {
+
+		// }
+		// }, 2*60*1000);
+
 		try {
 			while (true) {
 
@@ -851,7 +862,7 @@ public class Exploration {
 				timeLastupdate = System.currentTimeMillis();
 
 				if (timeSinceStart >= timeToStop) {
-					System.out.println("Here");
+					System.out.println("Time up!");
 					return 1;
 				}
 
