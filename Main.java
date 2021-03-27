@@ -6,6 +6,9 @@ import java.util.Queue;
 import java.util.Stack;
 import java.util.Scanner;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -51,7 +54,7 @@ public class Main {
 		Map map = new Map();
 
 		////////////////////////// simulator variable //////////////////////////
-		boolean simulator = false;
+		boolean simulator = true;
 
 		if (simulator) {
 			int[][] test = new int[][] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
@@ -431,6 +434,7 @@ public class Main {
 
 				if (!simulator)
 					theRobot.LookAtSurroundings();
+
 				int DoSimulatorExplorationResult = exe.DoSimulatorExploration();
 
 				if (simulator) {
@@ -475,6 +479,10 @@ public class Main {
 						pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
 						pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
 						pf.sendCMD("B:stat:finish_exe_mdf$");
+
+						// Ritik - added line
+						pf.sendCMD("A:cmd:cali_final$");
+						//
 						currentState = State.WAITINGFORCOMMAND;
 
 						try {
@@ -483,7 +491,8 @@ public class Main {
 							e.printStackTrace();
 						}
 
-						theRobot.initial_Calibrate();
+						// RITIK - add during exploration //
+						// theRobot.initial_Calibrate();
 						pf.setFlag(false);
 
 					} else if (DoSimulatorExplorationResult == -1) {

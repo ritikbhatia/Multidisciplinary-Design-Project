@@ -89,10 +89,15 @@ public class SocketClient {
 	// receive packet
 	public String receivePacket(boolean resentflag, String Data) {
 		String instruction = null;
+		// boolean alreadySent = false;
 		try {
 			do {
 				long timestart = System.currentTimeMillis();
 				while (input.available() == 0) {
+					// if (System.currentTimeMillis() - timestart >= 10 * 1000 && !alreadySent) {
+					// sendPacket("A:req:send_sensor:1$");
+					// alreadySent = true;
+					// }
 					Thread.sleep(10);
 				}
 				instruction = input.readLine();

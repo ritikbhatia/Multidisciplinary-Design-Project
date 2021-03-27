@@ -1,6 +1,4 @@
 import java.util.Stack;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Exploration {
 	private static final int listOfActionsSize = 4;
@@ -16,7 +14,7 @@ public class Exploration {
 	ExplorationState state;
 	//////////////////////////////////////// important
 	//////////////////////////////////////// variable!!!////////////////////////////////////////////
-	boolean exploreUnexplored = true;
+	boolean exploreUnexplored = false;
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	Visualization viz;
@@ -141,7 +139,7 @@ public class Exploration {
 
 		// Time to stop simulations
 		minute = 5;
-		second = 0;
+		second = 45;
 
 		// timeToStop = minute * 60000 + second * 1000;
 
@@ -842,22 +840,17 @@ public class Exploration {
 		long startTime = System.currentTimeMillis();
 		timeToStop = minute * 60000 + second * 1000;
 
-		// Timer timer = new Timer();
-		// timer.schedule(new TimerTask() {
-		// @Override
-		// public void run() {
-
-		// }
-		// }, 2*60*1000);
-
 		try {
 			while (true) {
 
 				////////////////////////////////// variables for the control of
 				////////////////////////////////// exploration(checklist)///////////////////////////
 
-				// timeSinceLastUpdate = System.currentTimeMillis() - timeLastupdate;
-				// timeSinceStart += timeSinceLastUpdate;
+				// will have to comment out this section to allow robot to go back to start
+				// during exploration
+
+				timeSinceLastUpdate = System.currentTimeMillis() - timeLastupdate;
+				timeSinceStart += timeSinceLastUpdate;
 				timeSinceStart = System.currentTimeMillis() - startTime;
 				timeLastupdate = System.currentTimeMillis();
 
@@ -870,8 +863,8 @@ public class Exploration {
 				System.out.print("Percentage Explored: " + percentageExplored + "\n");
 				System.out.print("Percentage to stop: " + percentageToStop + "\n");
 
-				if (percentageExplored >= percentageToStop)
-					return 1;
+				// if (percentageExplored >= percentageToStop)
+				// return 1;
 
 				////////////////////////////////// end of variables for the control of
 				////////////////////////////////// exploration(checklist)///////////////////////////
@@ -889,8 +882,9 @@ public class Exploration {
 					if (DoInitialExplorationResult == 1) {
 						robot.sendMapDescriptor();
 
-						if (exploreUnexplored) {
+						if (System.currentTimeMillis() - startTime < 225 * 1000 && exploreUnexplored) {
 							System.out.println("Doing explore Unexplored\n\n\n\n\n");
+
 							state = ExplorationState.CLEARING_UNKNOWN;
 							inputAllUnexploredAreas();
 							break;

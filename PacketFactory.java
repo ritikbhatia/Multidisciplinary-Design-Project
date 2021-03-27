@@ -75,19 +75,27 @@ public class PacketFactory implements Runnable {
 		boolean flag = true;
 		String data = null;
 
-		float startTime = System.currentTimeMillis();
-		boolean alreadyRequestedSensor = false;
+		// float startTime = System.currentTimeMillis();
+		// boolean alreadyRequestedSensor = false;
 
 		// while no data received, keep probing for the packet
 		while (data == null) {
 			data = sc.receivePacket(explorationflag, PreviousPacket);
 
 			////////////////////// Ritik - added code ///////////////////////
-			float currTime = System.currentTimeMillis();
-			if (currTime - startTime > 10 * 1000 && !alreadyRequestedSensor) {
-				sendCMD("A:cmd:send_sensor");
-				alreadyRequestedSensor = true;
-			}
+			// float currTime = System.currentTimeMillis();
+
+			// // if no data received for more than 10 seconds, ask to send sensor data
+			// if (currTime - startTime >= 5 * 1000 && !alreadyRequestedSensor) {
+			// sendCMD("A:req:send_sensor$");
+			// alreadyRequestedSensor = true;
+			// System.out.println("Sent sensor request");
+
+			// // can also try the following segment of code
+			// // basically hardcoding sensor packet to no obstacles
+			// // data = "P:map:sensor:[0,0,0,0,0,0]";
+			// // break;
+			// }
 			//////////////////// added code ends here ///////////////////////
 		}
 
