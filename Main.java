@@ -1,3 +1,7 @@
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -5,22 +9,23 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.Scanner;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
-enum State {
-	IDLE, WAITINGFORCOMMAND, EXPLORATION, FASTESTPATHHOME, FASTESTPATH, DONE, RESETFASTESTPATHHOME,
-	SENDINGMAPDESCRIPTOR,
+enum OperatingSystem {
+	Windows, 
+	Linux
 }
 
-enum OperatingSystem {
-	Windows, Linux
+enum State {
+	IDLE, 
+	WAITINGFORCOMMAND, 
+	EXPLORATION, 
+	FASTESTPATHHOME, 
+	FASTESTPATH, 
+	DONE, 
+	RESETFASTESTPATHHOME,
+	SENDINGMAPDESCRIPTOR,
 }
 
 public class Main {
@@ -28,6 +33,18 @@ public class Main {
 	public static void main(String[] args) {
 
 		// Initialisation of program objects & variables
+		RobotInterface theRobot;
+		Visualization viz = new Visualization();
+		currentState = State.WAITINGFORCOMMAND;
+		PacketFactory pf = null;
+		Queue<Packet> recvPackets = null;
+		A_star_search as = null;
+		Node waypoint = null;
+
+		// Initialisation of program objects & variables
+		State currentState;
+		JFrame frame = null;
+
 		String OS = System.getProperty("os.name").toLowerCase();
 
 		OperatingSystem theOS = OperatingSystem.Windows;
@@ -42,21 +59,20 @@ public class Main {
 		else if ((OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0))
 			theOS = OperatingSystem.Linux;
 
-		State currentState;
-		JFrame frame = null;
 
 		if (theOS == OperatingSystem.Windows) {
 			frame = new JFrame("MDP Simulator");
 			frame.setSize(600, 820);
 		}
+
 		Instant starts = null;
 		Instant end = null;
 		Map map = new Map();
 
-		////////////////////////// simulator variable //////////////////////////
-		boolean simulator = true;
+		////////////////////////// robot_simulator variable //////////////////////////
+		boolean robot_simulator = true;
 
-		if (simulator) {
+		if (robot_simulator) {
 			int[][] test = new int[][] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
 					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
@@ -91,9 +107,9 @@ public class Main {
 			// { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 } };
 
 			// Generated to facilitate debugging
-			MapIterator.printExploredResultsToFile(test, "test.txt");
-			MapIterator.ArraytoHex((test));
-			map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
+			GridMapIterator.print_explored_results_to_file(test, "test.txt");
+			GridMapIterator.array_to_hex((test));
+			map.setMapArray(GridMapIterator.parse_text_file_for_map_info("p1Hex.txt", "p2Hex.txt"));
 
 		}
 
@@ -102,21 +118,17 @@ public class Main {
 		//////////////////////////////////////// //////////////////////////////
 
 		// remove below statement if exploration but keep if doing fastest path
-		// map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
+		// map.setMapArray(GridMapIterator.parse_text_file_for_map_info("p1Hex.txt", "p2Hex.txt"));
 
-		// Initialisation of program objects & variables
-		RobotInterface theRobot;
-		Visualization viz = new Visualization();
-		currentState = State.WAITINGFORCOMMAND;
-		PacketFactory pf = null;
-		Queue<Packet> recvPackets = null;
-		Astar as = null;
-		Node waypoint = null;
 
 		// Activate rendering frame for simulation
-		if (simulator) {
+		if (robot_simulator) {
 			// Initialise robot simulation
 			theRobot = new Robot(1, 18, Direction.RIGHT, map);
+
+			viz.setRobot(theRobot);
+			theRobot.setViz(viz);
+			theRobot.setSpeed(10f);
 
 			// SENSOR POSITIONS: 3 front, 2 right, 1 (long range) left
 			Sensor s1 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 1, theRobot.x, theRobot.y);
@@ -129,10 +141,7 @@ public class Main {
 			Sensor[] Sensors = { s1, s2, s3, s4, s5, s6 };
 			theRobot.addSensors(Sensors);
 
-			viz.setRobot(theRobot);
-			theRobot.setViz(viz);
-			theRobot.setSpeed(10f);
-
+		
 			if (theOS == OperatingSystem.Windows) {
 				frame.getContentPane().add(viz);
 				frame.setVisible(true);
@@ -141,7 +150,7 @@ public class Main {
 			}
 		} else {
 			///////////////////////////////////////////////////////////////////
-			// // make simulator do exploration first
+			// // make robot_simulator do exploration first
 			// // Initialise robot simulation
 
 			// Robot simRobot = new Robot(1, 18, Direction.RIGHT, map);
@@ -174,7 +183,7 @@ public class Main {
 			// frame.setResizable(true);
 			// }
 			// Exploration simexe = new Exploration(null, true, simRobot, viz, map);
-			// simexe.initStartPoint(1, 18);
+			// simexe.initialise_robot_start_position(1, 18);
 			// simexe.DoSimulatorExploration();
 
 			///////////////////////////////////////////////////////////////////
@@ -207,8 +216,8 @@ public class Main {
 
 		}
 
-		Exploration exe = new Exploration(null, simulator, theRobot, viz, map);
-		exe.initStartPoint(1, 18);
+		Exploration exe = new Exploration(null, robot_simulator, theRobot, viz, map);
+		exe.initialise_robot_start_position(1, 18);
 
 		while (currentState != State.DONE) {
 			switch (currentState) {
@@ -220,20 +229,19 @@ public class Main {
 				System.out.println(
 						"\n------------------------------WaitingForCommand Case------------------------------\n");
 
-				// Command line interface for simulator
-				if (simulator) {
+				// Command line interface for robot_simulator
+				if (robot_simulator) {
 					Scanner sc = new Scanner(System.in);
 					System.out.println("Please enter state:");
 					System.out.println("1) Set Waypoint");
 					System.out.println("2) Set robot position");
 					System.out.println("3) Start Exploration");
 					System.out.println("4) Start Fastest Path");
-					System.out.println("5) Stop Instruction");
-					System.out.println("6) Reset Instruction");
-					System.out.println("7) Get Map Descriptor");
-					System.out.println("8) Set speed for fastest path, default = 10f");
-					System.out.println("9) Set maximum percentage of exploration");
-					System.out.println("10) Set maximum time for exploration");
+					System.out.println("5) Reset Instruction");
+					System.out.println("6) Get Map Descriptor");
+					System.out.println("7) Set speed for fastest path, default = 10f");
+					System.out.println("8) Set maximum percentage of exploration");
+					System.out.println("9) Set maximum time for exploration");
 
 					int scanType = sc.nextInt();
 
@@ -247,7 +255,7 @@ public class Main {
 						System.out.println("setting waypoint position at :" + wayx + ", " + wayy);
 						waypoint = new Node(wayx, wayy);
 
-						map.setWaypointClear(wayx, wayy);
+						map.set_way_point(wayx, wayy);
 
 					} else if (scanType == 2) {
 						// Determine robot position
@@ -266,20 +274,16 @@ public class Main {
 						currentState = State.EXPLORATION;
 
 					} else if (scanType == 4) {
-						// map.setMapArray(MapIterator.IterateTextFile("p1Hex.txt", "p2Hex.txt"));
-						// exe.adjustMapForFastestPath();
-						// map.updateMapWithScore();
-						// map.setScoreArray();
-						// map.updateMap();
+						// map.setMapArray(GridMapIterator.parse_text_file_for_map_info("p1Hex.txt", "p2Hex.txt"));
+						// exe.fastest_path_map_adjustment();
+						// map.update_map_and_score();
+						// map.set_map_scores();
+						// map.map_update();
 						// viz.repaint();
 						starts = Instant.now();
 						currentState = State.FASTESTPATH;
 
 					} else if (scanType == 5) {
-						// TODO: Implement this case
-						// currentState = State.FASTESTPATHHOME;
-
-					} else if (scanType == 6) {
 						// TODO: Implement this case
 						// TODO: Check hardcoded robot x,y values
 						// currentState = State.RESETFASTESTPATHHOME;
@@ -291,23 +295,27 @@ public class Main {
 						map.resetMap();
 						viz.repaint();
 
-					} else if (scanType == 7) {
+					} else if (scanType == 6) {
 						theRobot.sendMapDescriptor();
+
+					} else if (scanType == 7) {
+						System.out.println("Please input intended speed for fastest path\n(1000/robot_steps_per_second): ");
+						float robot_steps_per_second = sc.nextInt();
+						theRobot.setSpeed(robot_steps_per_second);
+
 					} else if (scanType == 8) {
-						System.out.println("Please input intended speed for fastest path\n(1000/stepsPerSecond): ");
-						float stepsPerSecond = sc.nextInt();
-						theRobot.setSpeed(stepsPerSecond);
-					} else if (scanType == 9) {
 						System.out.println("Please input maximum percentage of maze exploration: ");
 						float maxPercent = sc.nextFloat();
-						exe.setMazeCoverage(maxPercent);
-					} else if (scanType == 10) {
-						System.out.println("Please input maximum time for maze exploration (minutes:seconds) ");
+						exe.set_maze_coverage_percentage(maxPercent);
+
+					} else if (scanType == 9) {
+						System.out.println("Please input maximum time for maze exploration (time_minutes:time_seconds) ");
 						String time = sc.next();
 						String[] parts = time.split(":");
-						float minutes = Float.parseFloat(parts[0]);
-						float seconds = Float.parseFloat(parts[1]);
-						exe.setMaxExplorationTime(minutes, seconds);
+						float time_minutes = Float.parseFloat(parts[0]);
+						float time_seconds = Float.parseFloat(parts[1]);
+						exe.set_exploration_time_limit(time_minutes, time_seconds);
+
 					}
 
 					break;
@@ -326,14 +334,14 @@ public class Main {
 					Packet pkt = recvPackets.remove();
 					System.out.println(pkt.getType());
 
-					if (pkt.getType() == Packet.SetWayPointi) {
+					if (pkt.getType() == Packet.set_way_point_instruction) {
 						wayx = pkt.getX();
 						wayy = 19 - pkt.getY();
 
 						// Assign waypoint position for robot
 						System.out.println("setting waypoint position at :" + wayx + ", " + wayy);
 						waypoint = new Node(wayx, wayy);
-						map.setWaypointClear(wayx, wayy);
+						map.set_way_point(wayx, wayy);
 
 						///////////////////// RITIK - CODE ADDED HERE ///////////////
 
@@ -341,6 +349,10 @@ public class Main {
 
 						// Initialise robot simulation
 						Robot simRobot = new Robot(1, 18, Direction.RIGHT, map);
+
+						viz.setRobot(simRobot);
+						simRobot.setViz(viz);
+						simRobot.setSpeed(10f);
 
 						// SENSOR POSITIONS: 3 front, 2 right, 1 (long range) left
 						Sensor sim1 = new Sensor(3, SensorLocation.FACING_RIGHT, 1, 1, simRobot.x, simRobot.y);
@@ -353,10 +365,6 @@ public class Main {
 						Sensor[] simSensors = { sim1, sim2, sim3, sim4, sim5, sim6 };
 						simRobot.addSensors(simSensors);
 
-						viz.setRobot(simRobot);
-						simRobot.setViz(viz);
-						simRobot.setSpeed(10f);
-
 						if (theOS == OperatingSystem.Windows) {
 							frame.getContentPane().add(viz);
 							frame.setVisible(true);
@@ -365,19 +373,19 @@ public class Main {
 						}
 
 						Exploration simexe = new Exploration(null, true, simRobot, viz, map);
-						simexe.initStartPoint(1, 18);
+						simexe.initialise_robot_start_position(1, 18);
 						simexe.DoSimulatorExploration();
 
 						// calculate P1 and P2
 						// send to Android so that they can update their virtual map
-						MapIterator.printExploredResultsToFile(map.getMapArray(), "theExplored.txt");
-						MapIterator.printExploredResultsToHex("ExplorationHex.txt");
-						MapIterator.printObstacleResultsToFile(map.getMapArray(), "theObstacle.txt");
-						MapIterator.printObstacleResultsToHex("ObstacleHex.txt");
+						GridMapIterator.print_explored_results_to_file(map.get_grid_map_array(), "theExplored.txt");
+						GridMapIterator.print_explored_results_to_hex("ExplorationHex.txt");
+						GridMapIterator.print_obstacle_results_to_file(map.get_grid_map_array(), "theObstacle.txt");
+						GridMapIterator.print_obstacle_results_to_hex("ObstacleHex.txt");
 
 						// send exploration mdf to android for them to update the map
-						pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
-						pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
+						pf.sendCMD("B:stat:Exploration mdf:" + GridMapIterator.P1_map_descriptor_hex + "$");
+						pf.sendCMD("B:stat:Obstacle mdf:" + GridMapIterator.P2_map_descriptor_hex + "$");
 
 						// send waypoint to android for them to update the map
 						pf.sendCMD("B:stat:waypoint:" + String.valueOf(wayx) + ":" + String.valueOf(19 - wayy) + "$");
@@ -390,23 +398,14 @@ public class Main {
 
 						currentState = State.WAITINGFORCOMMAND;
 
-					} else if (pkt.getType() == Packet.setRobotPosition) {
-						// Assign robot position
-						System.out.println("-----------------Setting robot position--------------");
-						theRobot.setRobotPos(pkt.getX(), pkt.getY(), pkt.getDirection());
-
-					} else if (pkt.getType() == Packet.StartExploration) {
+					} else if (pkt.getType() == Packet.start_exploration) {
 						starts = Instant.now();
 						currentState = State.EXPLORATION;
 
-					} else if (pkt.getType() == Packet.StartFastestPath) {
-						starts = Instant.now();
-						currentState = State.FASTESTPATH;
-
-					} else if (pkt.getType() == Packet.StopInstruction) {
+					} else if (pkt.getType() == Packet.stop_instruction) {
 						currentState = State.FASTESTPATHHOME;
 
-					} else if (pkt.getType() == Packet.ResetInstruction) {
+					} else if (pkt.getType() == Packet.reset_instruction) {
 						currentState = State.RESETFASTESTPATHHOME;
 						System.out.println("Resetting Map...");
 
@@ -417,8 +416,19 @@ public class Main {
 						map.resetMap();
 						viz.repaint();
 
+					} else if (pkt.getType() == Packet.start_fastest_path) {
+						starts = Instant.now();
+						currentState = State.FASTESTPATH;
+						
 					} else if (pkt.getType() == Packet.GETMAPi)
 						theRobot.sendMapDescriptor();
+					
+					else if (pkt.getType() == Packet.set_robot_position) {
+						// Assign robot position
+						System.out.println("-----------------Setting robot position--------------");
+						theRobot.setRobotPos(pkt.getX(), pkt.getY(), pkt.getDirection());
+	
+					}
 
 					else {
 						System.out.println("Invalid Packet!!");
@@ -426,18 +436,34 @@ public class Main {
 					}
 					break;
 				}
+			
+			case FASTESTPATHHOME:
+
+				// Revise nodes and create new A* solution path
+				map.map_update();
+				A_star_search as1 = new A_star_search(map.get_node_with_xy_coordinates(theRobot.x, theRobot.y), map.get_node_with_xy_coordinates(1, 18));
+
+				// Transmit instructions to robot
+				theRobot.retrieve_fastest_instruction(as1.retrieve_fastest_path());
+				System.out.print("Completed fastest path home");
+
+				if (robot_simulator)
+					currentState = State.FASTESTPATH;
+				else
+					currentState = State.WAITINGFORCOMMAND;
+				break;
 
 			case EXPLORATION:
-				// Initialise algorithmic exploration, invoke StartExploration()
+				// Initialise algorithmic exploration, invoke start_exploration()
 				System.out.println(
 						"---------------------------------Exploration case---------------------------------\n");
 
-				if (!simulator)
+				if (!robot_simulator)
 					theRobot.LookAtSurroundings();
 
 				int DoSimulatorExplorationResult = exe.DoSimulatorExploration();
 
-				if (simulator) {
+				if (robot_simulator) {
 
 					// Exploration completes, robot returns to start position again and return TRUE
 					if (DoSimulatorExplorationResult == 1) {
@@ -472,12 +498,12 @@ public class Main {
 						System.out.println(
 								"------------------------------ Sending the map descriptor to files ------------------------------\n");
 						System.out.println("doing map descriptor");
-						MapIterator.printExploredResultsToFile(map.getMapArray(), "theExplored.txt");
-						MapIterator.printExploredResultsToHex("ExplorationHex.txt");
-						MapIterator.printObstacleResultsToFile(map.getMapArray(), "theObstacle.txt");
-						MapIterator.printObstacleResultsToHex("ObstacleHex.txt");
-						pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
-						pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
+						GridMapIterator.print_explored_results_to_file(map.get_grid_map_array(), "theExplored.txt");
+						GridMapIterator.print_explored_results_to_hex("ExplorationHex.txt");
+						GridMapIterator.print_obstacle_results_to_file(map.get_grid_map_array(), "theObstacle.txt");
+						GridMapIterator.print_obstacle_results_to_hex("ObstacleHex.txt");
+						pf.sendCMD("B:stat:Exploration mdf:" + GridMapIterator.P1_map_descriptor_hex + "$");
+						pf.sendCMD("B:stat:Obstacle mdf:" + GridMapIterator.P2_map_descriptor_hex + "$");
 						pf.sendCMD("B:stat:finish_exe_mdf$");
 
 						// Ritik - added line
@@ -521,8 +547,8 @@ public class Main {
 
 						map.resetMap();
 
-						exe = new Exploration(null, simulator, theRobot, viz, map);
-						exe.initStartPoint(1, 18);
+						exe = new Exploration(null, robot_simulator, theRobot, viz, map);
+						exe.initialise_robot_start_position(1, 18);
 					}
 				}
 
@@ -530,29 +556,13 @@ public class Main {
 					currentState = State.WAITINGFORCOMMAND;
 				break;
 
-			case FASTESTPATHHOME:
-
-				// Revise nodes and create new A* solution path
-				map.updateMap();
-				Astar as1 = new Astar(map.getNodeXY(theRobot.x, theRobot.y), map.getNodeXY(1, 18));
-
-				// Transmit instructions to robot
-				theRobot.getFastestInstruction(as1.getFastestPath());
-				System.out.print("Completed fastest path home");
-
-				if (simulator)
-					currentState = State.FASTESTPATH;
-				else
-					currentState = State.WAITINGFORCOMMAND;
-				break;
-
 			case RESETFASTESTPATHHOME:
 				// Revise nodes and create new A* solution path
-				map.updateMap();
-				Astar as3 = new Astar(map.getNodeXY(theRobot.x, theRobot.y), map.getNodeXY(1, 18));
+				map.map_update();
+				A_star_search as3 = new A_star_search(map.get_node_with_xy_coordinates(theRobot.x, theRobot.y), map.get_node_with_xy_coordinates(1, 18));
 
 				// Transmit instructions to robot
-				theRobot.getFastestInstruction(as3.getFastestPath());
+				theRobot.retrieve_fastest_instruction(as3.retrieve_fastest_path());
 				System.out.print("Completed fastest path home, resetting map");
 
 				map.resetMap();
@@ -563,6 +573,24 @@ public class Main {
 
 				break;
 
+			case SENDINGMAPDESCRIPTOR:
+				System.out.println(
+						"------------------------------ Sending the map descriptor to files ------------------------------\n");
+				System.out.println("doing map descriptor");
+
+				GridMapIterator.print_explored_results_to_file(map.get_grid_map_array(), "theExplored.txt");
+				GridMapIterator.print_explored_results_to_hex("ExplorationHex.txt");
+
+				GridMapIterator.print_obstacle_results_to_file(map.get_grid_map_array(), "theObstacle.txt");
+				GridMapIterator.print_obstacle_results_to_hex("ObstacleHex.txt");
+				if (!robot_simulator) {
+					pf.sendCMD("B:stat:Exploration mdf:" + GridMapIterator.P1_map_descriptor_hex + "$");
+					pf.sendCMD("B:stat:Obstacle mdf:" + GridMapIterator.P2_map_descriptor_hex + "$");
+
+					// pf.sendCMD("B:stat:finish_exe_mdf$");
+				}
+				currentState = State.WAITINGFORCOMMAND;
+
 			case FASTESTPATH:
 				// Initialise fastest path from start to goal node
 				System.out.println(
@@ -571,7 +599,7 @@ public class Main {
 				// ///////////////////// RITIK - CODE SEGMENT ADDED HERE!!!
 				// ///////////////////// //////////////////////////////
 
-				// // perform simulator exploration before fastest path
+				// // perform robot_simulator exploration before fastest path
 				// if (!explorationForFastestPathDone) {
 				// DoSimulatorExplorationResult = exe.DoSimulatorExploration();
 				// explorationForFastestPathDone = true;
@@ -584,27 +612,27 @@ public class Main {
 				// ///////////////////// RITIK - END OF CODE SEGMENT!!!
 				// ///////////////////// //////////////////////////////////
 
-				if (simulator) {
+				if (robot_simulator) {
 					theRobot.initial_Calibrate();
 
 					// Revise nodes and create new A* solution path
-					map.updateMap();
-					waypoint = map.getNodeXY(wayx, wayy);
-					Astar as31 = new Astar(map.getNodeXY(theRobot.x, theRobot.y), waypoint);
-					Astar as2 = new Astar(waypoint, map.getNodeXY(13, 1));
-					Stack<Node> as31GFP = as31.getFastestPath();
+					map.map_update();
+					waypoint = map.get_node_with_xy_coordinates(wayx, wayy);
+					A_star_search as31 = new A_star_search(map.get_node_with_xy_coordinates(theRobot.x, theRobot.y), waypoint);
+					A_star_search as2 = new A_star_search(waypoint, map.get_node_with_xy_coordinates(13, 1));
+					Stack<Node> as31GFP = as31.retrieve_fastest_path();
 
 					if (as31GFP.isEmpty()) {
-						Astar as4 = new Astar(map.getNodeXY(theRobot.x, theRobot.y), map.getNodeXY(13, 1));
-						PathDrawer.update(theRobot.x, theRobot.y, as4.getFastestPath());
-						theRobot.getFastestInstruction(as4.getFastestPath());
+						A_star_search as4 = new A_star_search(map.get_node_with_xy_coordinates(theRobot.x, theRobot.y), map.get_node_with_xy_coordinates(13, 1));
+						PathDrawer.update(theRobot.x, theRobot.y, as4.retrieve_fastest_path());
+						theRobot.retrieve_fastest_instruction(as4.retrieve_fastest_path());
 						PathDrawer.removePath();
 
 					} else {
 						PathDrawer.update(theRobot.x, theRobot.y, as31GFP);
-						theRobot.getFastestInstruction(as31.getFastestPath());
-						PathDrawer.update(theRobot.x, theRobot.y, as2.getFastestPath());
-						theRobot.getFastestInstruction(as2.getFastestPath());
+						theRobot.retrieve_fastest_instruction(as31.retrieve_fastest_path());
+						PathDrawer.update(theRobot.x, theRobot.y, as2.retrieve_fastest_path());
+						theRobot.retrieve_fastest_instruction(as2.retrieve_fastest_path());
 						PathDrawer.removePath();
 
 					}
@@ -618,36 +646,36 @@ public class Main {
 					pf.sendCMD(Packet.StartFastestPathTypeOkANDROID + "$"); // TODO: Check if this is required
 					pf.sendCMD(Packet.StartFastestPathTypeOkARDURINO + "$"); // TODO: Check if this is required
 
-					map.updateMap();
+					map.map_update();
 					Stack<Node> stack = null;
 
 					if (waypoint == null) {
 						System.out.println("NO waypoint.");
-						as = new Astar(map.getNodeXY(theRobot.x, theRobot.y), map.getNodeXY(13, 1));
-						stack = as.getFastestPath();
-						theRobot.getFastestInstruction(stack);
+						as = new A_star_search(map.get_node_with_xy_coordinates(theRobot.x, theRobot.y), map.get_node_with_xy_coordinates(13, 1));
+						stack = as.retrieve_fastest_path();
+						theRobot.retrieve_fastest_instruction(stack);
 
 					} else {
 						int x1 = waypoint.getX();
 						int y1 = waypoint.getY();
 						System.out.println("going to fastest path with waypoint of " + x1 + "," + y1);
-						waypoint = map.getNodeXY(x1, y1);
-						as = new Astar(map.getNodeXY(theRobot.x, theRobot.y), waypoint);
-						Astar as2 = new Astar(waypoint, map.getNodeXY(13, 1));
-						stack = as2.getFastestPath();
-						Stack<Node> stack2 = as.getFastestPath();
+						waypoint = map.get_node_with_xy_coordinates(x1, y1);
+						as = new A_star_search(map.get_node_with_xy_coordinates(theRobot.x, theRobot.y), waypoint);
+						A_star_search as2 = new A_star_search(waypoint, map.get_node_with_xy_coordinates(13, 1));
+						stack = as2.retrieve_fastest_path();
+						Stack<Node> stack2 = as.retrieve_fastest_path();
 
 						if (!stack.isEmpty() && !stack2.isEmpty()) {
 							System.out.println("going to waypoint...");
 							stack.addAll(stack2);
-							theRobot.getFastestInstruction(stack);
+							theRobot.retrieve_fastest_instruction(stack);
 
 						} else {
 							System.out.println("failed to go to waypoint");
 							System.out.println("going to goal without waypoint");
-							as = new Astar(map.getNodeXY(theRobot.x, theRobot.y), map.getNodeXY(13, 1));
-							stack = as.getFastestPath();
-							theRobot.getFastestInstruction(stack);
+							as = new A_star_search(map.get_node_with_xy_coordinates(theRobot.x, theRobot.y), map.get_node_with_xy_coordinates(13, 1));
+							stack = as.retrieve_fastest_path();
+							theRobot.retrieve_fastest_instruction(stack);
 						}
 					}
 
@@ -663,27 +691,10 @@ public class Main {
 				}
 				break;
 
-			case SENDINGMAPDESCRIPTOR:
-				System.out.println(
-						"------------------------------ Sending the map descriptor to files ------------------------------\n");
-				System.out.println("doing map descriptor");
-
-				MapIterator.printExploredResultsToFile(map.getMapArray(), "theExplored.txt");
-				MapIterator.printExploredResultsToHex("ExplorationHex.txt");
-
-				MapIterator.printObstacleResultsToFile(map.getMapArray(), "theObstacle.txt");
-				MapIterator.printObstacleResultsToHex("ObstacleHex.txt");
-				if (!simulator) {
-					pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
-					pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
-
-					// pf.sendCMD("B:stat:finish_exe_mdf$");
-				}
-				currentState = State.WAITINGFORCOMMAND;
 			}
 		}
 	}
 
-	// TODO: Configure IP & port ?
+	// TODO: Configure IP & port 
 	SocketClient cs = new SocketClient("192.168.9.9", 8081);
 }

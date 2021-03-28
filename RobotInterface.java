@@ -22,8 +22,8 @@ public abstract class RobotInterface {
 	Direction facing;
 
 	Map map;
-	final int WIDTH = 15;
-	final int HEIGHT = 20;
+	final int map_width = 15;
+	final int map_height = 20;
 
 	// the fastest path between 2 points
 	Stack<Node> fastestPath = new Stack<Node>();
@@ -46,7 +46,7 @@ public abstract class RobotInterface {
 
 	public abstract void turnRight();
 
-	public abstract boolean getFastestInstruction(Stack<Node> fast);
+	public abstract boolean retrieve_fastest_instruction(Stack<Node> fast);
 
 	public abstract void deactivateSensors();
 
@@ -64,7 +64,7 @@ public abstract class RobotInterface {
 
 	public abstract boolean doStepFastestPath();
 
-	public abstract void setSpeed(float stepsPerSecond);
+	public abstract void setSpeed(float robot_steps_per_second);
 
 	// set the fastest path for the robot to follow
 	public void setFastestInstruction(Stack<Node> fast, int targetX, int targetY) {
@@ -110,7 +110,7 @@ public abstract class RobotInterface {
 				}
 
 				// add instruction for the shortest path to stack
-				instructionsForFastestPath.add(Packet.FORWARDi);
+				instructionsForFastestPath.add(Packet.forward_instruction);
 			}
 		}
 	}
@@ -160,50 +160,50 @@ public abstract class RobotInterface {
 		// conditional statements specifying direction to turn
 		if (tempFacing == Direction.RIGHT) {
 			if (targetFacing == Direction.UP)
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
 
 			else if (targetFacing == Direction.DOWN)
-				instructionsForFastestPath.add(Packet.TURNRIGHTi);
+				instructionsForFastestPath.add(Packet.right_turn_instruction);
 
 			else if (targetFacing == Direction.LEFT) {
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
 			}
 
 		} else if (tempFacing == Direction.LEFT) {
 			if (targetFacing == Direction.UP)
-				instructionsForFastestPath.add(Packet.TURNRIGHTi);
+				instructionsForFastestPath.add(Packet.right_turn_instruction);
 
 			else if (targetFacing == Direction.DOWN)
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
 
 			else if (targetFacing == Direction.RIGHT) {
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
 			}
 
 		} else if (tempFacing == Direction.UP) {
 			if (targetFacing == Direction.LEFT)
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
 
 			else if (targetFacing == Direction.RIGHT)
-				instructionsForFastestPath.add(Packet.TURNRIGHTi);
+				instructionsForFastestPath.add(Packet.right_turn_instruction);
 
 			else if (targetFacing == Direction.DOWN) {
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
 			}
 
 		} else if (tempFacing == Direction.DOWN) {
 			if (targetFacing == Direction.RIGHT)
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
 
 			else if (targetFacing == Direction.LEFT)
-				instructionsForFastestPath.add(Packet.TURNRIGHTi);
+				instructionsForFastestPath.add(Packet.right_turn_instruction);
 
 			else if (targetFacing == Direction.UP) {
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
-				instructionsForFastestPath.add(Packet.TURNLEFTi);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_turn_instruction);
 			}
 
 		}
@@ -327,7 +327,7 @@ public abstract class RobotInterface {
 
 	// return true if bottom bound is being violated
 	public boolean checkBottomBound(int xi, int yi) {
-		if (yi > (HEIGHT)) {
+		if (yi > (map_height)) {
 			return true;
 		}
 		return false;
@@ -335,7 +335,7 @@ public abstract class RobotInterface {
 
 	// return true if right bound is being violated
 	public boolean checkRightBound(int xi, int yi) {
-		if (xi > (WIDTH)) {
+		if (xi > (map_width)) {
 			return true;
 		}
 		return false;
@@ -343,9 +343,9 @@ public abstract class RobotInterface {
 
 	// return true if out of bounds or obstacle at given coordinates
 	public boolean checkObstacle(int xi, int yi) {
-		if (yi >= HEIGHT || xi >= WIDTH || yi < 0 || xi < 0) {
+		if (yi >= map_height || xi >= map_width || yi < 0 || xi < 0) {
 			return true;
-		} else if (map.getMapArray()[yi][xi] == ExplorationTypes.toInt("OBSTACLE")) {
+		} else if (map.get_grid_map_array()[yi][xi] == ExplorationTypes.exploration_type_to_int("OBSTACLE")) {
 			return true;
 		}
 		return false;
@@ -416,8 +416,8 @@ public abstract class RobotInterface {
 			return true;
 		}
 
-		if (map.getMapArray()[yi][xi] == ExplorationTypes.toInt("UNEXPLORED_EMPTY")
-				|| map.getMapArray()[yi][xi] == ExplorationTypes.toInt("UNEXPLORED_OBSTACLE"))
+		if (map.get_grid_map_array()[yi][xi] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_EMPTY")
+				|| map.get_grid_map_array()[yi][xi] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_OBSTACLE"))
 			return true;
 
 		return false;
@@ -436,13 +436,13 @@ public abstract class RobotInterface {
 	}
 
 	// draw the robot, using graphics
-	public void paintRobot(Graphics g) {
-		g.setColor(Color.RED);
+	public void paintRobot(Graphics graphics) {
+		graphics.setColor(Color.RED);
 		x_g = 10 + (x - 1) * Map.sizeofsquare;
 		y_g = 10 + (y - 1) * Map.sizeofsquare;
-		g.fillArc(x_g, y_g, radius, radius, 0, 360);
+		graphics.fillArc(x_g, y_g, radius, radius, 0, 360);
 
-		g.setColor(Color.BLUE);
+		graphics.setColor(Color.BLUE);
 
 		int dirOffsetX = 0;
 		int dirOffsetY = 0;
@@ -456,7 +456,7 @@ public abstract class RobotInterface {
 		else if (facing == Direction.RIGHT)
 			dirOffsetX = 38;
 
-		g.fillArc(x_g + 30 + dirOffsetX, y_g + 30 + dirOffsetY, 20, 20, 0, 360);
+		graphics.fillArc(x_g + 30 + dirOffsetX, y_g + 30 + dirOffsetY, 20, 20, 0, 360);
 	}
 
 	public abstract boolean getWantToReset();

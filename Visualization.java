@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 // inherit from JComponent, the base class for all Swing components
-// use this the visualize and create the simulator for various tasks
+// use this the visualize and create the robot_simulator for various tasks
 public class Visualization extends JComponent {
 	private static final long serialVersionUID = 1L;
 	public RobotInterface robot;
@@ -33,11 +33,11 @@ public class Visualization extends JComponent {
 	}
 
 	// method to draw the components and perform visualization
-	protected void paintComponent(Graphics g) {
-		robot.map.paintMap(g);
-		robot.paintRobot(g);
-		PathDrawer.drawGrid(g);
-		PathDrawer.drawPath(g);
-		super.paintComponent(g);
+	protected void paintComponent(Graphics graphics) {
+		robot.map.paint_grid_map(graphics);
+		robot.paintRobot(graphics);
+		PathDrawer.drawGrid(graphics);
+		PathDrawer.drawPath(graphics);
+		super.paintComponent(graphics);
 	}
 }

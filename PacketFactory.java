@@ -25,12 +25,12 @@ public class PacketFactory implements Runnable {
 	String PreviousPacket = null;
 
 	int port = 8081;
-	final static int FORWARDi = 1;
-	final static int TURNRIGHTi = 2;
-	final static int TURNLEFTi = 3;
-	final static int REVERSEi = 4;
-	public static final int CALIBRATEi = 5;
-	final static int PHOTOi = 6;
+	final static int forward_instruction = 1;
+	final static int right_turn_instruction = 2;
+	final static int left_turn_instruction = 3;
+	final static int reverse_instruction = 4;
+	public static final int calibrate_instruction = 5;
+	final static int click_photo_instruction = 6;
 	boolean explorationflag = false;
 	final static byte UPDATESENSOR = 0x1;
 
@@ -85,7 +85,7 @@ public class PacketFactory implements Runnable {
 			////////////////////// Ritik - added code ///////////////////////
 			// float currTime = System.currentTimeMillis();
 
-			// // if no data received for more than 10 seconds, ask to send sensor data
+			// // if no data received for more than 10 time_seconds, ask to send sensor data
 			// if (currTime - startTime >= 5 * 1000 && !alreadyRequestedSensor) {
 			// sendCMD("A:req:send_sensor$");
 			// alreadyRequestedSensor = true;
@@ -115,7 +115,7 @@ public class PacketFactory implements Runnable {
 			// send ok:exploration to android when exploration ends and robot is at the
 			// start position
 			System.out.println("starting exploration...");
-			buffer.add(new Packet(Packet.StartExploration));
+			buffer.add(new Packet(Packet.start_exploration));
 			System.out.print(
 					"******************************************* Received Exploration Packet *********************************************\n");
 			sc.sendPacket(Packet.StartExplorationTypeOk + "$");
@@ -128,15 +128,15 @@ public class PacketFactory implements Runnable {
 			System.out.println(
 					"***************************************** Received fastest path packet **************************************\n");
 
-			buffer.add(new Packet(Packet.StartFastestPath));
+			buffer.add(new Packet(Packet.start_fastest_path));
 		} else if (splitPacket[1].equalsIgnoreCase(Packet.Stop)) {
 			// interrupt exploration, stop robot
-			buffer.add(new Packet(Packet.StopInstruction));
+			buffer.add(new Packet(Packet.stop_instruction));
 			sc.sendPacket(Packet.StopOk);
 		} else if (splitPacket[1].equalsIgnoreCase(Packet.Reset)) {
 			// carry robot back to starting point.
 			// reset map
-			buffer.add(new Packet(Packet.ResetInstruction));
+			buffer.add(new Packet(Packet.reset_instruction));
 			sc.sendPacket(Packet.ResetOK);
 			System.out.println("sending ok reset");
 		} else if (splitPacket[1].equals(Packet.GETMAP)) {
@@ -145,14 +145,14 @@ public class PacketFactory implements Runnable {
 			if (splitPacket[1].equalsIgnoreCase(Packet.SetRobotPos)) {
 				sc.sendPacket(Packet.SetRobotPosOk);
 			} else if (splitPacket[1].equalsIgnoreCase(Packet.SetWayPoint)) {
-				// remove bracket, split by comma , set first as x second as y
+				// remove bracket, split by comma , set first as x time_second as y
 				String[] waypointcoord = splitPacket[2].replace("[", "").replace("]", "").split(",");
 				int x = Integer.parseInt(waypointcoord[0]);
 				int y = Integer.parseInt(waypointcoord[1]);
 				// set robot position waypoint for the fastest path
 				// after setting this, send all instructions to RPi
 				// allow faster execution when android sends the command to start fastest path
-				buffer.add(new Packet(Packet.SetWayPointi, x, y));
+				buffer.add(new Packet(Packet.set_way_point_instruction, x, y));
 				sc.sendPacket("A:" + Packet.SetWayPointOK);
 			}
 		} else {
@@ -172,21 +172,21 @@ public class PacketFactory implements Runnable {
 				for (int i = 0; i < sensorData.length; i++) {
 					data[i] = Integer.parseInt(sensorData[i]);
 				}
-				buffer.add(new Packet(Packet.setObstacle, data));
+				buffer.add(new Packet(Packet.set_maze_obstacle, data));
 
 			}
 		} else if (commandSplit[1].equalsIgnoreCase(Packet.Stop)) {
 			// interrupt exploration
 			sc.sendPacket(Packet.StopOk);
 			explorationflag = false;
-			buffer.add(new Packet(Packet.StopInstruction));
+			buffer.add(new Packet(Packet.stop_instruction));
 		} else if (commandSplit[1].equalsIgnoreCase(Packet.Reset)) {
 			// stop everything and carry robot back to starting point
 			// reset map
 			sc.sendPacket(Packet.ResetOK);
 			System.out.println("sending ok reset");
 			explorationflag = false;
-			buffer.add(new Packet(Packet.ResetInstruction));
+			buffer.add(new Packet(Packet.reset_instruction));
 		} else {
 			System.out.println("Data received and ignored.");
 		}
@@ -210,33 +210,33 @@ public class PacketFactory implements Runnable {
 	}
 
 	public void sideTurnCalibrate() {
-		sc.sendPacket(Packet.SIDETURNCALIBRATE);
-		setPreviousPacket(Packet.SIDETURNCALIBRATE);
+		sc.sendPacket(Packet.side_turn_calibrate);
+		setPreviousPacket(Packet.side_turn_calibrate);
 	}
 
 	// for debugging purposes only
 	public void sideCalibrate(int x, int y, int directionNum) {
 		System.out.println("debug side calibrate");
-		sc.sendPacket(Packet.SIDECALIBRATE + "$");
-		setPreviousPacket(Packet.SIDECALIBRATE);
+		sc.sendPacket(Packet.side_calibrate + "$");
+		setPreviousPacket(Packet.side_calibrate);
 	}
 
 	// for debugging purposes only
 	public void frontCalibrate(int x, int y, int directionNum) {
 		System.out.println("debug front calibrate");
-		sc.sendPacket(Packet.FRONTCALIBRATE + "$");
-		setPreviousPacket(Packet.FRONTCALIBRATE);
+		sc.sendPacket(Packet.front_calibrate + "$");
+		setPreviousPacket(Packet.front_calibrate);
 	}
 
 	// for debugging purposes only
 	public void leftCalibrate(int x, int y, int directionNum) {
 		System.out.println("debug left calibrate");
-		sc.sendPacket(Packet.LEFTCALIBRATE);
-		setPreviousPacket(Packet.LEFTCALIBRATE);
+		sc.sendPacket(Packet.left_calibrate);
+		setPreviousPacket(Packet.left_calibrate);
 	}
 
 	public void initialCalibrate() {
-		sc.sendPacket(Packet.INITIALCALIBRATE);
+		sc.sendPacket(Packet.iniital_calibrate);
 	}
 
 	public boolean createFullMovementPacketToArduino(Queue<Integer> instructions) {
@@ -253,17 +253,17 @@ public class PacketFactory implements Runnable {
 		// perform while an instruction exists
 		while (!instructions.isEmpty()) {
 			temp = instructions.remove();
-			if (subinstruct == temp && count < 10 && subinstruct == Packet.FORWARDi) {
+			if (subinstruct == temp && count < 10 && subinstruct == Packet.forward_instruction) {
 				count++;
 				if (!instructions.isEmpty()) {
 					continue;
 				}
 			}
-			if (subinstruct == FORWARDi) {
+			if (subinstruct == forward_instruction) {
 				toSend = Packet.FORWARDCMD + Packet.Splitter + count + "$";
-			} else if (subinstruct == TURNRIGHTi) {
+			} else if (subinstruct == right_turn_instruction) {
 				toSend = Packet.TURNRIGHTCMD + Packet.Splitter + 0 + "$";
-			} else if (subinstruct == TURNLEFTi) {
+			} else if (subinstruct == left_turn_instruction) {
 				toSend = Packet.TURNLEFTCMD + Packet.Splitter + 0 + "$";
 			}
 			sc.sendPacket(toSend);
@@ -271,11 +271,11 @@ public class PacketFactory implements Runnable {
 
 			// if all instructions have been processed
 			if (instructions.isEmpty() && subinstruct != temp) {
-				if (temp == FORWARDi) {
+				if (temp == forward_instruction) {
 					toSend = Packet.FORWARDCMD + Packet.Splitter + count + "$";
-				} else if (temp == TURNRIGHTi) {
+				} else if (temp == right_turn_instruction) {
 					toSend = Packet.TURNRIGHTCMD + Packet.Splitter + 0 + "$";
-				} else if (temp == TURNLEFTi) {
+				} else if (temp == left_turn_instruction) {
 					toSend = Packet.TURNLEFTCMD + Packet.Splitter + 0 + "$";
 					System.out.println("Sending " + toSend + "...");
 				}
@@ -303,17 +303,17 @@ public class PacketFactory implements Runnable {
 	// send the whole map packet
 	public void sendWholeMap(Map mapP) {
 		// transpose array
-		int[][] map = mapP.getMapArray();
+		int[][] map = mapP.get_grid_map_array();
 		String mapCmd = Packet.MAPDESCRIPTORCMD + "[";
-		int[][] newMapArray = new int[Map.WIDTH][Map.HEIGHT];
-		for (int i = 0; i < Map.HEIGHT; i++) {
-			for (int j = 0; j < Map.WIDTH; j++) {
+		int[][] newMapArray = new int[Map.map_width][Map.map_height];
+		for (int i = 0; i < Map.map_height; i++) {
+			for (int j = 0; j < Map.map_width; j++) {
 				newMapArray[j][i] = map[i][j];
 			}
 		}
-		for (int i = 0; i < Map.WIDTH; i++) {
+		for (int i = 0; i < Map.map_width; i++) {
 			mapCmd += Arrays.toString(newMapArray[i]);
-			if (i != Map.WIDTH - 1)
+			if (i != Map.map_width - 1)
 				mapCmd += ",";
 		}
 		mapCmd += "]$";
@@ -323,17 +323,17 @@ public class PacketFactory implements Runnable {
 	// send the map packet to the RPi
 	public void sendWholeMapRpi(Map mapP) {
 		// transpose array
-		int[][] map = mapP.getMapArray();
+		int[][] map = mapP.get_grid_map_array();
 		String mapCmd = Packet.MAPDESCRIPTORCMDRPI + "[";
-		int[][] newMapArray = new int[Map.WIDTH][Map.HEIGHT];
-		for (int i = 0; i < Map.HEIGHT; i++) {
-			for (int j = 0; j < Map.WIDTH; j++) {
+		int[][] newMapArray = new int[Map.map_width][Map.map_height];
+		for (int i = 0; i < Map.map_height; i++) {
+			for (int j = 0; j < Map.map_width; j++) {
 				newMapArray[j][i] = map[i][j];
 			}
 		}
-		for (int i = 0; i < Map.WIDTH; i++) {
+		for (int i = 0; i < Map.map_width; i++) {
 			mapCmd += Arrays.toString(newMapArray[i]);
-			if (i != Map.WIDTH - 1)
+			if (i != Map.map_width - 1)
 				mapCmd += ",";
 		}
 		mapCmd += "]$";
@@ -357,19 +357,19 @@ public class PacketFactory implements Runnable {
 		// send to both android and arduino
 		String instructionString = null;
 		String instructionString2 = null;
-		if (instruction == FORWARDi) {
+		if (instruction == forward_instruction) {
 			instructionString = Packet.FORWARDCMD;
 			instructionString2 = Packet.FORWARDCMDANDROID;
 			System.out.println("Sending a forward packet");
-		} else if (instruction == TURNRIGHTi) {
+		} else if (instruction == right_turn_instruction) {
 			instructionString = Packet.TURNRIGHTCMD;
 			instructionString2 = Packet.TURNRIGHTCMDANDROID;
 			System.out.println("Sending a turn right packet");
-		} else if (instruction == TURNLEFTi) {
+		} else if (instruction == left_turn_instruction) {
 			instructionString = Packet.TURNLEFTCMD;
 			instructionString2 = Packet.TURNLEFTCMDANDROID;
 			System.out.println("Sending a turn left packet");
-		} else if (instruction == REVERSEi) {
+		} else if (instruction == reverse_instruction) {
 			instructionString = Packet.REVERSECMD;
 			instructionString2 = Packet.REVERSECMDANDROID;
 

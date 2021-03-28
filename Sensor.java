@@ -5,8 +5,8 @@ import java.util.HashMap;
 public class Sensor {
 
 	// declare class variables
-	private static final int WIDTH = 15;
-	private static final int HEIGHT = 20;
+	private static final int map_width = 15;
+	private static final int map_height = 20;
 	int range;
 	SensorLocation currentDirection;
 	int locationOnRobot_x;
@@ -213,10 +213,10 @@ public class Sensor {
 		else if (distanceFromRobot == 9)
 			score = -2;
 
-		if (x < WIDTH && y < HEIGHT && x >= 0 && y >= 0) {
+		if (x < map_width && y < map_height && x >= 0 && y >= 0) {
 			// make the score positive to indicate that it is a block
-			if (map.SimulatedmapArray[y][x] == ExplorationTypes.toInt("OBSTACLE")
-					|| map.SimulatedmapArray[y][x] == ExplorationTypes.toInt("UNEXPLORED_OBSTACLE")) {
+			if (map.simulated_map[y][x] == ExplorationTypes.exploration_type_to_int("OBSTACLE")
+					|| map.simulated_map[y][x] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_OBSTACLE")) {
 				score = -score;
 				hitWall = true;
 				System.out.print(" X = " + x + " Y + " + y + " score \n");
@@ -265,7 +265,7 @@ public class Sensor {
 		}
 
 		// update the map score after sensing
-		map.updateMapWithScore();
+		map.update_map_and_score();
 		return hitWallret;
 	}
 
@@ -306,7 +306,7 @@ public class Sensor {
 
 		}
 		// update the map score after sensing
-		map.updateMapWithScore();
+		map.update_map_and_score();
 		return hitWallret;
 	}
 }

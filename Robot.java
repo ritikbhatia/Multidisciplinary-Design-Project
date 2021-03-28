@@ -12,7 +12,7 @@ public class Robot extends RobotInterface {
 	int frontCalibrateCount = 0;
 	int sideCalibrateNum = 3;
 	int FrontCalibrateNum = 3;
-	float stepsPerSecond = 1f;
+	float robot_steps_per_second = 1f;
 	boolean frontCalibrated = false;
 	boolean sideCalibrated = false;
 
@@ -49,9 +49,9 @@ public class Robot extends RobotInterface {
 		Sen = new Sensor[0];
 	}
 
-	// specify robot speed as steps per second
-	public void setSpeed(float stepsPerSecond) {
-		this.stepsPerSecond = stepsPerSecond;
+	// specify robot speed as steps per time_second
+	public void setSpeed(float robot_steps_per_second) {
+		this.robot_steps_per_second = robot_steps_per_second;
 	}
 
 	// move robot
@@ -139,7 +139,7 @@ public class Robot extends RobotInterface {
 	public void SenseRobotLocation() {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++)
-				map.getMapArray()[y + i][x + j] = ExplorationTypes.toInt("EMPTY");
+				map.get_grid_map_array()[y + i][x + j] = ExplorationTypes.exploration_type_to_int("EMPTY");
 		}
 	}
 
@@ -188,7 +188,7 @@ public class Robot extends RobotInterface {
 	}
 
 	// get fastest path instructions
-	public boolean getFastestInstruction(Stack<Node> fast) {
+	public boolean retrieve_fastest_instruction(Stack<Node> fast) {
 		byte[] instruction = new byte[100];
 		int instcount = 0;
 		if (fast == null)
@@ -196,7 +196,7 @@ public class Robot extends RobotInterface {
 		while (!fast.isEmpty()) {
 			Node two = (Node) fast.pop();
 			try {
-				Thread.sleep((long) (1000 / stepsPerSecond));
+				Thread.sleep((long) (1000 / robot_steps_per_second));
 				if (two.getX() > x) {
 					while (facing != Direction.RIGHT) {
 						turnRight();
@@ -237,13 +237,13 @@ public class Robot extends RobotInterface {
 			sideCalibrated = false;
 			int instruction = (Integer) instructionsForFastestPath.remove(0);
 			switch (instruction) {
-				case Packet.TURNRIGHTi:
+				case Packet.right_turn_instruction:
 					turnRight();
 					break;
-				case Packet.TURNLEFTi:
+				case Packet.left_turn_instruction:
 					turnLeft();
 					break;
-				case Packet.FORWARDi:
+				case Packet.forward_instruction:
 					if (sideCalibrateCount >= sideCalibrateNum) {
 						if (canSide_Calibrate()) {
 							System.out.println("Right calibrating\n+++++++++++++++++++++++++++++++++");

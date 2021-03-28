@@ -16,7 +16,7 @@ public class RealRobot extends RobotInterface {
 	int frontCalibrateCount = 0;
 	int sideCalibrateNum = 3;
 	int FrontCalibrateNum = 3;
-	float stepsPerSecond = 10f;
+	float robot_steps_per_second = 10f;
 	boolean sideCalibrated = false;
 	boolean frontCalibrated = false;
 	boolean stepByStep = true;
@@ -35,9 +35,9 @@ public class RealRobot extends RobotInterface {
 			{ 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 }, { 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 },
 			{ 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 } };
 
-	// method to set robot spped (steps per second)
-	public void setSpeed(float stepsPerSecond) {
-		this.stepsPerSecond = stepsPerSecond;
+	// method to set robot spped (steps per time_second)
+	public void setSpeed(float robot_steps_per_second) {
+		this.robot_steps_per_second = robot_steps_per_second;
 	}
 
 	// parameterized constructor to initialize real robot
@@ -117,7 +117,7 @@ public class RealRobot extends RobotInterface {
 			if (count % 4 == 0) {
 				sendMapDescriptor();
 			}
-			pf.createOneMovementPacketToArduino(Packet.FORWARDi, x, y, getDirectionNum());
+			pf.createOneMovementPacketToArduino(Packet.forward_instruction, x, y, getDirectionNum());
 			// update the location for the robot in the sensors
 			updateSensor();
 			// make sensors sense the surrounding
@@ -141,7 +141,7 @@ public class RealRobot extends RobotInterface {
 			x += movementDistance;
 
 		if (stepByStep) {
-			pf.createOneMovementPacketToArduino(Packet.REVERSEi, x, y, getDirectionNum());
+			pf.createOneMovementPacketToArduino(Packet.reverse_instruction, x, y, getDirectionNum());
 			// update the location for the robot in the sensors
 			updateSensor();
 			// make sensors sense the surrounding
@@ -159,7 +159,7 @@ public class RealRobot extends RobotInterface {
 	public void LookAtSurroundings() {
 		Packet pck = null;
 		System.out.println("Waiting for Sensor Packets");
-		while (pck == null || pck.type != Packet.setObstacle) {
+		while (pck == null || pck.packet_type != Packet.set_maze_obstacle) {
 			pf.listen();
 			System.out.println(
 					"++++++++++++++++++++++++++++++++++++++ Dequeues buffer ++++++++++++++++++++++++++++++++++++++++++\n");
@@ -170,7 +170,7 @@ public class RealRobot extends RobotInterface {
 				continue;
 			}
 			System.out.println(pck.getType());
-			if (pck.type == Packet.ResetInstruction) {
+			if (pck.packet_type == Packet.reset_instruction) {
 				this.wantToReset = true;
 				this.map.resetMap();
 				x = 1;
@@ -212,7 +212,7 @@ public class RealRobot extends RobotInterface {
 			Sen[i].ChangeDirectionRight();
 		}
 		if (stepByStep) {
-			pf.createOneMovementPacketToArduino(Packet.TURNRIGHTi, x, y, getDirectionNum());
+			pf.createOneMovementPacketToArduino(Packet.right_turn_instruction, x, y, getDirectionNum());
 			// update location for the robot in the sensors
 			updateSensor();
 			// make sensors sense the surrounding
@@ -245,7 +245,7 @@ public class RealRobot extends RobotInterface {
 			Sen[i].ChangeDirectionLeft();
 		}
 		if (stepByStep) {
-			pf.createOneMovementPacketToArduino(Packet.TURNLEFTi, x, y, getDirectionNum());
+			pf.createOneMovementPacketToArduino(Packet.left_turn_instruction, x, y, getDirectionNum());
 			// update the location for the robot in the sensors
 			updateSensor();
 			// make sensors "sense" the surrounding
@@ -259,12 +259,12 @@ public class RealRobot extends RobotInterface {
 	public void SenseRobotLocation() {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++)
-				map.getMapArray()[y + i][x + j] = ExplorationTypes.toInt("EMPTY");
+				map.get_grid_map_array()[y + i][x + j] = ExplorationTypes.exploration_type_to_int("EMPTY");
 		}
 	}
 
 	// get fastest path instructions
-	public boolean getFastestInstruction(Stack<Node> fast) {
+	public boolean retrieve_fastest_instruction(Stack<Node> fast) {
 		stepByStep = false;
 
 		///////////// check here whether you need calibration!!! ////////////////////
@@ -290,17 +290,17 @@ public class RealRobot extends RobotInterface {
 					break;
 				case LEFT:
 					turnLeft();
-					instruction.add(Packet.TURNLEFTi);
+					instruction.add(Packet.left_turn_instruction);
 					turnLeft();
-					instruction.add(Packet.TURNLEFTi);
+					instruction.add(Packet.left_turn_instruction);
 					break;
 				case UP:
 					turnRight();
-					instruction.add(Packet.TURNRIGHTi);
+					instruction.add(Packet.right_turn_instruction);
 					break;
 				case DOWN:
 					turnLeft();
-					instruction.add(Packet.TURNLEFTi);
+					instruction.add(Packet.left_turn_instruction);
 					break;
 				}
 
@@ -310,19 +310,19 @@ public class RealRobot extends RobotInterface {
 				// to face left
 				case RIGHT:
 					turnLeft();
-					instruction.add(Packet.TURNLEFTi);
+					instruction.add(Packet.left_turn_instruction);
 					turnLeft();
-					instruction.add(Packet.TURNLEFTi);
+					instruction.add(Packet.left_turn_instruction);
 					break;
 				case LEFT:
 					break;
 				case UP:
 					turnLeft();
-					instruction.add(Packet.TURNLEFTi);
+					instruction.add(Packet.left_turn_instruction);
 					break;
 				case DOWN:
 					turnRight();
-					instruction.add(Packet.TURNRIGHTi);
+					instruction.add(Packet.right_turn_instruction);
 					break;
 				}
 
@@ -332,19 +332,19 @@ public class RealRobot extends RobotInterface {
 				// to face up
 				case RIGHT:
 					turnLeft();
-					instruction.add(Packet.TURNLEFTi);
+					instruction.add(Packet.left_turn_instruction);
 					break;
 				case LEFT:
 					turnRight();
-					instruction.add(Packet.TURNRIGHTi);
+					instruction.add(Packet.right_turn_instruction);
 					break;
 				case UP:
 					break;
 				case DOWN:
 					turnLeft();
-					instruction.add(Packet.TURNLEFTi);
+					instruction.add(Packet.left_turn_instruction);
 					turnLeft();
-					instruction.add(Packet.TURNLEFTi);
+					instruction.add(Packet.left_turn_instruction);
 					break;
 				}
 
@@ -354,17 +354,17 @@ public class RealRobot extends RobotInterface {
 					// turn right the fastest way
 					case RIGHT:
 						turnRight();
-						instruction.add(Packet.TURNRIGHTi);
+						instruction.add(Packet.right_turn_instruction);
 						break;
 					case LEFT:
 						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
+						instruction.add(Packet.left_turn_instruction);
 						break;
 					case UP:
 						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
+						instruction.add(Packet.left_turn_instruction);
 						turnLeft();
-						instruction.add(Packet.TURNLEFTi);
+						instruction.add(Packet.left_turn_instruction);
 						break;
 					case DOWN:
 						break;
@@ -374,7 +374,7 @@ public class RealRobot extends RobotInterface {
 			}
 
 			moveRobot();
-			instruction.add(Packet.FORWARDi);
+			instruction.add(Packet.forward_instruction);
 
 		}
 		stepByStep = true;
@@ -456,13 +456,13 @@ public class RealRobot extends RobotInterface {
 			sideCalibrated = false;
 			int instruction = (Integer) instructionsForFastestPath.remove(0);
 			switch (instruction) {
-			case Packet.TURNRIGHTi:
+			case Packet.right_turn_instruction:
 				turnRight();
 				break;
-			case Packet.TURNLEFTi:
+			case Packet.left_turn_instruction:
 				turnLeft();
 				break;
-			case Packet.FORWARDi:
+			case Packet.forward_instruction:
 				if (sideCalibrateCount >= sideCalibrateNum) {
 					if (canSide_Calibrate()) {
 						System.out.println("Right calibrating\n+++++++++++++++++++++++++++++++++");
@@ -558,12 +558,12 @@ public class RealRobot extends RobotInterface {
 		pf.sendWholeMap(map);
 
 		/////////////////// check if you want to add this!! /////////////////////////
-		// MapIterator.printExploredResultsToFile(map.getMapArray(), "theExplored.txt");
-		// MapIterator.printExploredResultsToHex("ExplorationHex.txt");
-		// MapIterator.printObstacleResultsToFile(map.getMapArray(), "theObstacle.txt");
-		// MapIterator.printObstacleResultsToHex("ObstacleHex.txt");
-		// pf.sendCMD("B:stat:Exploration mdf:" + MapIterator.mapDescriptorP1Hex + "$");
-		// pf.sendCMD("B:stat:Obstacle mdf:" + MapIterator.mapDescriptorP2Hex + "$");
+		// GridMapIterator.print_explored_results_to_file(map.get_grid_map_array(), "theExplored.txt");
+		// GridMapIterator.print_explored_results_to_hex("ExplorationHex.txt");
+		// GridMapIterator.print_obstacle_results_to_file(map.get_grid_map_array(), "theObstacle.txt");
+		// GridMapIterator.print_obstacle_results_to_hex("ObstacleHex.txt");
+		// pf.sendCMD("B:stat:Exploration mdf:" + GridMapIterator.P1_map_descriptor_hex + "$");
+		// pf.sendCMD("B:stat:Obstacle mdf:" + GridMapIterator.P2_map_descriptor_hex + "$");
 	}
 
 	// send map descriptor to the RPi

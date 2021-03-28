@@ -30,7 +30,7 @@ public class RealSensor extends Sensor {
 		else if (distanceFromRobot == 9)
 			score = -2;
 
-		if (x < Map.WIDTH && y < Map.HEIGHT && x >= 0 && y >= 0) {
+		if (x < Map.map_width && y < Map.map_height && x >= 0 && y >= 0) {
 			// assign a positive score if wall hit
 			// this prevents robot to go there since expensive
 			if (hitWall)
@@ -81,7 +81,7 @@ public class RealSensor extends Sensor {
 		System.out.println(hitWall);
 
 		// update the map score after "sensing"
-		map.updateMapWithScore();
+		map.update_map_and_score();
 
 		return hitWallret;
 	}
@@ -125,7 +125,7 @@ public class RealSensor extends Sensor {
 		}
 
 		// update the scores on the map after sensing
-		map.updateMapWithScore();
+		map.update_map_and_score();
 
 		return hitWallret;
 	}
