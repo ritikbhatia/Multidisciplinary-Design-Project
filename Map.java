@@ -20,7 +20,7 @@ public class Map {
 	int[][] map_array_2;
 
 	public void setMapArray(int[][] grid_map_array) {
-		
+
 		init_neighbours();
 		nodes_init();
 		this.grid_map_array = grid_map_array;
@@ -62,7 +62,7 @@ public class Map {
 		map_scores[2][12] = confirmed_score;
 		map_scores[2][13] = confirmed_score;
 		map_scores[2][14] = confirmed_score;
-		
+
 		simulated_map = new int[map_height][map_width];
 
 	}
@@ -104,7 +104,7 @@ public class Map {
 	public void map_update() {
 		compute_clearence();
 		nodes_init();
-		init_neighbours();	
+		init_neighbours();
 	}
 
 	public void FPoptimise() {
@@ -121,13 +121,13 @@ public class Map {
 	}
 
 	public void set_map_to_map() {
-		System.out.println();
+
 		for (int i = 0; i < map_array_2.length; i++) {
 			for (int j = 0; j < map_array_2[i].length; j++) {
 				map_array_2[i][j] = grid_map_array[i][j];
 				System.out.print(map_array_2[i][j]);
 			}
-			System.out.println();
+
 		}
 	}
 
@@ -144,7 +144,7 @@ public class Map {
 
 			}
 		}
-		System.out.println();
+
 	}
 
 	public void setEmpty() {
@@ -273,8 +273,8 @@ public class Map {
 					graphics.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
 
 				} else if ((i == 0 && j == 12) || (i == 0 && j == 13) || (i == 0 && j == 14) || (i == 1 && j == 12)
-				|| (i == 1 && j == 13) || (i == 1 && j == 14) || (i == 2 && j == 12) || (i == 2 && j == 13)
-				|| (i == 2 && j == 14)) {
+						|| (i == 1 && j == 13) || (i == 1 && j == 14) || (i == 2 && j == 12) || (i == 2 && j == 13)
+						|| (i == 2 && j == 14)) {
 					// Draw goal position
 					graphics.setColor(Color.GREEN);
 					graphics.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
@@ -303,7 +303,7 @@ public class Map {
 	}
 
 	public void generateMapDescriptor() {
-		GridMapIterator.print_explored_results_to_file(grid_map_array, "Map.txt");
+		GridMapIterator.print_explored_results_to_file("Map.txt", grid_map_array);
 	}
 
 	public Map() {

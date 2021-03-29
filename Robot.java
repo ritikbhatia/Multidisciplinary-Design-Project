@@ -123,11 +123,8 @@ public class Robot extends RobotInterface {
 					hitWallRight = false;
 			}
 		}
-		System.out.println(countR);
-		if (hitWallFront && hitWallRight) {
-			System.out.println(
-					"************************************ Both walls hit *************************************\n");
 
+		if (hitWallFront && hitWallRight) {
 			// calibrate both front and side
 			front_Calibrate();
 			side_Calibrate();
@@ -146,18 +143,18 @@ public class Robot extends RobotInterface {
 	// make the robot turn right
 	public void turnRight() {
 		switch (facing) {
-			case RIGHT:
-				facing = Direction.DOWN;
-				break;
-			case LEFT:
-				facing = Direction.UP;
-				break;
-			case UP:
-				facing = Direction.RIGHT;
-				break;
-			case DOWN:
-				facing = Direction.LEFT;
-				break;
+		case RIGHT:
+			facing = Direction.DOWN;
+			break;
+		case LEFT:
+			facing = Direction.UP;
+			break;
+		case UP:
+			facing = Direction.RIGHT;
+			break;
+		case DOWN:
+			facing = Direction.LEFT;
+			break;
 		}
 		for (int i = 0; i < Sen.length; i++) {
 			Sen[i].ChangeDirectionRight();
@@ -168,17 +165,17 @@ public class Robot extends RobotInterface {
 	// make the robot turn left
 	public void turnLeft() {
 		switch (facing) {
-			case RIGHT:
-				facing = Direction.UP;
-				break;
-			case LEFT:
-				facing = Direction.DOWN;
-				break;
-			case UP:
-				facing = Direction.LEFT;
-				break;
-			case DOWN:
-				facing = Direction.RIGHT;
+		case RIGHT:
+			facing = Direction.UP;
+			break;
+		case LEFT:
+			facing = Direction.DOWN;
+			break;
+		case UP:
+			facing = Direction.LEFT;
+			break;
+		case DOWN:
+			facing = Direction.RIGHT;
 		}
 		// change sensor direction to follow robot
 		for (int i = 0; i < Sen.length; i++) {
@@ -237,39 +234,39 @@ public class Robot extends RobotInterface {
 			sideCalibrated = false;
 			int instruction = (Integer) instructionsForFastestPath.remove(0);
 			switch (instruction) {
-				case Packet.right_turn_instruction:
-					turnRight();
-					break;
-				case Packet.left_turn_instruction:
-					turnLeft();
-					break;
-				case Packet.forward_instruction:
-					if (sideCalibrateCount >= sideCalibrateNum) {
-						if (canSide_Calibrate()) {
-							System.out.println("Right calibrating\n+++++++++++++++++++++++++++++++++");
-							side_Calibrate();
-							sideCalibrateCount = 0;
-						} else if (canLeft_Calibrate()) {
-							System.out.println("Left calibrating\n---------------------------------");
-							left_Calibrate();
-							sideCalibrateCount = 0;
-						}
-						sideCalibrated = true;
+			case Packet.right_turn_instruction:
+				turnRight();
+				break;
+			case Packet.left_turn_instruction:
+				turnLeft();
+				break;
+			case Packet.forward_instruction:
+				if (sideCalibrateCount >= sideCalibrateNum) {
+					if (canSide_Calibrate()) {
+
+						side_Calibrate();
+						sideCalibrateCount = 0;
+					} else if (canLeft_Calibrate()) {
+
+						left_Calibrate();
+						sideCalibrateCount = 0;
 					}
-					if (frontCalibrateCount >= FrontCalibrateNum) {
-						if (canFront_Calibrate()) {
-							System.out.println("Front calibrating\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-							front_Calibrate();
-							frontCalibrateCount = 0;
-							frontCalibrated = true;
-						}
+					sideCalibrated = true;
+				}
+				if (frontCalibrateCount >= FrontCalibrateNum) {
+					if (canFront_Calibrate()) {
+
+						front_Calibrate();
+						frontCalibrateCount = 0;
+						frontCalibrated = true;
 					}
-					if (!frontCalibrated)
-						frontCalibrateCount++;
-					if (!sideCalibrated)
-						sideCalibrateCount++;
-					moveRobot();
-					break;
+				}
+				if (!frontCalibrated)
+					frontCalibrateCount++;
+				if (!sideCalibrated)
+					sideCalibrateCount++;
+				moveRobot();
+				break;
 			}
 		}
 		return false;
@@ -286,18 +283,17 @@ public class Robot extends RobotInterface {
 
 	@Override
 	public void side_Calibrate() {
-		System.out.println("Side calibrating");
 
 	}
 
 	@Override
 	public void left_Calibrate() {
-		System.out.println("Left Calibrate");
+
 	}
 
 	@Override
 	public void front_Calibrate() {
-		System.out.println("Front calibrating");
+
 	}
 
 	@Override

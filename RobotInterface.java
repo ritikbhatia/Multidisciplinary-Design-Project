@@ -118,18 +118,18 @@ public abstract class RobotInterface {
 	// simulate a right turn by the robot, by changing direction
 	public Direction simulateTurnRight(Direction tempFacing) {
 		switch (tempFacing) {
-			case RIGHT:
-				tempFacing = Direction.DOWN;
-				break;
-			case LEFT:
-				tempFacing = Direction.UP;
-				break;
-			case UP:
-				tempFacing = Direction.RIGHT;
-				break;
-			case DOWN:
-				tempFacing = Direction.LEFT;
-				break;
+		case RIGHT:
+			tempFacing = Direction.DOWN;
+			break;
+		case LEFT:
+			tempFacing = Direction.UP;
+			break;
+		case UP:
+			tempFacing = Direction.RIGHT;
+			break;
+		case DOWN:
+			tempFacing = Direction.LEFT;
+			break;
 		}
 		return tempFacing;
 	}
@@ -137,17 +137,17 @@ public abstract class RobotInterface {
 	// simulate a left turn by the robot, by changing direction
 	public Direction simulateTurnLeft(Direction tempFacing) {
 		switch (tempFacing) {
-			case RIGHT:
-				tempFacing = Direction.UP;
-				break;
-			case LEFT:
-				tempFacing = Direction.DOWN;
-				break;
-			case UP:
-				tempFacing = Direction.LEFT;
-				break;
-			case DOWN:
-				tempFacing = Direction.RIGHT;
+		case RIGHT:
+			tempFacing = Direction.UP;
+			break;
+		case LEFT:
+			tempFacing = Direction.DOWN;
+			break;
+		case UP:
+			tempFacing = Direction.LEFT;
+			break;
+		case DOWN:
+			tempFacing = Direction.RIGHT;
 		}
 		return tempFacing;
 	}
@@ -287,23 +287,23 @@ public abstract class RobotInterface {
 	// method to return whether front has a wall/obstacle
 	public boolean isObstacleOrWallFront() {
 		switch (facing) {
-			case UP:
-				if (isBlocked(x - 1, y - 2) || isBlocked(x, y - 2) || isBlocked(x + 1, y - 2))
-					return true;
-				break;
-			case DOWN:
-				if (isBlocked(x - 1, y + 2) || isBlocked(x, y + 2) || isBlocked(x + 1, y + 2))
-					return true;
-				break;
-			case LEFT:
-				if (isBlocked(x - 2, y - 1) || isBlocked(x - 2, y) || isBlocked(x - 2, y + 1))
-					return true;
-				break;
-			case RIGHT:
-				if (isBlocked(x + 2, y - 1) || isBlocked(x + 2, y) || isBlocked(x + 2, y + 1)) {
-					return true;
-				}
-				break;
+		case UP:
+			if (isBlocked(x - 1, y - 2) || isBlocked(x, y - 2) || isBlocked(x + 1, y - 2))
+				return true;
+			break;
+		case DOWN:
+			if (isBlocked(x - 1, y + 2) || isBlocked(x, y + 2) || isBlocked(x + 1, y + 2))
+				return true;
+			break;
+		case LEFT:
+			if (isBlocked(x - 2, y - 1) || isBlocked(x - 2, y) || isBlocked(x - 2, y + 1))
+				return true;
+			break;
+		case RIGHT:
+			if (isBlocked(x + 2, y - 1) || isBlocked(x + 2, y) || isBlocked(x + 2, y + 1)) {
+				return true;
+			}
+			break;
 
 		}
 		return false;
@@ -358,48 +358,48 @@ public abstract class RobotInterface {
 
 	public boolean isAbleToMove(Direction dir, int x, int y) {
 		boolean canMove = true;
-		System.out.println("Direction: " + dir + "\nx coord: " + x + "\ny coord: " + y);
+
 		switch (dir) {
-			case LEFT:
-				for (int i = -1; i < 2; i++) {
-					// if part of the robot is out of bounds or going to hit a wall
-					if (checkLeftBound(x - 1, y) || checkObstacle(x - 1 - 1, y + i)) {
-						canMove = false;
-						break;
-					}
+		case LEFT:
+			for (int i = -1; i < 2; i++) {
+				// if part of the robot is out of bounds or going to hit a wall
+				if (checkLeftBound(x - 1, y) || checkObstacle(x - 1 - 1, y + i)) {
+					canMove = false;
+					break;
 				}
-				break;
+			}
+			break;
 
-			case RIGHT:
-				for (int i = -1; i < 2; i++) {
-					// if part of the robot is out of bounds or going to hit a wall
-					if (checkRightBound(x + 1, y) || checkObstacle(x + 1 + 1, y + i)) {
-						canMove = false;
-						break;
-					}
+		case RIGHT:
+			for (int i = -1; i < 2; i++) {
+				// if part of the robot is out of bounds or going to hit a wall
+				if (checkRightBound(x + 1, y) || checkObstacle(x + 1 + 1, y + i)) {
+					canMove = false;
+					break;
 				}
-				break;
+			}
+			break;
 
-			case UP:
-				for (int i = -1; i < 2; i++) {
-					// if part of the robot is out of bounds or going to hit a wall
-					if (checkTopBound(x, y - 1) || checkObstacle(x + i, y - 1 - 1)) {
-						canMove = false;
-						break;
-					}
+		case UP:
+			for (int i = -1; i < 2; i++) {
+				// if part of the robot is out of bounds or going to hit a wall
+				if (checkTopBound(x, y - 1) || checkObstacle(x + i, y - 1 - 1)) {
+					canMove = false;
+					break;
 				}
-				break;
+			}
+			break;
 
-			case DOWN:
+		case DOWN:
 
-				for (int i = -1; i < 2; i++) {
-					// if part of the robot is out of bounds or going to hit a wall
-					if (checkBottomBound(x, y + 1) || checkObstacle(x + i, y + 1 + 1)) {
-						canMove = false;
-						break;
-					}
+			for (int i = -1; i < 2; i++) {
+				// if part of the robot is out of bounds or going to hit a wall
+				if (checkBottomBound(x, y + 1) || checkObstacle(x + i, y + 1 + 1)) {
+					canMove = false;
+					break;
 				}
-				break;
+			}
+			break;
 		}
 		return canMove;
 	}

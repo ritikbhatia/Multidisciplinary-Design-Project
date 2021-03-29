@@ -78,7 +78,6 @@ public class RealSensor extends Sensor {
 				// send a 0 to signify that this is behind a wall
 				SenseLocation(map, nextLocationX, nextLocationY, 0, hitWall);
 		}
-		System.out.println(hitWall);
 
 		// update the map score after "sensing"
 		map.update_map_and_score();

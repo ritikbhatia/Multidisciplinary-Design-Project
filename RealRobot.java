@@ -158,18 +158,15 @@ public class RealRobot extends RobotInterface {
 	// make robot sense surrounding, through packets
 	public void LookAtSurroundings() {
 		Packet pck = null;
-		System.out.println("Waiting for Sensor Packets");
+
 		while (pck == null || pck.packet_type != Packet.set_maze_obstacle) {
 			pf.listen();
-			System.out.println(
-					"++++++++++++++++++++++++++++++++++++++ Dequeues buffer ++++++++++++++++++++++++++++++++++++++++++\n");
+
 			pck = pf.getLatestPacket();
 			if (pck == null) {
-				System.out.println(
-						"++++++++++++++++++++++++++++++++++++++ Packet is Null (Need to Reset Instruction) +++++++++++++++++++++++++++++++++++++++++++\n");
 				continue;
 			}
-			System.out.println(pck.getType());
+
 			if (pck.packet_type == Packet.reset_instruction) {
 				this.wantToReset = true;
 				this.map.resetMap();
@@ -180,8 +177,6 @@ public class RealRobot extends RobotInterface {
 				return;
 			}
 		}
-		System.out.println(
-				"+++++++++++++++++++++++++++++++++++++ Getting Sensor Data +++++++++++++++++++++++++++++++++++++++\n");
 		int[] data = pck.getSensorData();
 		for (int i = 0; i < Sen.length; i++) {
 			Sen[i].Sense(map, data[i], mapConfirmed);
@@ -271,10 +266,9 @@ public class RealRobot extends RobotInterface {
 		int numberofPacketCalibrate = 10;
 		int counttocalibrate = 0;
 		Queue<Integer> instruction = new LinkedList<Integer>();
-		System.out.println("starting Fastest Path");
 
 		if (fast == null) {
-			System.out.println("NULL DATA! no fastest path.");
+
 			return false;
 		}
 
@@ -282,7 +276,7 @@ public class RealRobot extends RobotInterface {
 		while (!fast.isEmpty()) {
 			Node two = (Node) fast.pop();
 			counttocalibrate++;
-			System.out.println("Y" + two.getY());
+
 			if (two.getX() > x) {
 				switch (facing) {
 				// turn right the fastest way
@@ -465,11 +459,11 @@ public class RealRobot extends RobotInterface {
 			case Packet.forward_instruction:
 				if (sideCalibrateCount >= sideCalibrateNum) {
 					if (canSide_Calibrate()) {
-						System.out.println("Right calibrating\n+++++++++++++++++++++++++++++++++");
+
 						side_Calibrate();
 						sideCalibrateCount = 0;
 					} else if (canLeft_Calibrate()) {
-						System.out.println("Left calibrating\n---------------------------------");
+
 						left_Calibrate();
 						sideCalibrateCount = 0;
 					}
@@ -510,14 +504,14 @@ public class RealRobot extends RobotInterface {
 
 	@Override
 	public void front_Calibrate() {
-		System.out.println("front calibrating");
+
 		pf.frontCalibrate(x, y, (getDirectionNum() + 1) % 4);
 		LookAtSurroundings();
 	}
 
 	@Override
 	public void left_Calibrate() {
-		System.out.println("left calibrating");
+
 		pf.leftCalibrate(x, y, (getDirectionNum() - 1) % 4);
 		LookAtSurroundings();
 	}
@@ -541,8 +535,6 @@ public class RealRobot extends RobotInterface {
 
 		}
 		pf.initialCalibrate();
-		System.out.println(
-				"######################################### Initial Calibration... #########################################");
 		facing = Direction.RIGHT;
 		// update the android orientation
 		String instructionString2 = Packet.TURNLEFTCMDANDROID + Packet.Splitter + "1" + "$";
@@ -558,12 +550,16 @@ public class RealRobot extends RobotInterface {
 		pf.sendWholeMap(map);
 
 		/////////////////// check if you want to add this!! /////////////////////////
-		// GridMapIterator.print_explored_results_to_file(map.get_grid_map_array(), "theExplored.txt");
+		// GridMapIterator.print_explored_results_to_file(map.get_grid_map_array(),
+		/////////////////// "theExplored.txt");
 		// GridMapIterator.print_explored_results_to_hex("ExplorationHex.txt");
-		// GridMapIterator.print_obstacle_results_to_file(map.get_grid_map_array(), "theObstacle.txt");
+		// GridMapIterator.print_obstacle_results_to_file(map.get_grid_map_array(),
+		/////////////////// "theObstacle.txt");
 		// GridMapIterator.print_obstacle_results_to_hex("ObstacleHex.txt");
-		// pf.sendCMD("B:stat:Exploration mdf:" + GridMapIterator.P1_map_descriptor_hex + "$");
-		// pf.sendCMD("B:stat:Obstacle mdf:" + GridMapIterator.P2_map_descriptor_hex + "$");
+		// pf.sendCMD("B:stat:Exploration mdf:" + GridMapIterator.P1_map_descriptor_hex
+		/////////////////// + "$");
+		// pf.sendCMD("B:stat:Obstacle mdf:" + GridMapIterator.P2_map_descriptor_hex +
+		/////////////////// "$");
 	}
 
 	// send map descriptor to the RPi

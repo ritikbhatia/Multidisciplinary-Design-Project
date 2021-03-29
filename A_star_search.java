@@ -128,8 +128,6 @@ public class A_star_search {
                 int clearance = node_neighbour.getClearance();
                 float total_path_cost = node.getCost(node_neighbour, end_node, is_start_node) + 1;
 
-                System.out.println("total_path_cost: " + total_path_cost);
-
                 // Check 1. if node neighbours have not been explored OR 2. if shorter path to
                 // neighbour node exists
                 if ((!isOpen && !isClosed) || total_path_cost < node_neighbour.total_path_cost) {
@@ -137,7 +135,8 @@ public class A_star_search {
                     node_neighbour.total_path_cost = total_path_cost;
                     node_neighbour.cost_estimated_to_goal_node = node_neighbour.calculate_path_cost(end_node);
 
-                    // Add neighbour node to priority_list if 1. node not in priority_list/linked_list AND 2.
+                    // Add neighbour node to priority_list if 1. node not in
+                    // priority_list/linked_list AND 2.
                     // robot can reach
                     if (!isOpen && !is_obstacle && size == clearance) {
                         priority_list.add(node_neighbour);
@@ -148,7 +147,7 @@ public class A_star_search {
         }
 
         // priority_list empty; no path found
-        System.out.println("NULL DATA! no fastest path.");
+
         return new Stack<Node>();
     }
 

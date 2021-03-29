@@ -69,7 +69,7 @@ public class GridMapIterator {
             buffer_read_p2 = new BufferedReader(new FileReader(file_P2));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            System.out.println("File not found!");
+
         }
 
         // read hexadecimal values
@@ -109,36 +109,36 @@ public class GridMapIterator {
         return fileMap;
     }
 
-        // Convert grid exploration results from binary to hexadecimal format
-        public static void print_explored_results_to_hex(String fileName) {
+    // Convert grid exploration results from binary to hexadecimal format
+    public static void print_explored_results_to_hex(String fileName) {
 
-            // Initialised to NULL
-            BufferedWriter buffered_write = null;
-            FileWriter file_writer = null;
-    
-            // Convert string from binary to hex, then write to given file
+        // Initialised to NULL
+        BufferedWriter buffered_write = null;
+        FileWriter file_writer = null;
+
+        // Convert string from binary to hex, then write to given file
+        try {
+            file_writer = new FileWriter(fileName);
+            buffered_write = new BufferedWriter(file_writer);
+
+            P1_map_descriptor_hex = format_string_to_hex(P1_map_descriptor_hex);
+
+            buffered_write.write(P1_map_descriptor_hex);
+        } catch (IOException e) {
+
+        }
+
+        finally {
             try {
-                file_writer = new FileWriter(fileName);
-                buffered_write = new BufferedWriter(file_writer);
-    
-                P1_map_descriptor_hex = format_string_to_hex(P1_map_descriptor_hex);
-                System.out.println(P1_map_descriptor_hex);
-                buffered_write.write(P1_map_descriptor_hex);
-            } catch (IOException e) {
-                System.out.println("Not possible to write!");
-            }
-    
-            finally {
-                try {
-                    if (buffered_write != null)
-                        buffered_write.close();
-                    if (file_writer != null)
-                        file_writer.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                if (buffered_write != null)
+                    buffered_write.close();
+                if (file_writer != null)
+                    file_writer.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         }
+    }
 
     // Parse explored grid map results and store in TXT file
     public static void print_explored_results_to_file(String fileName, int[][] results) {
@@ -194,7 +194,7 @@ public class GridMapIterator {
             P1_map_descriptor_hex = hexSB.toString();
 
         } catch (IOException e) {
-            System.out.println("Not possible to write!");
+
         }
 
         finally {
@@ -220,11 +220,11 @@ public class GridMapIterator {
 
             // Convert string from binary to hex, then write to given file
             P2_map_descriptor_hex = format_string_to_hex(P2_map_descriptor_hex);
-            System.out.println(P2_map_descriptor_hex);
+
             buffered_write.write(P2_map_descriptor_hex);
 
         } catch (IOException e) {
-            System.out.println("Not possible to write!");
+
         }
 
         finally {
@@ -241,7 +241,7 @@ public class GridMapIterator {
 
     // Write grid map obstacle positions to TXT file
     public static void print_obstacle_results_to_file(int[][] results, String fileName) {
-        
+
         BufferedWriter buffered_write = null;
         FileWriter file_writer = null;
 
@@ -254,13 +254,12 @@ public class GridMapIterator {
 
             StringBuilder string_builder = new StringBuilder();
             StringBuilder hexSB = new StringBuilder();
-            
+
             file_writer = new FileWriter(fileName);
             buffered_write = new BufferedWriter(file_writer);
 
             System.out.print("MapDescriptorP1.length: " + P1_map_descriptor.length); // twenty (TODO: ?)
             System.out.print("P1_map_descriptor[0].length: " + P1_map_descriptor[0].length); // fifteen (TODO: ?)
-            System.out.println("\n");
 
             for (int w = P1_map_descriptor.length - 1; w >= 0; w--) {
                 for (int h = 0; h < P1_map_descriptor[0].length; h++) {
@@ -286,7 +285,7 @@ public class GridMapIterator {
             P2_map_descriptor_hex = hexSB.toString();
 
         } catch (IOException e) {
-            System.out.println("Not possible to write!");
+
         }
 
         finally {
@@ -325,14 +324,13 @@ public class GridMapIterator {
 
         String hexi = format_string_to_hex(string_builder.toString());
 
-        System.out.println(hexi);
     }
 
     // Format String to Hex
     public static String format_string_to_hex(String string) {
-        
+
         StringBuilder stringBuilder = new StringBuilder();
-        
+
         String sub;
         int decimal;
         int start = 0;
@@ -353,7 +351,7 @@ public class GridMapIterator {
                 end += 8;
             }
         } catch (Exception e) {
-            System.out.println("Doing exception for string to hex");
+
             StringBuilder string_builder = new StringBuilder();
 
             int length = string.length() - start;
