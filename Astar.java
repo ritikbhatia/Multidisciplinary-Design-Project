@@ -100,8 +100,6 @@ public class Astar {
                 int clearance = neighborNode.getClearance();
                 float costFromStart = node.getCost(neighborNode, goalNode, isStartNode) + 1;
 
-                System.out.println("costFromStart: " + costFromStart);
-
                 // Check 1. if node neighbours have not been explored OR 2. if shorter path to
                 // neighbour node exists
                 if ((!isOpen && !isClosed) || costFromStart < neighborNode.costFromStart) {
