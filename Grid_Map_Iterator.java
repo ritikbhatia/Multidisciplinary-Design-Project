@@ -1,10 +1,6 @@
 import java.io.*;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Scanner;
 
-public class GridMapIterator {
+public class Grid_Map_Iterator {
 
     static int all_known_grids;
 
@@ -25,7 +21,7 @@ public class GridMapIterator {
         all_known_grids = 0;
     }
 
-    public GridMapIterator() {
+    public Grid_Map_Iterator() {
         P1_map_descriptor = new int[map_height][map_width];
         P2_map_descriptor = new int[map_height][map_width];
 
@@ -90,13 +86,13 @@ public class GridMapIterator {
             for (int row = map_height - 1; row >= 0; row--) {
                 for (int col = 0; col < map_width; col++) {
                     if (Character.getNumericValue(p1String.charAt(p1Index)) == 0) {
-                        // fileMap[row][col] = ExplorationTypes.exploration_type_to_int("EMPTY");
-                        fileMap[row][col] = ExplorationTypes.exploration_type_to_int("UNEXPLORED_EMPTY");
+                        // fileMap[row][col] = Explored_Types.convertTypeToInt("EMPTY");
+                        fileMap[row][col] = Explored_Types.convertTypeToInt("UN_EMPTY");
                     } else {
                         if (p2Index < p2String.length() && Character.getNumericValue(p2String.charAt(p2Index)) == 0) {
-                            fileMap[row][col] = ExplorationTypes.exploration_type_to_int("EMPTY");
+                            fileMap[row][col] = Explored_Types.convertTypeToInt("EMPTY");
                         } else {
-                            fileMap[row][col] = ExplorationTypes.exploration_type_to_int("OBSTACLE");
+                            fileMap[row][col] = Explored_Types.convertTypeToInt("OBSTACLE");
                         }
                         p2Index++;
                     }
@@ -167,8 +163,8 @@ public class GridMapIterator {
             for (int w = P1_map_descriptor.length - 1; w >= 0; w--) {
                 for (int h = 0; h < P1_map_descriptor[0].length; h++) {
 
-                    if (results[w][h] == ExplorationTypes.exploration_type_to_int("EMPTY")
-                            || results[w][h] == ExplorationTypes.exploration_type_to_int("OBSTACLE")) {
+                    if (results[w][h] == Explored_Types.convertTypeToInt("EMPTY")
+                            || results[w][h] == Explored_Types.convertTypeToInt("OBSTACLE")) {
                         string_builder.append(1);
                         P1_map_descriptor[w][h] = 1;
                         hexSB.append(1);
@@ -258,18 +254,15 @@ public class GridMapIterator {
             file_writer = new FileWriter(fileName);
             buffered_write = new BufferedWriter(file_writer);
 
-            System.out.print("MapDescriptorP1.length: " + P1_map_descriptor.length); // twenty (TODO: ?)
-            System.out.print("P1_map_descriptor[0].length: " + P1_map_descriptor[0].length); // fifteen (TODO: ?)
-
             for (int w = P1_map_descriptor.length - 1; w >= 0; w--) {
                 for (int h = 0; h < P1_map_descriptor[0].length; h++) {
 
                     // If map explored, input results accordingly
                     if (P1_map_descriptor[w][h] == 1) {
-                        if (results[w][h] == ExplorationTypes.exploration_type_to_int("EMPTY")) {
+                        if (results[w][h] == Explored_Types.convertTypeToInt("EMPTY")) {
                             string_builder.append(0);
                             hexSB.append(0);
-                        } else if (results[w][h] == ExplorationTypes.exploration_type_to_int("OBSTACLE")) {
+                        } else if (results[w][h] == Explored_Types.convertTypeToInt("OBSTACLE")) {
                             string_builder.append(1);
                             hexSB.append(1);
                         }

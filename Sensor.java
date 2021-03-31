@@ -7,221 +7,220 @@ public class Sensor {
 	// declare class variables
 	private static final int map_width = 15;
 	private static final int map_height = 20;
-	int range;
-	SensorLocation currentDirection;
-	int locationOnRobot_x;
-	int locationOnRobot_y;
-	int robot_x;
-	int robot_y;
-	boolean hitWallCheck;
+	boolean checkHittingWall;
 	int[] sensor_XY = new int[2];
-	HashMap<int[], int[]> coordinatesLeft;
-	HashMap<int[], int[]> coordinatesRight;
+	HashMap<int[], int[]> leftCoords;
+	HashMap<int[], int[]> rightCoords;
+	int senseRange;
+	Location_Sensor currDir;
+	int locationRobotX;
+	int locationRobotY;
+	int robotX;
+	int robotY;
 
 	// parameterized constructor to initialize Sensor
-	public Sensor(int range, SensorLocation currentDirection, int locationOnRobot_x, int locationOnRobot_y, int robot_x,
-			int robot_y) {
+	public Sensor(int senseRange, Location_Sensor currDir, int locationRobotX, int locationRobotY, int robotX,
+			int robotY) {
 		super();
-		this.range = range;
-		this.currentDirection = currentDirection;
-		this.locationOnRobot_x = locationOnRobot_x;
-		this.locationOnRobot_y = locationOnRobot_y;
-		this.robot_x = robot_x;
-		this.robot_y = robot_y;
-		this.hitWallCheck = false;
+		this.locationRobotX = locationRobotX;
+		this.locationRobotY = locationRobotY;
+		this.robotX = robotX;
+		this.robotY = robotY;
+		this.checkHittingWall = false;
+		this.senseRange = senseRange;
+		this.currDir = currDir;
 	}
 
-	// set init direction
-	public void initDirection() {
-		switch (currentDirection) {
-			case FACING_TOP:
-				locationOnRobot_x = -1;
-				locationOnRobot_y = 0;
-				break;
-			case FACING_TOPRIGHT:
-				locationOnRobot_x = -1;
-				locationOnRobot_y = 1;
-				break;
-			case FACING_RIGHT:
-				locationOnRobot_x = 1;
-				locationOnRobot_y = -1;
-				break;
-			case FACING_BOTTOMRIGHT:
-				locationOnRobot_x = 1;
-				locationOnRobot_y = 1;
-				break;
-			case FACING_DOWN:
-				locationOnRobot_x = 1;
-				locationOnRobot_y = 0;
-				break;
-			case FACING_BOTTOMLEFT:
-				locationOnRobot_x = 1;
-				locationOnRobot_y = -1;
-				break;
-			case FACING_LEFT:
-				locationOnRobot_x = 0;
-				locationOnRobot_y = -1;
-				break;
-			case FACING_TOPLEFT:
-				locationOnRobot_x = -1;
-				locationOnRobot_y = -1;
-				break;
+	// set initial direction
+	public void initialDirection() {
+		switch (currDir) {
+		case DOWN:
+			locationRobotX = 1;
+			locationRobotY = 0;
+			break;
+		case BOTTOM_LEFT:
+			locationRobotX = 1;
+			locationRobotY = -1;
+			break;
+		case LEFT:
+			locationRobotX = 0;
+			locationRobotY = -1;
+			break;
+		case TOP_LEFT:
+			locationRobotX = -1;
+			locationRobotY = -1;
+			break;
+		case TOP:
+			locationRobotX = -1;
+			locationRobotY = 0;
+			break;
+		case TOP_RIGHT:
+			locationRobotX = -1;
+			locationRobotY = 1;
+			break;
+		case RIGHT:
+			locationRobotX = 1;
+			locationRobotY = -1;
+			break;
+		case BOTTOM_RIGHT:
+			locationRobotX = 1;
+			locationRobotY = 1;
+			break;
 		}
 	}
 
 	// change direction to left
-	public void ChangeDirectionLeft() {
-		switch (currentDirection) {
-			case FACING_TOP:
-				currentDirection = currentDirection.FACING_LEFT;
-				break;
-			case FACING_TOPRIGHT:
-				currentDirection = currentDirection.FACING_TOPLEFT;
-				break;
-			case FACING_RIGHT:
-				currentDirection = currentDirection.FACING_TOP;
-				break;
-			case FACING_BOTTOMRIGHT:
-				currentDirection = currentDirection.FACING_TOPRIGHT;
-				break;
-			case FACING_DOWN:
-				currentDirection = currentDirection.FACING_RIGHT;
-				break;
-			case FACING_BOTTOMLEFT:
-				currentDirection = currentDirection.FACING_BOTTOMRIGHT;
-				break;
-			case FACING_LEFT:
-				currentDirection = currentDirection.FACING_DOWN;
-				break;
-			case FACING_TOPLEFT:
-				currentDirection = currentDirection.FACING_BOTTOMLEFT;
-				break;
+	public void changeToLeft() {
+		switch (currDir) {
+		case TOP:
+			currDir = currDir.LEFT;
+			break;
+		case TOP_RIGHT:
+			currDir = currDir.TOP_LEFT;
+			break;
+		case RIGHT:
+			currDir = currDir.TOP;
+			break;
+		case BOTTOM_RIGHT:
+			currDir = currDir.TOP_RIGHT;
+			break;
+		case DOWN:
+			currDir = currDir.RIGHT;
+			break;
+		case BOTTOM_LEFT:
+			currDir = currDir.BOTTOM_RIGHT;
+			break;
+		case LEFT:
+			currDir = currDir.DOWN;
+			break;
+		case TOP_LEFT:
+			currDir = currDir.BOTTOM_LEFT;
+			break;
 		}
 
-		if (locationOnRobot_x == 1 && locationOnRobot_y == -1) {
-			locationOnRobot_x = -1;
-			locationOnRobot_y = -1;
-		} else if (locationOnRobot_x == 1 && locationOnRobot_y == 0) {
-			locationOnRobot_x = 0;
-			locationOnRobot_y = -1;
-		} else if (locationOnRobot_x == 1 && locationOnRobot_y == 1) {
-			locationOnRobot_x = 1;
-			locationOnRobot_y = -1;
-		} else if (locationOnRobot_x == 0 && locationOnRobot_y == 1) {
-			locationOnRobot_x = 1;
-			locationOnRobot_y = 0;
-		} else if (locationOnRobot_x == -1 && locationOnRobot_y == 1) {
-			locationOnRobot_x = 1;
-			locationOnRobot_y = 1;
-		} else if (locationOnRobot_x == -1 && locationOnRobot_y == 0) {
-			locationOnRobot_x = 0;
-			locationOnRobot_y = 1;
-		} else if (locationOnRobot_x == -1 && locationOnRobot_y == -1) {
-			locationOnRobot_x = -1;
-			locationOnRobot_y = 1;
-		} else if (locationOnRobot_x == 0 && locationOnRobot_y == -1) {
-			locationOnRobot_x = -1;
-			locationOnRobot_y = 0;
+		if (locationRobotX == 1 && locationRobotY == -1) {
+			locationRobotX = -1;
+			locationRobotY = -1;
+		} else if (locationRobotX == 1 && locationRobotY == 0) {
+			locationRobotX = 0;
+			locationRobotY = -1;
+		} else if (locationRobotX == 1 && locationRobotY == 1) {
+			locationRobotX = 1;
+			locationRobotY = -1;
+		} else if (locationRobotX == 0 && locationRobotY == 1) {
+			locationRobotX = 1;
+			locationRobotY = 0;
+		} else if (locationRobotX == -1 && locationRobotY == 1) {
+			locationRobotX = 1;
+			locationRobotY = 1;
+		} else if (locationRobotX == -1 && locationRobotY == 0) {
+			locationRobotX = 0;
+			locationRobotY = 1;
+		} else if (locationRobotX == -1 && locationRobotY == -1) {
+			locationRobotX = -1;
+			locationRobotY = 1;
+		} else if (locationRobotX == 0 && locationRobotY == -1) {
+			locationRobotX = -1;
+			locationRobotY = 0;
 		}
 	}
 
 	// change direction to right
-	public void ChangeDirectionRight() {
-		switch (currentDirection) {
-			case FACING_TOP:
-				currentDirection = currentDirection.FACING_RIGHT;
-				break;
-			case FACING_TOPRIGHT:
-				currentDirection = currentDirection.FACING_BOTTOMRIGHT;
-				break;
-			case FACING_RIGHT:
-				currentDirection = currentDirection.FACING_DOWN;
-				break;
-			case FACING_BOTTOMRIGHT:
-				currentDirection = currentDirection.FACING_BOTTOMLEFT;
-				break;
-			case FACING_DOWN:
-				currentDirection = currentDirection.FACING_LEFT;
-				break;
-			case FACING_BOTTOMLEFT:
-				currentDirection = currentDirection.FACING_TOPLEFT;
-				break;
-			case FACING_LEFT:
-				currentDirection = currentDirection.FACING_TOP;
-				break;
-			case FACING_TOPLEFT:
-				currentDirection = currentDirection.FACING_TOPRIGHT;
-				break;
+	public void changeToRight() {
+		switch (currDir) {
+		case TOP:
+			currDir = currDir.RIGHT;
+			break;
+		case TOP_RIGHT:
+			currDir = currDir.BOTTOM_RIGHT;
+			break;
+		case RIGHT:
+			currDir = currDir.DOWN;
+			break;
+		case BOTTOM_RIGHT:
+			currDir = currDir.BOTTOM_LEFT;
+			break;
+		case DOWN:
+			currDir = currDir.LEFT;
+			break;
+		case BOTTOM_LEFT:
+			currDir = currDir.TOP_LEFT;
+			break;
+		case LEFT:
+			currDir = currDir.TOP;
+			break;
+		case TOP_LEFT:
+			currDir = currDir.TOP_RIGHT;
+			break;
 		}
 
-		if (locationOnRobot_x == 1 && locationOnRobot_y == -1) {
-			locationOnRobot_x = 1;
-			locationOnRobot_y = 1;
-		} else if (locationOnRobot_x == 1 && locationOnRobot_y == 0) {
-			locationOnRobot_x = 0;
-			locationOnRobot_y = 1;
-		} else if (locationOnRobot_x == 1 && locationOnRobot_y == 1) {
-			locationOnRobot_x = -1;
-			locationOnRobot_y = 1;
-		} else if (locationOnRobot_x == 0 && locationOnRobot_y == 1) {
-			locationOnRobot_x = -1;
-			locationOnRobot_y = 0;
-		} else if (locationOnRobot_x == -1 && locationOnRobot_y == 1) {
-			locationOnRobot_x = -1;
-			locationOnRobot_y = -1;
-		} else if (locationOnRobot_x == -1 && locationOnRobot_y == 0) {
-			locationOnRobot_x = 0;
-			locationOnRobot_y = -1;
-		} else if (locationOnRobot_x == -1 && locationOnRobot_y == -1) {
-			locationOnRobot_x = 1;
-			locationOnRobot_y = -1;
-		} else if (locationOnRobot_x == 0 && locationOnRobot_y == -1) {
-			locationOnRobot_x = 1;
-			locationOnRobot_y = 0;
+		if (locationRobotX == 1 && locationRobotY == -1) {
+			locationRobotX = 1;
+			locationRobotY = 1;
+		} else if (locationRobotX == 1 && locationRobotY == 0) {
+			locationRobotX = 0;
+			locationRobotY = 1;
+		} else if (locationRobotX == 1 && locationRobotY == 1) {
+			locationRobotX = -1;
+			locationRobotY = 1;
+		} else if (locationRobotX == 0 && locationRobotY == 1) {
+			locationRobotX = -1;
+			locationRobotY = 0;
+		} else if (locationRobotX == -1 && locationRobotY == 1) {
+			locationRobotX = -1;
+			locationRobotY = -1;
+		} else if (locationRobotX == -1 && locationRobotY == 0) {
+			locationRobotX = 0;
+			locationRobotY = -1;
+		} else if (locationRobotX == -1 && locationRobotY == -1) {
+			locationRobotX = 1;
+			locationRobotY = -1;
+		} else if (locationRobotX == 0 && locationRobotY == -1) {
+			locationRobotX = 1;
+			locationRobotY = 0;
 		}
 
 	}
 
 	// update location of the robot
-	public void updateRobotLocation(int x, int y) {
-		robot_x = x;
-		robot_y = y;
+	public void updateLoc(int x, int y) {
+		robotX = x;
+		robotY = y;
 	}
 
 	// make robot sense the location
-	public boolean SenseLocation(Map map, int x, int y, int distanceFromRobot) {
+	public boolean senseLoc(Map map, int x, int y, int distance_robot) {
 		boolean hitWall = false;
 
 		int score = 0;
 
-		if (distanceFromRobot == 1)
-			score = -70;
-		else if (distanceFromRobot == 2)
-			score = -40;
-		else if (distanceFromRobot == 3)
-			score = -8;
-		else if (distanceFromRobot == 4)
-			score = -5;
-		else if (distanceFromRobot == 5)
+		if (distance_robot == 1)
+			score = -80;
+		else if (distance_robot == 2)
+			score = -30;
+		else if (distance_robot == 3)
+			score = -9;
+		else if (distance_robot == 4)
+			score = -4;
+		else if (distance_robot == 5)
 			score = -2;
-		else if (distanceFromRobot == 6)
+		else if (distance_robot == 6)
 			score = -2;
-		else if (distanceFromRobot == 7)
+		else if (distance_robot == 7)
 			score = -2;
-		else if (distanceFromRobot == 8)
+		else if (distance_robot == 8)
 			score = -2;
-		else if (distanceFromRobot == 9)
+		else if (distance_robot == 9)
 			score = -2;
 
-		if (x < map_width && y < map_height && x >= 0 && y >= 0) {
+		if (x >= 0 && y >= 0 && x < map_width && y < map_height) {
 			// make the score positive to indicate that it is a block
-			if (map.simulated_map[y][x] == ExplorationTypes.exploration_type_to_int("OBSTACLE")
-					|| map.simulated_map[y][x] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_OBSTACLE")) {
+			if (map.simulated_map[y][x] == Explored_Types.convertTypeToInt("OBSTACLE")
+					|| map.simulated_map[y][x] == Explored_Types.convertTypeToInt("UN_OBSTACLE")) {
 				score = -score;
 				hitWall = true;
-				System.out.print(" X = " + x + " Y + " + y + " score \n");
 			}
-			map.setMapScore(x, y, score);
+			map.setScore(x, y, score);
 		} else
 			hitWall = true;
 
@@ -230,83 +229,42 @@ public class Sensor {
 
 	public boolean Sense(Map map, int data, int[][] notWorkinghe) {
 		// have to make sure does not overshoot boundary of environment
-		int nextLocationX = 0;
-		int nextLocationY = 0;
+		int newX = 0;
+		int newY = 0;
 
 		// is true after robot hits a wall, to prevent further sensing
 		boolean hitWall = false;
-		boolean hitWallret = false;
+		boolean wallHitExtra = false;
 
-		for (int i = 1; i < range + 1; i++) {
-			// make sure it is in the map range and bound
-			if (currentDirection == SensorLocation.FACING_RIGHT) {
-				nextLocationX = robot_x + locationOnRobot_x + i;
-				nextLocationY = robot_y + locationOnRobot_y;
-			} else if (currentDirection == SensorLocation.FACING_LEFT) {
-				nextLocationX = robot_x + locationOnRobot_x - i;
-				nextLocationY = robot_y + locationOnRobot_y;
-			} else if (currentDirection == SensorLocation.FACING_TOP) {
-				nextLocationX = robot_x + locationOnRobot_x;
-				nextLocationY = robot_y + locationOnRobot_y - i;
+		for (int i = 1; i < senseRange + 1; i++) {
+			// make sure it is in the map senseRange and bound
+			if (currDir == Location_Sensor.LEFT) {
+				newX = robotX + locationRobotX - i;
+				newY = robotY + locationRobotY;
+			} else if (currDir == Location_Sensor.TOP) {
+				newX = robotX + locationRobotX;
+				newY = robotY + locationRobotY - i;
+			} else if (currDir == Location_Sensor.RIGHT) {
+				newX = robotX + locationRobotX + i;
+				newY = robotY + locationRobotY;
 			} else {
-				nextLocationX = robot_x + locationOnRobot_x;
-				nextLocationY = robot_y + locationOnRobot_y + i;
+				newX = robotX + locationRobotX;
+				newY = robotY + locationRobotY + i;
 			}
 
 			// hitWall will be true when senselocation returns a true
 			// that indicates a wall has been encountered
 			if (!hitWall) {
-				hitWall = SenseLocation(map, nextLocationX, nextLocationY, i);
-				if (SenseLocation(map, nextLocationX, nextLocationY, 0) && i == 1)
-					hitWallret = true;
+				hitWall = senseLoc(map, newX, newY, i);
+				if (senseLoc(map, newX, newY, 0) && i == 1)
+					wallHitExtra = true;
 			} else
 				// send a 0 to signify that this is behind a wall
-				SenseLocation(map, nextLocationX, nextLocationY, 0);
+				senseLoc(map, newX, newY, 0);
 		}
 
 		// update the map score after sensing
-		map.update_map_and_score();
-		return hitWallret;
-	}
-
-	public boolean SenseRight(Map map, int data, int[][] notWorkinghe) {
-		// make sure does not overshoot boundary of environment
-		int nextLocationX = 0;
-		int nextLocationY = 0;
-
-		// is true after robot hits a wall, to prevent it from sensing further
-		boolean hitWall = false;
-		boolean hitWallret = false;
-
-		for (int i = 1; i < range + 1; i++) {
-			// make sure it is in the map range and bound
-			if (currentDirection == SensorLocation.FACING_RIGHT) {
-				nextLocationX = robot_x + locationOnRobot_x + i;
-				nextLocationY = robot_y + locationOnRobot_y;
-			} else if (currentDirection == SensorLocation.FACING_LEFT) {
-				nextLocationX = robot_x + locationOnRobot_x - i;
-				nextLocationY = robot_y + locationOnRobot_y;
-			} else if (currentDirection == SensorLocation.FACING_TOP) {
-				nextLocationX = robot_x + locationOnRobot_x;
-				nextLocationY = robot_y + locationOnRobot_y - i;
-			} else {
-				nextLocationX = robot_x + locationOnRobot_x;
-				nextLocationY = robot_y + locationOnRobot_y + i;
-			}
-
-			// hitWall will be true when senselocation returns a true
-			// that is when a wall is encountered
-			if (!hitWall) {
-				hitWall = SenseLocation(map, nextLocationX, nextLocationY, i);
-				if (SenseLocation(map, nextLocationX, nextLocationY, 0) && i == 2)
-					hitWallret = true;
-			} else
-				// send a 0 to signify that this is behind a wall
-				SenseLocation(map, nextLocationX, nextLocationY, 0);
-
-		}
-		// update the map score after sensing
-		map.update_map_and_score();
-		return hitWallret;
+		map.mapAndScoreUpdate();
+		return wallHitExtra;
 	}
 }

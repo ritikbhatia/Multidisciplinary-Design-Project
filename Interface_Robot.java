@@ -6,9 +6,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
-public abstract class RobotInterface {
+public abstract class Interface_Robot {
 
-	Visualization viz;
+	Viz viz;
 	// the x and y coorsinates of the robot
 	int x;
 	int y;
@@ -18,8 +18,8 @@ public abstract class RobotInterface {
 	// radius of the circle to draw the robot
 	final static int radius = 90;
 
-	// the direction the robot is facing
-	Direction facing;
+	// the direction the robot is face_dir
+	Direction face_dir;
 
 	Map map;
 	final int map_width = 15;
@@ -32,37 +32,37 @@ public abstract class RobotInterface {
 
 	// define abstract functions to implement later
 	// use to provide only function signatures
-	public abstract void addSensors(RealSensor[] sensors);
+	public abstract void addSensors(Real_Sensor[] sensors);
 
 	public abstract void addSensors(Sensor[] sensors);
 
-	public abstract void LookAtSurroundings();
+	public abstract void surroundingSense();
 
 	public abstract void SenseRobotLocation();
 
-	public abstract void moveRobot();// move robot forward
+	public abstract void moveInstructionRobot();// move robot forward
 
-	public abstract void turnLeft();
+	public abstract void leftTurn();
 
-	public abstract void turnRight();
+	public abstract void rightTurn();
 
 	public abstract boolean retrieve_fastest_instruction(Stack<Node> fast);
 
-	public abstract void deactivateSensors();
+	public abstract void removeSensors();
 
 	public abstract void reverse();
 
-	public abstract void side_Calibrate();
+	public abstract void rightSideCali();
 
-	public abstract void left_Calibrate();
+	public abstract void leftSideCali();
 
-	public abstract void front_Calibrate();
+	public abstract void frontCali();
 
-	public abstract void initial_Calibrate();
+	public abstract void initCali();
 
-	public abstract void sendMapDescriptor();
+	public abstract void sendDesc();
 
-	public abstract boolean doStepFastestPath();
+	public abstract boolean fpStep();
 
 	public abstract void setSpeed(float robot_steps_per_second);
 
@@ -70,7 +70,7 @@ public abstract class RobotInterface {
 	public void setFastestInstruction(Stack<Node> fast, int targetX, int targetY) {
 
 		// to input instructions into the stack
-		Direction tempFacing = facing;
+		Direction tempFacing = face_dir;
 		int tempX = x;
 		int tempY = y;
 		Node next = null;
@@ -110,7 +110,7 @@ public abstract class RobotInterface {
 				}
 
 				// add instruction for the shortest path to stack
-				instructionsForFastestPath.add(Packet.forward_instruction);
+				instructionsForFastestPath.add(Packet.forward_inst);
 			}
 		}
 	}
@@ -153,57 +153,57 @@ public abstract class RobotInterface {
 	}
 
 	// method to get shortest way to turn to a specific direction
-	// answer specific to current direction robot is facing
+	// answer specific to current direction robot is face_dir
 	public Direction getShortestTurnInstruction(Direction tempFacing, Direction targetFacing) {
 		Stack<Direction> listOfTurnInstructions = new Stack<Direction>();
 
 		// conditional statements specifying direction to turn
 		if (tempFacing == Direction.RIGHT) {
 			if (targetFacing == Direction.UP)
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_inst);
 
 			else if (targetFacing == Direction.DOWN)
-				instructionsForFastestPath.add(Packet.right_turn_instruction);
+				instructionsForFastestPath.add(Packet.right_inst);
 
 			else if (targetFacing == Direction.LEFT) {
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_inst);
+				instructionsForFastestPath.add(Packet.left_inst);
 			}
 
 		} else if (tempFacing == Direction.LEFT) {
 			if (targetFacing == Direction.UP)
-				instructionsForFastestPath.add(Packet.right_turn_instruction);
+				instructionsForFastestPath.add(Packet.right_inst);
 
 			else if (targetFacing == Direction.DOWN)
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_inst);
 
 			else if (targetFacing == Direction.RIGHT) {
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_inst);
+				instructionsForFastestPath.add(Packet.left_inst);
 			}
 
 		} else if (tempFacing == Direction.UP) {
 			if (targetFacing == Direction.LEFT)
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_inst);
 
 			else if (targetFacing == Direction.RIGHT)
-				instructionsForFastestPath.add(Packet.right_turn_instruction);
+				instructionsForFastestPath.add(Packet.right_inst);
 
 			else if (targetFacing == Direction.DOWN) {
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_inst);
+				instructionsForFastestPath.add(Packet.left_inst);
 			}
 
 		} else if (tempFacing == Direction.DOWN) {
 			if (targetFacing == Direction.RIGHT)
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_inst);
 
 			else if (targetFacing == Direction.LEFT)
-				instructionsForFastestPath.add(Packet.right_turn_instruction);
+				instructionsForFastestPath.add(Packet.right_inst);
 
 			else if (targetFacing == Direction.UP) {
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
-				instructionsForFastestPath.add(Packet.left_turn_instruction);
+				instructionsForFastestPath.add(Packet.left_inst);
+				instructionsForFastestPath.add(Packet.left_inst);
 			}
 
 		}
@@ -211,14 +211,14 @@ public abstract class RobotInterface {
 	}
 
 	// returns true if the left side has blocks to calibrate
-	public boolean canSide_Calibrate() {
-		if (facing == Direction.LEFT && isBlocked(x - 1, y - 2) && isBlocked(x + 1, y - 2))
+	public boolean rightSideCaliPossible() {
+		if (face_dir == Direction.LEFT && isBlocked(x - 1, y - 2) && isBlocked(x + 1, y - 2))
 			return true;
-		else if (facing == Direction.RIGHT && isBlocked(x - 1, y + 2) && isBlocked(x + 1, y + 2))
+		else if (face_dir == Direction.RIGHT && isBlocked(x - 1, y + 2) && isBlocked(x + 1, y + 2))
 			return true;
-		else if (facing == Direction.DOWN && isBlocked(x - 2, y - 1) && isBlocked(x - 2, y + 1))
+		else if (face_dir == Direction.DOWN && isBlocked(x - 2, y - 1) && isBlocked(x - 2, y + 1))
 			return true;
-		else if (facing == Direction.UP && isBlocked(x + 2, y - 1) && isBlocked(x + 2, y + 1))
+		else if (face_dir == Direction.UP && isBlocked(x + 2, y - 1) && isBlocked(x + 2, y + 1))
 			return true;
 
 		return false;
@@ -226,27 +226,29 @@ public abstract class RobotInterface {
 
 	// returns true if the front of the robot has blocks to calibrate
 	public boolean canFront_Calibrate() {
-		if (facing == Direction.LEFT && isBlocked(x - 2, y - 1) && isBlocked(x - 2, y) && isBlocked(x - 2, y + 1))
+		if (face_dir == Direction.LEFT && isBlocked(x - 2, y - 1) && isBlocked(x - 2, y) && isBlocked(x - 2, y + 1))
 			return true;
-		else if (facing == Direction.RIGHT && isBlocked(x + 2, y - 1) && isBlocked(x + 2, y) && isBlocked(x + 2, y + 1))
+		else if (face_dir == Direction.RIGHT && isBlocked(x + 2, y - 1) && isBlocked(x + 2, y)
+				&& isBlocked(x + 2, y + 1))
 			return true;
-		else if (facing == Direction.DOWN && isBlocked(x - 1, y + 2) && isBlocked(x, y + 2) && isBlocked(x + 1, y + 2))
+		else if (face_dir == Direction.DOWN && isBlocked(x - 1, y + 2) && isBlocked(x, y + 2)
+				&& isBlocked(x + 1, y + 2))
 			return true;
-		else if (facing == Direction.UP && isBlocked(x - 1, y - 2) && isBlocked(x, y - 2) && isBlocked(x + 1, y - 2))
+		else if (face_dir == Direction.UP && isBlocked(x - 1, y - 2) && isBlocked(x, y - 2) && isBlocked(x + 1, y - 2))
 			return true;
 
 		return false;
 	}
 
 	// returns true if the right side of the robot has block to calibrate
-	public boolean canLeft_Calibrate() {
-		if (facing == Direction.LEFT && isBlocked(x - 1, y + 2) && isBlocked(x + 1, y + 2))
+	public boolean leftSideCaliPossible() {
+		if (face_dir == Direction.LEFT && isBlocked(x - 1, y + 2) && isBlocked(x + 1, y + 2))
 			return true;
-		else if (facing == Direction.RIGHT && isBlocked(x - 1, y - 2) && isBlocked(x + 1, y - 2))
+		else if (face_dir == Direction.RIGHT && isBlocked(x - 1, y - 2) && isBlocked(x + 1, y - 2))
 			return true;
-		else if (facing == Direction.DOWN && isBlocked(x + 2, y - 1) && isBlocked(x + 2, y + 1))
+		else if (face_dir == Direction.DOWN && isBlocked(x + 2, y - 1) && isBlocked(x + 2, y + 1))
 			return true;
-		else if (facing == Direction.UP && isBlocked(x - 2, y - 1) && isBlocked(x - 2, y + 1))
+		else if (face_dir == Direction.UP && isBlocked(x - 2, y - 1) && isBlocked(x - 2, y + 1))
 			return true;
 
 		return false;
@@ -262,31 +264,31 @@ public abstract class RobotInterface {
 		return y;
 	}
 
-	// set position of the robot and facing direction
-	public void setRobotPos(int x, int y, Direction facing) {
+	// set position of the robot and face_dir direction
+	public void setRobotPos(int x, int y, Direction face_dir) {
 		this.x = x;
 		this.y = y;
-		this.facing = facing;
+		this.face_dir = face_dir;
 	}
 
 	// get the visualizaton
-	public Visualization getViz() {
+	public Viz getViz() {
 		return viz;
 	}
 
-	// set direction in which robot is facing
-	public void setface(Direction facing) {
-		this.facing = facing;
+	// set direction in which robot is face_dir
+	public void setface(Direction face_dir) {
+		this.face_dir = face_dir;
 	}
 
 	// set visualization
-	public void setViz(Visualization viz) {
+	public void setViz(Viz viz) {
 		this.viz = viz;
 	}
 
 	// method to return whether front has a wall/obstacle
 	public boolean isObstacleOrWallFront() {
-		switch (facing) {
+		switch (face_dir) {
 		case UP:
 			if (isBlocked(x - 1, y - 2) || isBlocked(x, y - 2) || isBlocked(x + 1, y - 2))
 				return true;
@@ -345,7 +347,7 @@ public abstract class RobotInterface {
 	public boolean checkObstacle(int xi, int yi) {
 		if (yi >= map_height || xi >= map_width || yi < 0 || xi < 0) {
 			return true;
-		} else if (map.get_grid_map_array()[yi][xi] == ExplorationTypes.exploration_type_to_int("OBSTACLE")) {
+		} else if (map.get_grid_map_array()[yi][xi] == Explored_Types.convertTypeToInt("OBSTACLE")) {
 			return true;
 		}
 		return false;
@@ -416,8 +418,8 @@ public abstract class RobotInterface {
 			return true;
 		}
 
-		if (map.get_grid_map_array()[yi][xi] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_EMPTY")
-				|| map.get_grid_map_array()[yi][xi] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_OBSTACLE"))
+		if (map.get_grid_map_array()[yi][xi] == Explored_Types.convertTypeToInt("UN_EMPTY")
+				|| map.get_grid_map_array()[yi][xi] == Explored_Types.convertTypeToInt("UN_OBSTACLE"))
 			return true;
 
 		return false;
@@ -447,17 +449,17 @@ public abstract class RobotInterface {
 		int dirOffsetX = 0;
 		int dirOffsetY = 0;
 
-		if (facing == Direction.UP)
+		if (face_dir == Direction.UP)
 			dirOffsetY = -30;
-		else if (facing == Direction.DOWN)
+		else if (face_dir == Direction.DOWN)
 			dirOffsetY = 38;
-		else if (facing == Direction.LEFT)
+		else if (face_dir == Direction.LEFT)
 			dirOffsetX = -30;
-		else if (facing == Direction.RIGHT)
+		else if (face_dir == Direction.RIGHT)
 			dirOffsetX = 38;
 
 		graphics.fillArc(x_g + 30 + dirOffsetX, y_g + 30 + dirOffsetY, 20, 20, 0, 360);
 	}
 
-	public abstract boolean getWantToReset();
+	public abstract boolean retrieve_reset_wanted();
 }

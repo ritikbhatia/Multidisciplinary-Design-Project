@@ -4,28 +4,27 @@ import java.util.List;
 public class Node implements Comparable {
 
     // Node variables
-    Node parent_node_in_path;
-    List neighbors_list = new ArrayList<Node>();
     Node left;
     Node right;
     Node up;
     Node down;
+    Node parent_node_in_path;
+    List list_of_neighbors = new ArrayList<Node>();
 
     // Cost of path computation
-    float total_path_cost;
-    float cost_estimated_to_goal_node;
+    float tot_cost;
+    float heuristic_cost;
 
     // Grid variables
-    boolean is_obstacle;
-    int clearance;
-    boolean is_virtual_wall;
+    boolean isObs;
+    int space;
 
-    // Directional/Positional coordinates 
+    // Directional/Positional coordinates
+    Facing face_dir;
     final int x;
     final int y;
-    Facing facing;
 
-    // Compare node costs 
+    // Compare node costs
     public int compareTo(Object other_node) {
         float current_value = this.getCost();
         float other_value = ((Node) other_node).getCost();
@@ -34,9 +33,9 @@ public class Node implements Comparable {
         return (v > 0) ? 1 : (v < 0) ? -1 : 0;
     }
 
-    // GET method: Cost 
+    // GET method: Cost
     public float getCost() {
-        return total_path_cost + cost_estimated_to_goal_node;
+        return tot_cost + heuristic_cost;
     }
 
     // Initialise node coordinates
@@ -51,22 +50,21 @@ public class Node implements Comparable {
         this.y = y_coordinate;
     }
 
-    public void add_neighbours(Node node) {
-        neighbors_list.add(node);
+    public void addNeighbors(Node node) {
+        list_of_neighbors.add(node);
     }
 
-
-    // Compute path cost 
+    // Compute path cost
     public float getCost(Node node, Node end_node, boolean is_start_node) {
-        return this.total_path_cost + get_node_weight(node, is_start_node);
+        return this.tot_cost + getWeight(is_start_node, node);
     }
 
     public List getNeighbors() {
-        return neighbors_list;
+        return list_of_neighbors;
     }
 
-    // Compute node cost 
-    public float calculate_path_cost(Node node) {
+    // Compute node cost
+    public float pathCost(Node node) {
         Node goal = (Node) node;
 
         float dx = Math.abs(this.x - goal.x);
@@ -74,28 +72,57 @@ public class Node implements Comparable {
         return (dx + dy);
     }
 
-    // Compute node cost 
-    public float get_node_weight(boolean is_start_node, Node some_node) {
+    // Compute node cost
+    public float getWeight(boolean is_start_node, Node some_node) {
         Node node = (Node) some_node;
         setFacing();
 
-        if ((compareX(node) == 1 && facing == Facing.RIGHT || compareX(node) == -1 && facing == Facing.LEFT
-                || compareY(node) == 1 && facing == Facing.UP || compareY(node) == -1 && facing == Facing.DOWN)
+        if ((compareY(node) == 1 && face_dir == Facing.UP || compareX(node) == 1 && face_dir == Facing.RIGHT
+                || compareX(node) == -1 && face_dir == Facing.LEFT || compareY(node) == -1 && face_dir == Facing.DOWN)
                 && !is_start_node) {
             return 100;
         }
-
-        // Add edge cost to penalise turns 
         return 1500;
     }
 
-    // SET method: Robot's orientation 
     public void setFacing(Facing face) {
-        this.facing = face;
+        this.face_dir = face;
     }
 
-    public void set_clearence(int clearance) {
-        this.clearance = clearance;
+    // Initialise robot's orientation
+    public void setFacing() {
+
+        if (this.parent_node_in_path == null) {
+            this.face_dir = Facing.RIGHT;
+            return;
+        }
+
+        else if (compareX((Node) this.parent_node_in_path) == -1) {
+            this.face_dir = Facing.RIGHT;
+        } else if (compareY((Node) this.parent_node_in_path) == 1) {
+            this.face_dir = Facing.DOWN;
+        } else if (compareX((Node) this.parent_node_in_path) == 1) {
+            this.face_dir = Facing.LEFT;
+        } else if (compareY((Node) this.parent_node_in_path) == -1) {
+            this.face_dir = Facing.UP;
+        }
+    }
+
+    public int getClearance() {
+        return space;
+    }
+
+    public void setIfClear(int space) {
+        this.space = space;
+    }
+
+    // Grid map navigation methods
+    public void setObs(boolean val) {
+        this.isObs = val;
+    }
+
+    public boolean isObs() {
+        return isObs;
     }
 
     // Compare node coordinates
@@ -107,54 +134,8 @@ public class Node implements Comparable {
         return node.y > this.y ? 1 : node.y < this.y ? -1 : 0;
     }
 
-    // Grid map navigation methods 
-    public void set_maze_obstacle(boolean val) {
-        this.is_obstacle = val;
-    }
-
-    public boolean is_obstacle() {
-        return is_obstacle;
-    }
-
-    // Initialise robot's orientation
-    public void setFacing() {
-
-        if (this.parent_node_in_path == null) {
-            this.facing = Facing.RIGHT;
-            return;
-        }
-
-        if (compareX((Node) this.parent_node_in_path) == 1) {
-            this.facing = Facing.LEFT;
-        } else if (compareX((Node) this.parent_node_in_path) == -1) {
-            this.facing = Facing.RIGHT;
-        } else if (compareY((Node) this.parent_node_in_path) == 1) {
-            this.facing = Facing.DOWN;
-        } else if (compareY((Node) this.parent_node_in_path) == -1) {
-            this.facing = Facing.UP;
-        }
-    }
-
-    public int getClearance() {
-        return clearance;
-    }
-
-    // SET methods: Define directions
-    public void set_left(Node left) {
+    public void setLeft(Node left) {
         this.left = left;
-    }
-
-    // GET methods: Directions
-    public Node getLeft() {
-        return left;
-    }
-
-    public void setRight(Node right) {
-        this.right = right;
-    }
-
-    public void setUp(Node up) {
-        this.up = up;
     }
 
     public Node getRight() {
@@ -168,9 +149,22 @@ public class Node implements Comparable {
     public Node getDown() {
         return down;
     }
-    
+
     public Node getUp() {
         return up;
+    }
+
+    // GET methods: Directions
+    public Node getLeft() {
+        return left;
+    }
+
+    public void setRight(Node right) {
+        this.right = right;
+    }
+
+    public void setUp(Node up) {
+        this.up = up;
     }
 
     // GET methods: X & Y coordinates

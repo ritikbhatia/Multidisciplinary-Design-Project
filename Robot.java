@@ -2,27 +2,27 @@
 // specifying imports
 import java.util.Stack;
 
-public class Robot extends RobotInterface {
+public class Robot extends Interface_Robot {
 
 	// declare class variables
 	Sensor[] Sen;
 	boolean hitWallFront = false;
 	boolean hitWallRight = false;
-	int sideCalibrateCount = 0;
+	int rightSideCaliCount = 0;
 	int frontCalibrateCount = 0;
 	int sideCalibrateNum = 3;
-	int FrontCalibrateNum = 3;
+	int numFrontCali = 3;
 	float robot_steps_per_second = 1f;
 	boolean frontCalibrated = false;
 	boolean sideCalibrated = false;
 
 	// parameterized contructor to initialize robot variables
-	public Robot(int x, int y, Direction facing, Map map) {
+	public Robot(int x, int y, Direction face_dir, Map map) {
 		// starting postition
 		super();
 		this.x = x;
 		this.y = y;
-		this.facing = facing;
+		this.face_dir = face_dir;
 		this.map = map;
 		hitWallFront = false;
 		hitWallRight = false;
@@ -34,18 +34,18 @@ public class Robot extends RobotInterface {
 	public void addSensors(Sensor[] sensors) {
 		this.Sen = sensors;
 		// sense the surrounding
-		LookAtSurroundings();
+		surroundingSense();
 	}
 
 	// update robot sensors with the new location
 	public void updateSensor() {
 		for (int i = 0; i < Sen.length; i++) {
-			Sen[i].updateRobotLocation(x, y);
+			Sen[i].updateLoc(x, y);
 		}
 	}
 
 	// deactivate sensors
-	public void deactivateSensors() {
+	public void removeSensors() {
 		Sen = new Sensor[0];
 	}
 
@@ -55,47 +55,47 @@ public class Robot extends RobotInterface {
 	}
 
 	// move robot
-	public void moveRobot() {
+	public void moveInstructionRobot() {
 		int movementDistance = 1;
-		if (facing == Direction.UP)
+		if (face_dir == Direction.UP)
 			y -= movementDistance;
-		else if (facing == Direction.DOWN)
+		else if (face_dir == Direction.DOWN)
 			y += movementDistance;
-		else if (facing == Direction.RIGHT)
+		else if (face_dir == Direction.RIGHT)
 			x += movementDistance;
-		else if (facing == Direction.LEFT)
+		else if (face_dir == Direction.LEFT)
 			x -= movementDistance;
 
 		// update the location for the robot in the sensors
 		updateSensor();
 
 		// make robot sense surroundings
-		LookAtSurroundings();
+		surroundingSense();
 
 	}
 
 	// make robot reverse
 	public void reverse() {
 		int movementDistance = 1;
-		if (facing == Direction.UP)
+		if (face_dir == Direction.UP)
 			y += movementDistance;
-		else if (facing == Direction.DOWN)
+		else if (face_dir == Direction.DOWN)
 			y -= movementDistance;
-		else if (facing == Direction.RIGHT)
+		else if (face_dir == Direction.RIGHT)
 			x -= movementDistance;
-		else if (facing == Direction.LEFT)
+		else if (face_dir == Direction.LEFT)
 			x += movementDistance;
 
 		// update the location for the robot in the sensors
 		updateSensor();
 
 		// make robot sense surrounding
-		LookAtSurroundings();
+		surroundingSense();
 
 	}
 
 	// method to allow to robot to sense the surrounding
-	public void LookAtSurroundings() {
+	public void surroundingSense() {
 		boolean sensePlaceHolder;
 		boolean sensePlaceHolder1;
 		int countF = 0;
@@ -103,7 +103,7 @@ public class Robot extends RobotInterface {
 
 		for (int i = 0; i < Sen.length; i++) {
 			sensePlaceHolder = Sen[i].Sense(map, 0, null);
-			sensePlaceHolder1 = Sen[i].SenseRight(map, 0, null);
+			sensePlaceHolder1 = Sen[i].Sense(map, 0, null);
 
 			// front wall hit
 			if ((i <= 1 || i == 3) && sensePlaceHolder) {
@@ -126,8 +126,8 @@ public class Robot extends RobotInterface {
 
 		if (hitWallFront && hitWallRight) {
 			// calibrate both front and side
-			front_Calibrate();
-			side_Calibrate();
+			frontCali();
+			rightSideCali();
 			hitWallFront = false;
 			hitWallRight = false;
 		}
@@ -136,52 +136,52 @@ public class Robot extends RobotInterface {
 	public void SenseRobotLocation() {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++)
-				map.get_grid_map_array()[y + i][x + j] = ExplorationTypes.exploration_type_to_int("EMPTY");
+				map.get_grid_map_array()[y + i][x + j] = Explored_Types.convertTypeToInt("EMPTY");
 		}
 	}
 
 	// make the robot turn right
-	public void turnRight() {
-		switch (facing) {
+	public void rightTurn() {
+		switch (face_dir) {
 		case RIGHT:
-			facing = Direction.DOWN;
+			face_dir = Direction.DOWN;
 			break;
 		case LEFT:
-			facing = Direction.UP;
+			face_dir = Direction.UP;
 			break;
 		case UP:
-			facing = Direction.RIGHT;
+			face_dir = Direction.RIGHT;
 			break;
 		case DOWN:
-			facing = Direction.LEFT;
+			face_dir = Direction.LEFT;
 			break;
 		}
 		for (int i = 0; i < Sen.length; i++) {
-			Sen[i].ChangeDirectionRight();
+			Sen[i].changeToRight();
 		}
-		LookAtSurroundings();
+		surroundingSense();
 	}
 
 	// make the robot turn left
-	public void turnLeft() {
-		switch (facing) {
+	public void leftTurn() {
+		switch (face_dir) {
 		case RIGHT:
-			facing = Direction.UP;
+			face_dir = Direction.UP;
 			break;
 		case LEFT:
-			facing = Direction.DOWN;
+			face_dir = Direction.DOWN;
 			break;
 		case UP:
-			facing = Direction.LEFT;
+			face_dir = Direction.LEFT;
 			break;
 		case DOWN:
-			facing = Direction.RIGHT;
+			face_dir = Direction.RIGHT;
 		}
 		// change sensor direction to follow robot
 		for (int i = 0; i < Sen.length; i++) {
-			Sen[i].ChangeDirectionLeft();
+			Sen[i].changeToLeft();
 		}
-		LookAtSurroundings();
+		surroundingSense();
 	}
 
 	// get fastest path instructions
@@ -195,25 +195,25 @@ public class Robot extends RobotInterface {
 			try {
 				Thread.sleep((long) (1000 / robot_steps_per_second));
 				if (two.getX() > x) {
-					while (facing != Direction.RIGHT) {
-						turnRight();
+					while (face_dir != Direction.RIGHT) {
+						rightTurn();
 					}
-					moveRobot();
+					moveInstructionRobot();
 				} else if (two.getX() < x) {
-					while (facing != Direction.LEFT) {
-						turnLeft();
+					while (face_dir != Direction.LEFT) {
+						leftTurn();
 					}
-					moveRobot();
+					moveInstructionRobot();
 				} else if (two.getY() < y) {
-					while (facing != Direction.UP) {
-						turnLeft();
+					while (face_dir != Direction.UP) {
+						leftTurn();
 					}
-					moveRobot();
+					moveInstructionRobot();
 				} else { // if(two.getY() < one.getY())
-					while (facing != Direction.DOWN) {
-						turnRight();
+					while (face_dir != Direction.DOWN) {
+						rightTurn();
 					}
-					moveRobot();
+					moveInstructionRobot();
 				}
 				viz.repaint();
 			} catch (InterruptedException e) {
@@ -224,7 +224,7 @@ public class Robot extends RobotInterface {
 	}
 
 	// perform step indicated in the fastest path
-	public boolean doStepFastestPath() {
+	public boolean fpStep() {
 
 		// if no more instructions, then fastest path is performed
 		if (instructionsForFastestPath.isEmpty())
@@ -234,29 +234,29 @@ public class Robot extends RobotInterface {
 			sideCalibrated = false;
 			int instruction = (Integer) instructionsForFastestPath.remove(0);
 			switch (instruction) {
-			case Packet.right_turn_instruction:
-				turnRight();
+			case Packet.right_inst:
+				rightTurn();
 				break;
-			case Packet.left_turn_instruction:
-				turnLeft();
+			case Packet.left_inst:
+				leftTurn();
 				break;
-			case Packet.forward_instruction:
-				if (sideCalibrateCount >= sideCalibrateNum) {
-					if (canSide_Calibrate()) {
+			case Packet.forward_inst:
+				if (rightSideCaliCount >= sideCalibrateNum) {
+					if (rightSideCaliPossible()) {
 
-						side_Calibrate();
-						sideCalibrateCount = 0;
-					} else if (canLeft_Calibrate()) {
+						rightSideCali();
+						rightSideCaliCount = 0;
+					} else if (leftSideCaliPossible()) {
 
-						left_Calibrate();
-						sideCalibrateCount = 0;
+						leftSideCali();
+						rightSideCaliCount = 0;
 					}
 					sideCalibrated = true;
 				}
-				if (frontCalibrateCount >= FrontCalibrateNum) {
+				if (frontCalibrateCount >= numFrontCali) {
 					if (canFront_Calibrate()) {
 
-						front_Calibrate();
+						frontCali();
 						frontCalibrateCount = 0;
 						frontCalibrated = true;
 					}
@@ -264,8 +264,8 @@ public class Robot extends RobotInterface {
 				if (!frontCalibrated)
 					frontCalibrateCount++;
 				if (!sideCalibrated)
-					sideCalibrateCount++;
-				moveRobot();
+					rightSideCaliCount++;
+				moveInstructionRobot();
 				break;
 			}
 		}
@@ -273,31 +273,31 @@ public class Robot extends RobotInterface {
 	}
 
 	@Override
-	public void initial_Calibrate() {
+	public void initCali() {
 	}
 
 	@Override
-	public void sendMapDescriptor() {
-		// sendWholeMap(map);
+	public void sendDesc() {
+		// sendDescriptor(map);
 	}
 
 	@Override
-	public void side_Calibrate() {
-
-	}
-
-	@Override
-	public void left_Calibrate() {
+	public void rightSideCali() {
 
 	}
 
 	@Override
-	public void front_Calibrate() {
+	public void leftSideCali() {
 
 	}
 
 	@Override
-	public void addSensors(RealSensor[] sensors) {
+	public void frontCali() {
+
+	}
+
+	@Override
+	public void addSensors(Real_Sensor[] sensors) {
 	}
 
 	@Override
@@ -306,7 +306,7 @@ public class Robot extends RobotInterface {
 	}
 
 	@Override
-	public boolean getWantToReset() {
+	public boolean retrieve_reset_wanted() {
 		return false;
 	}
 }

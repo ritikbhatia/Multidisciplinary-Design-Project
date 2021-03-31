@@ -39,12 +39,12 @@ public class A_star_search {
     }
 
     // Find robot direction
-    public Facing getRobotDirection(Node node, Facing facing) {
+    public Facing getRobotDirection(Node node, Facing face_dir) {
 
         Node parent_node = (Node) node.parent_node_in_path;
 
         if (parent_node == null) {
-            return facing;
+            return face_dir;
         }
 
         // if nodeA of current node < nodeA of parent, then move to left
@@ -91,7 +91,7 @@ public class A_star_search {
 
         // Initialise start node
         initial_node.total_path_cost = 0;
-        initial_node.cost_estimated_to_goal_node = initial_node.calculate_path_cost(end_node);
+        initial_node.cost_estimated_to_goal_node = initial_node.pathCost(end_node);
         initial_node.parent_node_in_path = null;
         priority_list.add(initial_node);
 
@@ -124,7 +124,7 @@ public class A_star_search {
                 Node node_neighbour = (Node) neighbors_list.get(i);
                 boolean isOpen = priority_list.contains(node_neighbour);
                 boolean isClosed = linked_list.contains(node_neighbour);
-                boolean is_obstacle = (node_neighbour).is_obstacle();
+                boolean isObs = (node_neighbour).isObs();
                 int clearance = node_neighbour.getClearance();
                 float total_path_cost = node.getCost(node_neighbour, end_node, is_start_node) + 1;
 
@@ -133,12 +133,12 @@ public class A_star_search {
                 if ((!isOpen && !isClosed) || total_path_cost < node_neighbour.total_path_cost) {
                     node_neighbour.parent_node_in_path = node;
                     node_neighbour.total_path_cost = total_path_cost;
-                    node_neighbour.cost_estimated_to_goal_node = node_neighbour.calculate_path_cost(end_node);
+                    node_neighbour.cost_estimated_to_goal_node = node_neighbour.pathCost(end_node);
 
                     // Add neighbour node to priority_list if 1. node not in
                     // priority_list/linked_list AND 2.
                     // robot can reach
-                    if (!isOpen && !is_obstacle && size == clearance) {
+                    if (!isOpen && !isObs && size == clearance) {
                         priority_list.add(node_neighbour);
                     }
                 }

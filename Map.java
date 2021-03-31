@@ -1,9 +1,6 @@
-import javax.swing.*;
-import javax.swing.Timer;
+
+// specify imports used
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
 
 public class Map {
 
@@ -42,7 +39,7 @@ public class Map {
 			}
 		}
 
-		int confirmed_score = -1000;
+		int confirmed_score = -2000;
 		map_scores[17][0] = confirmed_score;
 		map_scores[19][0] = confirmed_score;
 		map_scores[18][0] = confirmed_score;
@@ -79,22 +76,22 @@ public class Map {
 		return grid_map_array;
 	}
 
-	public void setMapScore(int x, int y, int score) {
+	public void setScore(int x, int y, int score) {
 		map_scores[y][x] += score;
 	}
 
 	// Revise probabilities grid map simulation display & real robot
-	public void update_map_and_score() {
+	public void mapAndScoreUpdate() {
 		for (int y = 0; y < map_scores.length; y++) {
 			for (int x = 0; x < map_scores[y].length; x++) {
 				if (map_scores[y][x] == 0) {
-					grid_map_array[y][x] = ExplorationTypes.exploration_type_to_int("UNEXPLORED_EMPTY");
+					grid_map_array[y][x] = Explored_Types.convertTypeToInt("UN_EMPTY");
 
 				} else if (map_scores[y][x] > 0) {
-					grid_map_array[y][x] = ExplorationTypes.exploration_type_to_int("OBSTACLE");
+					grid_map_array[y][x] = Explored_Types.convertTypeToInt("OBSTACLE");
 
 				} else if (map_scores[y][x] < 0) {
-					grid_map_array[y][x] = ExplorationTypes.exploration_type_to_int("EMPTY");
+					grid_map_array[y][x] = Explored_Types.convertTypeToInt("EMPTY");
 
 				}
 			}
@@ -102,7 +99,7 @@ public class Map {
 	}
 
 	public void map_update() {
-		compute_clearence();
+		calc_space();
 		nodes_init();
 		init_neighbours();
 	}
@@ -111,7 +108,7 @@ public class Map {
 		for (int i = 0; i < grid_map_array.length; i++) {
 			for (int j = 0; j < grid_map_array[i].length; j++) {
 				if (map_scores[i][j] == -1)
-					map_array_2[i][j] = ExplorationTypes.exploration_type_to_int("UNEXPLORED_EMPTY");
+					map_array_2[i][j] = Explored_Types.convertTypeToInt("UN_EMPTY");
 			}
 		}
 	}
@@ -125,7 +122,7 @@ public class Map {
 		for (int i = 0; i < map_array_2.length; i++) {
 			for (int j = 0; j < map_array_2[i].length; j++) {
 				map_array_2[i][j] = grid_map_array[i][j];
-				System.out.print(map_array_2[i][j]);
+
 			}
 
 		}
@@ -138,9 +135,9 @@ public class Map {
 				NodeArray[r][c] = new Node(c, r);
 
 				if (grid_map_array[r][c] != 0) {
-					NodeArray[r][c].set_maze_obstacle(true);
+					NodeArray[r][c].setObs(true);
 				} else
-					NodeArray[r][c].set_maze_obstacle(false);
+					NodeArray[r][c].setObs(false);
 
 			}
 		}
@@ -182,29 +179,30 @@ public class Map {
 
 		for (int r = 0; r < map_height; r++) {
 			for (int c = 0; c < map_width; c++) {
-				// Moving left
-				if (c > 0) {
-					Node left = NodeArray[r][c - 1];
-					NodeArray[r][c].add_neighbours(left);
-					NodeArray[r][c].set_left(left);
-				}
+
 				// Moving up
 				if (r > 0) {
 					Node up = NodeArray[r - 1][c];
-					NodeArray[r][c].add_neighbours(up);
+					NodeArray[r][c].addNeighbors(up);
 					NodeArray[r][c].setUp(up);
 				}
 				// Moving right
 				if (c < map_width - 1) {
 					Node right = NodeArray[r][c + 1];
-					NodeArray[r][c].add_neighbours(right);
+					NodeArray[r][c].addNeighbors(right);
 					NodeArray[r][c].setRight(right);
 
+				}
+				// Moving left
+				if (c > 0) {
+					Node left = NodeArray[r][c - 1];
+					NodeArray[r][c].addNeighbors(left);
+					NodeArray[r][c].setLeft(left);
 				}
 				// Moving down
 				if (r < map_height - 1) {
 					Node down = NodeArray[r + 1][c];
-					NodeArray[r][c].add_neighbours(down);
+					NodeArray[r][c].addNeighbors(down);
 					NodeArray[r][c].setDown(down);
 				}
 			}
@@ -212,28 +210,28 @@ public class Map {
 	}
 
 	// Calculate clearence distance between robot and obstacle
-	public void compute_clearence() {
+	public void calc_space() {
 		Node node;
 		for (int r = 0; r < map_height; r++) {
-			columnloop: for (int c = 0; c < map_width; c++) {
+			loop_column: for (int c = 0; c < map_width; c++) {
 				node = NodeArray[r][c];
-				node.set_clearence(0);
+				node.setIfClear(0);
 
-				if (node.is_obstacle()) {
-					node.set_clearence(0);
+				if (node.isObs()) {
+					node.setIfClear(0);
 					continue;
 				}
 
 				for (int i = -1; i < 2; i++) {
 					for (int j = -1; j < 2; j++) {
-						if (r + i >= map_height || r + i < 0 || c + j >= map_width || c + j < 0) {
-							continue columnloop;
+						if (r + i < 0 || c + j >= map_width || r + i >= map_height || c + j < 0) {
+							continue loop_column;
 						}
-						if (NodeArray[r + i][c + j].is_obstacle())
-							continue columnloop;
+						if (NodeArray[r + i][c + j].isObs())
+							continue loop_column;
 					}
 				}
-				node.set_clearence(3);
+				node.setIfClear(3);
 			}
 		}
 	}
@@ -248,62 +246,57 @@ public class Map {
 		}
 	}
 
-	public void paint_grid_map(Graphics graphics) {
+	public void gridPainting(Graphics g) {
 
 		// Initialise map variables
-		String mapScore = "";
 		int distanceY = 0;
 		int distanceX = 0;
-		Graphics2D graphics2d = (Graphics2D) graphics;
-		graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		for (int i = 0; i < grid_map_array.length; i++) {
 			// Paint Y
 			distanceX = 0;
-			graphics.drawRect(10, 10 + distanceY, sizeofsquare, sizeofsquare);
+			g.drawRect(10, 10 + distanceY, sizeofsquare, sizeofsquare);
 
 			for (int j = 0; j < grid_map_array[i].length; j++) {
 				// Paint X
-				graphics.setColor(Color.WHITE);
-				graphics.drawRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+				g.setColor(Color.WHITE);
+				g.drawRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
 
-				if (grid_map_array[i][j] == ExplorationTypes.exploration_type_to_int("OBSTACLE")) {
-					// Draw obstacle
-					graphics.setColor(Color.BLACK);
-					graphics.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
-
-				} else if ((i == 0 && j == 12) || (i == 0 && j == 13) || (i == 0 && j == 14) || (i == 1 && j == 12)
-						|| (i == 1 && j == 13) || (i == 1 && j == 14) || (i == 2 && j == 12) || (i == 2 && j == 13)
-						|| (i == 2 && j == 14)) {
+				if ((i == 0 && j == 12) || (i == 2 && j == 13)
+						|| (i == 2 && j == 14 || (i == 0 && j == 13) || (i == 0 && j == 14) || (i == 1 && j == 12)
+								|| (i == 1 && j == 13) || (i == 1 && j == 14) || (i == 2 && j == 12))) {
 					// Draw goal position
-					graphics.setColor(Color.GREEN);
-					graphics.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+					g.setColor(Color.GREEN);
+					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
 
-				} else if ((i == 18 && j == 0) || (i == 18 && j == 1) || (i == 18 && j == 2) || (i == 17 && j == 0)
-						|| (i == 17 && j == 1) || (i == 17 && j == 2) || (i == 19 && j == 0) || (i == 19 && j == 1)
+				} else if ((i == 18 && j == 2) || (i == 17 && j == 0) || (i == 18 && j == 0) || (i == 17 && j == 2)
+						|| (i == 19 && j == 0) || (i == 18 && j == 1) || (i == 17 && j == 1) || (i == 19 && j == 1)
 						|| (i == 19 && j == 2)) {
 					// Draw start position
-					graphics.setColor(Color.YELLOW);
-					graphics.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+					g.setColor(Color.YELLOW);
+					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
 
-				} else if (grid_map_array[i][j] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_EMPTY")) {
-					graphics.setColor(Color.LIGHT_GRAY);
-					graphics.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+				} else if (grid_map_array[i][j] == Explored_Types.convertTypeToInt("OBSTACLE")) {
+					// Draw obstacle
+					g.setColor(Color.BLACK);
+					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
+
+				} else if (grid_map_array[i][j] == Explored_Types.convertTypeToInt("UN_EMPTY")) {
+					g.setColor(Color.LIGHT_GRAY);
+					g.fillRect(10 + distanceX, 10 + distanceY, sizeofsquare, sizeofsquare);
 
 				}
 
-				graphics.setColor(Color.BLACK);
-				graphics2d.drawString(Integer.toString(map_scores[i][j]), 20 + distanceX, 30 + distanceY);
+				g.setColor(Color.BLACK);
+				g2d.drawString(Integer.toString(map_scores[i][j]), 20 + distanceX, 30 + distanceY);
 				distanceX += sizeofsquare;
 			}
 
 			distanceY += sizeofsquare;
 		}
 
-	}
-
-	public void generateMapDescriptor() {
-		GridMapIterator.print_explored_results_to_file("Map.txt", grid_map_array);
 	}
 
 	public Map() {

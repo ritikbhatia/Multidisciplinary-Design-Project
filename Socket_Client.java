@@ -1,27 +1,21 @@
 
 // specify all imports
 import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.TimerTask;
+import java.net.*;
 
-public class SocketClient {
+public class Socket_Client {
 
 	// define variables to be used like host IP, input stream, socket to use etc
-	InetAddress host;
-	Socket socket = null;
 	DataInputStream input = null;
-	PrintStream out = null;
+	PrintStream output = null;
 	String IP_Addr;
 	int Port;
-	boolean firstflag = false;
+	InetAddress host;
+	Socket socket = null;
 
 	// paramterized constructor to initiate socket client using IP and the port
-	public SocketClient(String IP_Addr, int Port) {
+	public Socket_Client(String IP_Addr, int Port) {
 		this.IP_Addr = IP_Addr;
 		this.Port = Port;
 	}
@@ -32,37 +26,30 @@ public class SocketClient {
 
 		// specify a timeout
 		// if connection not established within this time, return false
-		int timeout = 6000;
+		int timeout = 10000;
 		try {
-			// if socket is already connected, return true
-			if (socket != null) {
-				if (socket.isConnected()) {
-					return true;
-				}
-			}
+			socket = new Socket();
 
 			// establish socket connection
 			InetSocketAddress ISA = new InetSocketAddress(IP_Addr, Port);
-			socket = new Socket();
 			socket.connect(ISA, timeout);
 
 			// specify input and output streams
 			input = new DataInputStream(socket.getInputStream());
-			out = new PrintStream(socket.getOutputStream());
+			output = new PrintStream(socket.getOutputStream());
+
 			return true;
-		} catch (UnknownHostException u) {
-
-		} catch (IOException i) {
-
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 
 	}
 
 	// send packet data to RPi for further processing
-	public int sendPacket(String packetData) {
+	public int send(String packetData) {
 		try {
-			out.flush();
+			output.flush();
 			return 0;
 		} catch (Exception e) {
 
@@ -70,13 +57,11 @@ public class SocketClient {
 
 			// re-establish connection if socket is not connected
 			while (socket.isClosed()) {
-
 				connectToDevice();
 			}
 
 			// attempt to send packet again
-
-			sendPacket(packetData);
+			send(packetData);
 		}
 		return 0;
 	}
@@ -84,24 +69,14 @@ public class SocketClient {
 	// receive packet
 	public String receivePacket(boolean resentflag, String Data) {
 		String instruction = null;
-		// boolean alreadySent = false;
 		try {
 			do {
-				long timestart = System.currentTimeMillis();
 				while (input.available() == 0) {
-					// if (System.currentTimeMillis() - timestart >= 10 * 1000 && !alreadySent) {
-					// sendPacket("A:req:send_sensor:1$");
-					// alreadySent = true;
-					// }
-					Thread.sleep(10);
+					Thread.sleep(100);
 				}
 				instruction = input.readLine();
 			} while (instruction == null || instruction.equalsIgnoreCase(""));
-		} catch (IOException e) {
-
-			e.printStackTrace();
-			connectToDevice();
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -112,7 +87,7 @@ public class SocketClient {
 	public void closeConnection() {
 		try {
 			socket.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

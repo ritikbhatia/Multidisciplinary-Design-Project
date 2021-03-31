@@ -17,10 +17,10 @@ public class Exploration {
 
 	private static final int listOfActionsSize = 4;
 
-	Visualization viz;
-	SocketClient sc = null;
+	Viz viz;
+	Socket_Client sc = null;
 	boolean robot_simulator;
-	RobotInterface robot;
+	Interface_Robot robot;
 	Map map;
 
 	ExplorationState state;
@@ -52,7 +52,7 @@ public class Exploration {
 	// Prevent double front calibration for robot
 	boolean has_robot_just_fc;
 	// Stack to store unexplored areas of grid, arrays to contain {x,y}
-	Stack<int[]> unexplored_areas_stack;
+	Stack<int[]> stackUnexplored;
 
 	// Store list of possible actions for robot
 	Action listOfActions[];
@@ -86,7 +86,7 @@ public class Exploration {
 		NO_ACTION, TURN_LEFT, TURN_RIGHT, TURN_UP, TURN_DOWN, MOVE_FORWARD,
 	}
 
-	public Exploration(SocketClient sc, boolean robot_simulator, RobotInterface robot, Visualization viz, Map inMap) {
+	public Exploration(Socket_Client sc, boolean robot_simulator, Interface_Robot robot, Viz viz, Map inMap) {
 		this.robot_simulator = robot_simulator;
 		if (robot_simulator)
 			this.sc = sc;
@@ -119,7 +119,7 @@ public class Exploration {
 		has_robot_just_fc = false;
 
 		// Initialise stack
-		unexplored_areas_stack = new Stack<int[]>();
+		stackUnexplored = new Stack<int[]>();
 
 		// Values stored for checking of offset
 		offset_values_stack = new Stack<int[]>();
@@ -157,8 +157,8 @@ public class Exploration {
 		int explored = 0;
 		for (int i = 0; i < Map.map_height; i++)
 			for (int j = 0; j < Map.map_width; j++)
-				if (map.get_grid_map_array()[i][j] == ExplorationTypes.exploration_type_to_int("EMPTY")
-						|| map.get_grid_map_array()[i][j] == ExplorationTypes.exploration_type_to_int("OBSTACLE"))
+				if (map.get_grid_map_array()[i][j] == Explored_Types.convertTypeToInt("EMPTY")
+						|| map.get_grid_map_array()[i][j] == Explored_Types.convertTypeToInt("OBSTACLE"))
 					explored++;
 
 		return explored;
@@ -167,9 +167,9 @@ public class Exploration {
 	boolean check_if_coordinate_in_stack(int[] coordinate_of_map) {
 		int[] unexplored; // temp variable
 
-		for (int i = 0; i < unexplored_areas_stack.size(); i++) {
+		for (int i = 0; i < stackUnexplored.size(); i++) {
 
-			unexplored = unexplored_areas_stack.get(i);
+			unexplored = stackUnexplored.get(i);
 
 			if (unexplored[0] == coordinate_of_map[0] && unexplored[1] == coordinate_of_map[1]
 					&& unexplored[2] == coordinate_of_map[2] && unexplored[3] == coordinate_of_map[3])
@@ -305,8 +305,8 @@ public class Exploration {
 		int[] coordinate_of_map;
 		for (int y = 0; y < Map.map_height; y++) {
 			for (int x = 0; x < Map.map_width; x++) {
-				if (grid_map_array[y][x] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_EMPTY")
-						|| grid_map_array[y][x] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_OBSTACLE")) {
+				if (grid_map_array[y][x] == Explored_Types.convertTypeToInt("UN_EMPTY")
+						|| grid_map_array[y][x] == Explored_Types.convertTypeToInt("UN_OBSTACLE")) {
 
 					// Input areas explored by robot, next to unexplored areas,
 					// and feasible for robot to fit/move in
@@ -315,28 +315,28 @@ public class Exploration {
 					// Don't push onto stack if (values == -1) OR (values already in stack )
 					if (coordinate_of_map[0] != -1 && coordinate_of_map[1] != -1
 							&& !check_if_coordinate_in_stack(coordinate_of_map))
-						unexplored_areas_stack.push(coordinate_of_map);
+						stackUnexplored.push(coordinate_of_map);
 				}
 			}
 		}
 
 	}
 
-	void update_unexplored_map_areas() {
+	void updateUnexplored() {
 		// Load grid map array to work with
 		int[][] grid_map_array = map.get_grid_map_array();
 
 		// Iterate through entire list to remove those that were halfway explored
-		for (int i = 0; i < unexplored_areas_stack.size(); i++) {
+		for (int i = 0; i < stackUnexplored.size(); i++) {
 
 			// Remove area from stack if area NOT unexplored (i.e. it was explored on the
 			// way)
-			if (grid_map_array[unexplored_areas_stack.get(i)[1]][unexplored_areas_stack.get(i)[0]] == ExplorationTypes
-					.exploration_type_to_int("EMPTY")
-					|| grid_map_array[unexplored_areas_stack.get(i)[1]][unexplored_areas_stack
-							.get(i)[0]] == ExplorationTypes.exploration_type_to_int("OBSTACLE")) {
+			if (grid_map_array[stackUnexplored.get(i)[1]][stackUnexplored.get(i)[0]] == Explored_Types
+					.convertTypeToInt("EMPTY")
+					|| grid_map_array[stackUnexplored.get(i)[1]][stackUnexplored.get(i)[0]] == Explored_Types
+							.convertTypeToInt("OBSTACLE")) {
 
-				unexplored_areas_stack.remove(i);
+				stackUnexplored.remove(i);
 				i--;
 			}
 		}
@@ -347,7 +347,7 @@ public class Exploration {
 
 	public int calculate_backtrack_steps_count() {
 
-		Direction tempFacing = robot.facing;
+		Direction tempFacing = robot.face_dir;
 		Action curAction;
 		int tempX = robot.x;
 		int tempY = robot.y;
@@ -407,7 +407,7 @@ public class Exploration {
 		if (robot.isAbleToMove(Direction.UP, tempX, tempY) || robot.isAbleToMove(Direction.DOWN, tempX, tempY)
 				|| robot.isAbleToMove(Direction.LEFT, tempX, tempY)
 				|| robot.isAbleToMove(Direction.RIGHT, tempX, tempY)) {
-			System.out.print("found a block!\n");
+
 			return true;
 		}
 
@@ -416,28 +416,28 @@ public class Exploration {
 
 	void perform_stored_actions() {
 
-		// Instead of calculations in start_exploration(), robot executes actions stored
+		// Instead of calculations in begin_explore(), robot executes actions stored
 		// here
 		switch (listOfActions[actions_iterator]) {
 
 		case TURN_RIGHT:
-			robot.turnRight();
-			System.out.print("Robot turn right\n");
+			robot.rightTurn();
+
 			back_track_steps.push(Action.TURN_RIGHT);
 			break;
 
 		case MOVE_FORWARD:
 
-			robot.moveRobot();
-			System.out.print("Robot move forward\n");
+			robot.moveInstructionRobot();
+
 			back_track_steps.push(Action.MOVE_FORWARD);
 			move_forward_count++;
 			break;
 
 		case TURN_LEFT:
-			// System.out.print("turning left at the stored actions\n");
-			robot.turnLeft();
-			System.out.print("Robot turn left\n");
+			//
+			robot.leftTurn();
+
 			back_track_steps.push(Action.TURN_LEFT);
 			break;
 
@@ -449,27 +449,27 @@ public class Exploration {
 	}
 
 	public void DoIETurnRight() {
-		System.out.print("Robot turn right\n");
+
 		has_robot_just_fc = false;
 		actions_iterator = 0;
 
 		// Check if can front calibrate & left calibrate (has 3 blocks)
-		if (robot.canFront_Calibrate() && robot.canLeft_Calibrate() && !has_robot_just_fc) {
-			robot.front_Calibrate();
+		if (robot.canFront_Calibrate() && robot.leftSideCaliPossible() && !has_robot_just_fc) {
+			robot.frontCali();
 			has_robot_just_fc = true;
 			move_forward_count = 0;
 
 		}
 		// Check if can only left calibrate after a certain no. of steps
-		else if (robot.canLeft_Calibrate() && !has_robot_just_fc) {
-			robot.left_Calibrate();
+		else if (robot.leftSideCaliPossible() && !has_robot_just_fc) {
+			robot.leftSideCali();
 			has_robot_just_fc = true;
 			move_forward_count = 0;
 
 		}
 		// Turn to right after all calibrations complete
-		robot.turnRight();
-		System.out.print("Robot turn right\n");
+		robot.rightTurn();
+
 		back_track_steps.push(Action.TURN_RIGHT);
 
 		// listOfActions[1] = Action.TURN_RIGHT;
@@ -483,27 +483,26 @@ public class Exploration {
 			back_track_steps_count = calculate_backtrack_steps_count();
 		}
 
-		System.out.print("doing trace back\n");
 		if (back_track_steps.empty()) {
-			System.out.print("trace back step is empty\n");
+
 			return;
 		}
 		Action prevAction = back_track_steps.pop();
 
 		switch (prevAction) {
 		case TURN_LEFT:
-			robot.turnRight();
+			robot.rightTurn();
 			break;
 
 		case TURN_RIGHT:
-			robot.turnLeft();
+			robot.leftTurn();
 			break;
 
 		case MOVE_FORWARD:
 			robot.reverse();
 			break;
 		default:
-			System.out.print("back track error\n");
+
 			break;
 		}
 
@@ -513,8 +512,8 @@ public class Exploration {
 			back_tracking = false;
 	}
 
-	public void DoIEMoveForward(Facing facing) {
-		System.out.print("Robot moves forward\n");
+	public void DoIEMoveForward(Facing face_dir) {
+
 		has_robot_just_fc = false;
 		boolean has_robot_calibrated = false;
 
@@ -522,17 +521,17 @@ public class Exploration {
 		if (move_forward_count >= time_to_sc) {
 
 			// Check if blocks next to robot, using side sensors
-			if (robot.canSide_Calibrate()) {
-				System.out.print("align right\n");
-				robot.side_Calibrate();
+			if (robot.rightSideCaliPossible()) {
+
+				robot.rightSideCali();
 
 				// Counter reset
 				move_forward_count = 0;
 				has_robot_calibrated = true;
 
-			} else if (robot.canLeft_Calibrate()) {
+			} else if (robot.leftSideCaliPossible()) {
 
-				robot.left_Calibrate();
+				robot.leftSideCali();
 				move_forward_count = 0;
 				has_robot_calibrated = true;
 			}
@@ -540,9 +539,9 @@ public class Exploration {
 
 		if (!has_robot_calibrated) {
 			// Just move forward
-			robot.moveRobot();
-			previousFacing = facing;
-			back_track_facing.push(facing);
+			robot.moveInstructionRobot();
+			previousFacing = face_dir;
+			back_track_facing.push(face_dir);
 			has_robot_moved = true;
 			move_forward_count++;
 
@@ -558,7 +557,7 @@ public class Exploration {
 
 		// Only continue if no stored actions, else execute stored actions
 		if (actions_iterator != -1) {
-			System.out.print("perform stored actions\n");
+
 			perform_stored_actions();
 
 			return 0;
@@ -571,10 +570,10 @@ public class Exploration {
 			return 0;
 		}
 
-		switch (robot.facing) {
+		switch (robot.face_dir) {
 
 		case UP:
-			// Do stored actions, if previously facing up & can move right
+			// Do stored actions, if previously face_dir up & can move right
 			if (robot.isAbleToMove(Direction.RIGHT) && previousFacing == Facing.UP)
 				DoIETurnRight();
 
@@ -594,7 +593,7 @@ public class Exploration {
 
 		case LEFT:
 
-			// Do stored actions, if robot previously facing left wall & can move up
+			// Do stored actions, if robot previously face_dir left wall & can move up
 			if (robot.isAbleToMove(Direction.UP) && previousFacing == Facing.LEFT)
 				DoIETurnRight();
 
@@ -630,7 +629,7 @@ public class Exploration {
 			break;
 
 		case RIGHT:
-			// if can move down and it was facing right previously, execute stored actions
+			// if can move down and it was face_dir right previously, execute stored actions
 			if (robot.isAbleToMove(Direction.DOWN) && previousFacing == Facing.RIGHT)
 				DoIETurnRight();
 
@@ -652,7 +651,7 @@ public class Exploration {
 		}
 
 		// Robot requested reset, request granted and new Robot created
-		if (robot.getWantToReset()) {
+		if (robot.retrieve_reset_wanted()) {
 
 			return -1;
 		}
@@ -668,19 +667,18 @@ public class Exploration {
 	public void DoIETurnLeft() {
 		actions_iterator = 0;
 		listOfActions[0] = Action.TURN_LEFT;
-		System.out.print("Robot turn left\n");
 
 		// Check if can front calibrate (has 3 blocks right infront of robot)
-		if (robot.canFront_Calibrate() && robot.canSide_Calibrate() && !has_robot_just_fc) {
-			System.out.print("align front\n");
-			robot.front_Calibrate();
+		if (robot.canFront_Calibrate() && robot.rightSideCaliPossible() && !has_robot_just_fc) {
+
+			robot.frontCali();
 			has_robot_just_fc = true;
 			// Counter reset
 			move_forward_count = 0;
 
-		} else if (robot.canSide_Calibrate() && !has_robot_just_fc) {
-			System.out.print("align right\n");
-			robot.side_Calibrate();
+		} else if (robot.rightSideCaliPossible() && !has_robot_just_fc) {
+
+			robot.rightSideCali();
 			has_robot_just_fc = true;
 			move_forward_count = 0;
 		}
@@ -694,9 +692,9 @@ public class Exploration {
 		if (robot_move_towards_block) {
 
 			// Function returns true if robot has reached unexplored area
-			if (robot.doStepFastestPath()) {
+			if (robot.fpStep()) {
 
-				// Ensure robot is facing the un-explored area before completing current path
+				// Ensure robot is face_dir the un-explored area before completing current path
 				// if(robot.isFacingArea(nextUnexploredArea[0], nextUnexploredArea[1]))
 				robot_move_towards_block = false;
 			}
@@ -705,12 +703,12 @@ public class Exploration {
 
 			// If array == empty, check if robot returned to start location, else return to
 			// start
-			if (unexplored_areas_stack.empty()) {
+			if (stackUnexplored.empty()) {
 
 				if (robot.x == robot_start_X && robot.y == robot_start_Y) {
 
 					if (return_to_start)
-						PathDrawer.removePath();
+						Path_Drawer.removePath();
 					fastest_path_map_adjustment();
 
 					return true;
@@ -719,13 +717,12 @@ public class Exploration {
 				// Continue exploring if grid not fully explored/still unexplored
 				else if (get_explored_map() < 290)// != map.map_height*map.map_width)
 				{
-					System.out.print("checking if map got properly explored aka 90% of map");
+
 					enter_all_unexplored_areas();
 
 					return_to_start = false;
 
 				} else {
-					System.out.print("finished exploring part 2, going back to start");
 
 					path_to_unexplored_map_area = new A_star_search(map.get_node_with_xy_coordinates(robot.x, robot.y),
 							map.get_node_with_xy_coordinates(robot_start_X, robot_start_Y));
@@ -735,29 +732,28 @@ public class Exploration {
 					robot.setFastestInstruction(fast, robot_start_X, robot_start_Y);
 
 					// Update pathdrawer for simulation graphics
-					PathDrawer.update(robot.x, robot.y, path_to_unexplored_map_area.retrieve_fastest_path());
+					Path_Drawer.update(robot.x, robot.y, path_to_unexplored_map_area.retrieve_fastest_path());
 					return_to_start = true;
 
 					robot_move_towards_block = true;
 				}
 			} else {
 				has_unexplored_areas = true;
-				System.out.print("update map nodes for A star\n");
 
 				// Update grid nodes for A*
 				map.map_update();
 
-				// Update unexplored_areas_stack<Stack> (to clear blocks encountered on the way
+				// Update stackUnexplored<Stack> (to clear blocks encountered on the way
 				// to
 				// other blocks)
-				update_unexplored_map_areas();
+				updateUnexplored();
 
 				int closest_cost = 999;
 				int closest_area_index = 0;
 
-				if (!unexplored_areas_stack.empty()) {
-					System.out.print("unexploreaAreas.size = " + unexplored_areas_stack.size() + "\n");
-					for (int i = 0; i < unexplored_areas_stack.size(); i++) {
+				if (!stackUnexplored.empty()) {
+
+					for (int i = 0; i < stackUnexplored.size(); i++) {
 						// put the x and y value of the unexplored area
 						// [0]=x value of unexplored area
 						// [1]=y value of unexplored area
@@ -766,8 +762,8 @@ public class Exploration {
 						// [3]=y value of coordinate of point next to unexplored area that the robot can
 						// access
 						path_to_unexplored_map_area = new A_star_search(
-								map.get_node_with_xy_coordinates(robot.x, robot.y), map.get_node_with_xy_coordinates(
-										unexplored_areas_stack.get(i)[2], unexplored_areas_stack.get(i)[3]));
+								map.get_node_with_xy_coordinates(robot.x, robot.y),
+								map.get_node_with_xy_coordinates(stackUnexplored.get(i)[2], stackUnexplored.get(i)[3]));
 
 						path_to_unexplored_map_area.retrieve_fastest_path();
 						int cost = path_to_unexplored_map_area.getCost();
@@ -780,23 +776,18 @@ public class Exploration {
 					}
 
 					path_to_unexplored_map_area = new A_star_search(map.get_node_with_xy_coordinates(robot.x, robot.y),
-							map.get_node_with_xy_coordinates(unexplored_areas_stack.get(closest_area_index)[2],
-									unexplored_areas_stack.get(closest_area_index)[3]));
+							map.get_node_with_xy_coordinates(stackUnexplored.get(closest_area_index)[2],
+									stackUnexplored.get(closest_area_index)[3]));
 
-					System.out.print("next area to explore " + unexplored_areas_stack.get(closest_area_index)[0]
-							+ " and " + unexplored_areas_stack.get(closest_area_index)[1] + " but going to "
-							+ unexplored_areas_stack.get(closest_area_index)[2] + " and "
-							+ unexplored_areas_stack.get(closest_area_index)[3] + '\n');
-
-					nextUnexploredArea = unexplored_areas_stack.remove(closest_area_index);
+					nextUnexploredArea = stackUnexplored.remove(closest_area_index);
 
 					// Transmit to robot to store instructions
 					Stack<Node> fast = path_to_unexplored_map_area.retrieve_fastest_path();
-					System.out.print("setting fastest instructions\n++++++++++++++++++++++++++++++");
+
 					robot.setFastestInstruction(fast, nextUnexploredArea[0], nextUnexploredArea[1]);
 
 					// Update pathdrawer for simulation graphics
-					PathDrawer.update(robot.x, robot.y, path_to_unexplored_map_area.retrieve_fastest_path());
+					Path_Drawer.update(robot.x, robot.y, path_to_unexplored_map_area.retrieve_fastest_path());
 				}
 				robot_move_towards_block = true;
 				return_to_start = false;
@@ -820,7 +811,7 @@ public class Exploration {
 		for (int y = 0; y < Map.map_height; y++) {
 			for (int x = 0; x < Map.map_width; x++) {
 
-				if (grid_map_array[y][x] == ExplorationTypes.exploration_type_to_int("OBSTACLE")) {
+				if (grid_map_array[y][x] == Explored_Types.convertTypeToInt("OBSTACLE")) {
 					Integer[] obstacle = new Integer[3];
 					obstacle[2] = map.map_scores[y][x];
 					obstacle[0] = x;
@@ -830,8 +821,8 @@ public class Exploration {
 				}
 
 				// Mark unexplored areas as explored
-				if (grid_map_array[y][x] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_EMPTY")
-						|| grid_map_array[y][x] == ExplorationTypes.exploration_type_to_int("UNEXPLORED_OBSTACLE")) {
+				if (grid_map_array[y][x] == Explored_Types.convertTypeToInt("UN_EMPTY")
+						|| grid_map_array[y][x] == Explored_Types.convertTypeToInt("UN_OBSTACLE")) {
 					map.map_scores[y][x] = -1;
 				}
 			}
@@ -855,7 +846,7 @@ public class Exploration {
 				}
 			}
 
-			// Set obstacle with minimum score to an empty block
+			// set obstacle with minimum score to an empty block
 			map.map_scores[obstacle_with_scores.get(minimum_score_index)[1]][obstacle_with_scores
 					.get(minimum_score_index)[0]] = -1;
 
@@ -864,10 +855,10 @@ public class Exploration {
 		}
 
 		// Revise the score map
-		map.update_map_and_score();
+		map.mapAndScoreUpdate();
 		for (int i = 0; i < map.grid_map_array.length; i++) {
 			for (int j = 0; j < map.grid_map_array[i].length; j++) {
-				System.out.print(map.grid_map_array[i][j]);
+
 			}
 
 		}
@@ -876,7 +867,7 @@ public class Exploration {
 
 		for (int i = 0; i < map.map_array_2.length; i++) {
 			for (int j = 0; j < map.map_array_2[i].length; j++) {
-				System.out.print(map.map_array_2[i][j]);
+
 			}
 
 		}
@@ -885,7 +876,7 @@ public class Exploration {
 	// Robot reaches start position: return 1
 	// False: return 0
 	// Reset: return 1
-	public int DoSimulatorExploration() {
+	public int DoExp() {
 
 		// Record time since start of simulation
 		long startTime = System.currentTimeMillis();
@@ -912,8 +903,6 @@ public class Exploration {
 
 				float percentageExplored = ((float) get_explored_map() / (float) (Map.map_height * Map.map_width))
 						* 100;
-				System.out.print("Percentage Explored: " + percentageExplored + "\n");
-				System.out.print("Percentage to stop: " + stop_percentage + "\n");
 
 				// if (percentageExplored >= stop_percentage)
 				// return 1;
@@ -932,7 +921,7 @@ public class Exploration {
 					int DoInitialExplorationResult = start_initial_exploration();
 
 					if (DoInitialExplorationResult == 1) {
-						robot.sendMapDescriptor();
+						robot.sendDesc();
 
 						if (System.currentTimeMillis() - startTime < 225 * 1000 && exploreUnexplored) {
 
@@ -967,7 +956,7 @@ public class Exploration {
 						return 1;
 					}
 					map.map_update();
-					PathDrawer.update_unexplored_map_areas(unexplored_areas_stack);
+					Path_Drawer.updateUnexplored(stackUnexplored);
 
 					break;
 				}
