@@ -35,7 +35,7 @@ Our algorithm also solves the issue of __phantom blocks__ (blocks seen by the se
 __backtracking__ the robot to the last correct location and again performing the same steps.
 
 ## Fastest Path Algorithm
-The fastest path algorithm uses the popular __A* search__, a _complete, optimal graph traversal algorithm_, given a start node and a goal node. The space com- plexity of the A* algorithm is __O(|V|) or O(bd)__, the number of cells in the arena. The time complexity of the A* search algorithm is __O(|E|) or O(bd)__, the total number of possible movements to the new cell.
+The fastest path algorithm uses the popular __A* search__, a _complete, optimal graph traversal algorithm_, given a start node and a goal node. The space complexity of the A* algorithm is __O(|V|) or O(bd)__, the number of cells in the arena. The time complexity of the A* search algorithm is __O(|E|) or O(bd)__, the total number of possible movements to the new cell.
 
 <img src="assets/complexity.png">
 
