@@ -28,7 +28,7 @@ Our exploration uses the __right wall hugging__ algorithm, where every decision 
 * If cannot move downwards or right, then _Turn Left_
 * Else if no wall beside robot, _Back track_
 
-The algorithm uses an enum of 4 main values: EMTPY, OBSTACLE, UNEX- PLORED_EMPTY and UNEXPLORED_OBSTACLE. 
+The algorithm uses an enum of 4 main values: EMTPY, OBSTACLE, UNEXPLORED_EMPTY and UNEXPLORED_OBSTACLE. 
 Initially, the entire map is set to unexplored. Once the robot completes hugging the right wall and returns to the start point, it computes the fastest path to the unexplored areas (using __A* search__), explores the type of the unexplored cells, and then makes its way back.
 
 Our algorithm also solves the issue of __phantom blocks__ (blocks seen by the sensors but do not actually exist) by overwriting grids, and in the worst case,
