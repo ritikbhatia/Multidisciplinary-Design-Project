@@ -21,8 +21,8 @@ The robot should travel to explore an unknown area from start to goal zone and b
 
 ## Team 
 ### Algorithms
-* Anusha Datta
 * Ritik Bhatia
+* Anusha Datta
 ### Android
 * Wei Bin Kang
 * Jeremy Lee Kian Kiat
