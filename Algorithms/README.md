@@ -40,7 +40,7 @@ The fastest path algorithm uses the popular __A* search__, a _complete, optimal 
 <img src="assets/complexity.png">
 
 ### Formulation of Cost
-Our A* search algorithm calculates the evaluation function _f(n) = g(n) + h(n)_ where _g(n)_ is the actual path cost to the node n and _h(n)_ is the heuristic cost from node n to the goal node. We have defined _h(n) = (end_x-x) + (end_y-y)_, that is, the sum of the differences in x and y coordinates from node n to the goal node. The A* search chooses the neighboring node with the lowest value evaluation function. Th detailed flowchart for our algorithm is as follows:
+Our A* search algorithm calculates the evaluation function _f(n) = g(n) + h(n)_ where _g(n)_ is the actual path cost to the node n and _h(n)_ is the heuristic cost from node n to the goal node. We have defined _h(n) = (end_x-x) + (end_y-y)_, that is, the sum of the differences in x and y coordinates from node n to the goal node. The A* search chooses the neighboring node with the lowest value of the evaluation function. The detailed flowchart for our algorithm is as follows:
 
 <p align="center"><img src="assets/flow-chart.png" height="380"></p>
 
